@@ -327,9 +327,10 @@ export default async function Home() {
           <div className="text-center">
             <Link
               href="/transparansi"
-              className="inline-flex items-center gap-2.5 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full font-extrabold transition-all shadow-lg shadow-emerald-600/20 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-0.5 text-base"
+              className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 md:px-8 md:py-4 w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-full font-extrabold transition-all shadow-lg shadow-emerald-600/20 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-0.5 text-sm md:text-base"
             >
-              <Eye className="w-5 h-5 text-emerald-100" /> Buka Laporan Transparansi Seluruh Jamaah
+              <Eye className="w-5 h-5 text-emerald-100 shrink-0" /> 
+              <span>Lihat Laporan Transparansi <span className="hidden sm:inline">Seluruh Jamaah</span></span>
             </Link>
           </div>
         </div>
