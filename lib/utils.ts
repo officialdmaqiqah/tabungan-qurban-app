@@ -9,7 +9,8 @@ export function formatCurrency(amount: number) {
 }
 
 export function calculateDaysLeft(targetDateStr: string) {
-  const target = new Date(targetDateStr);
+  const dateOnly = targetDateStr.split('T')[0];
+  const target = new Date(`${dateOnly}T00:00:00+07:00`);
   const now = new Date();
   const diffTime = target.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
