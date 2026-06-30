@@ -11,7 +11,10 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-slate-200 py-6 text-center text-sm text-slate-500 bg-white mt-auto">
-      <p>&copy; {new Date().getFullYear()} Masjid Agung Kubah Timah Pangkalpinang. All rights reserved.</p>
+      <p>
+        &copy; {new Date().getFullYear()} Masjid Agung Kubah Timah Pangkalpinang. 
+        <span className="block sm:inline">All rights reserved.</span>
+      </p>
     </footer>
   );
 }
