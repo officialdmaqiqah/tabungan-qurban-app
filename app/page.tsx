@@ -62,7 +62,7 @@ export default async function Home() {
     <div className="flex-1 flex flex-col bg-slate-50 font-sans text-slate-800">
       
       {/* ================= SECTION 1: HERO SECTION (ABOVE THE FOLD) ================= */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white pt-28 pb-36">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white pt-20 lg:pt-28 pb-24 lg:pb-36">
         {/* Background Decorative Elements */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 mix-blend-overlay"></div>
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-[500px] h-[500px] bg-emerald-500 rounded-full blur-[150px] opacity-35"></div>
@@ -89,21 +89,7 @@ export default async function Home() {
                 Niat suci berqurban kini lebih mudah diraih. Tabung dana qurban Anda secara fleksibel tanpa batas minimum setor. Amanah, terpercaya, dan tercatat otomatis langsung dari HP Anda.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2">
-                <Link
-                  href="/register"
-                  className="px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 rounded-full font-extrabold hover:from-amber-400 hover:to-amber-500 transition-all shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 text-base group"
-                >
-                  Mulai Niat Qurban Sekarang
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-                <a
-                  href="#paket"
-                  className="px-8 py-4 bg-emerald-800/40 hover:bg-emerald-800/60 border border-emerald-700/60 text-white rounded-full font-bold transition-all flex items-center justify-center gap-2"
-                >
-                  Lihat Pilihan Paket
-                </a>
-              </div>
+              {/* CTA Buttons Removed */}
 
               {/* Mini Stats / Badges */}
               <div className="grid grid-cols-3 gap-4 pt-6 border-t border-emerald-800/50 max-w-lg">
