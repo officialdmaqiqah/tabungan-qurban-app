@@ -18,7 +18,7 @@ export default function Header({ user, role }: { user: any, role: string }) {
           <img src="/logo-dark.png" alt="Logo Masjid Agung Kubah Timah" className="h-8 md:h-10 w-auto" />
           <div className="flex flex-col justify-center">
             <span className="font-black text-[15px] md:text-xl text-emerald-700 leading-none tracking-tight">Tabungan Qurban</span>
-            <span className="text-[8px] md:text-[11px] font-medium text-slate-500 italic mt-0.5">Sisihkan Sekarang, Tunaikan Qurban Kemudian</span>
+            <span className="hidden md:block text-[11px] font-medium text-slate-500 italic mt-0.5">Sisihkan Sekarang, Tunaikan Qurban Kemudian</span>
           </div>
         </Link>
         <nav className="flex items-center gap-4 text-sm font-medium">
