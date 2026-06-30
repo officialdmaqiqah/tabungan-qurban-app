@@ -41,15 +41,15 @@ export default async function AdminDashboardOverview() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end pb-4 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Dashboard Ringkasan</h1>
-          <p className="text-slate-500 mt-1">Pantau perkembangan tabungan qurban jamaah secara real-time.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900">Dashboard Ringkasan</h1>
+          <p className="text-slate-500 mt-1 text-sm md:text-base">Pantau perkembangan tabungan qurban jamaah secara real-time.</p>
         </div>
         <a 
           href="/admin/export"
           download
-          className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-slate-900 text-white px-4 py-3 md:py-2 rounded-xl md:rounded-lg font-medium hover:bg-slate-800 transition-colors shadow-sm w-full md:w-auto shrink-0 whitespace-nowrap"
         >
           <Download className="w-4 h-4" />
           Export Laporan CSV

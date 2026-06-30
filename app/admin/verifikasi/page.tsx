@@ -96,7 +96,7 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
           </div>
         </div>
 
-        <form method="GET" className="flex items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
+        <form method="GET" className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded-lg border border-slate-200">
           <Filter className="w-4 h-4 text-slate-400 ml-2" />
           <select name="status" defaultValue={filterStatus} className="text-sm bg-transparent border-none focus:ring-0 text-slate-700 cursor-pointer">
             <option value="all">Semua Status</option>
@@ -104,13 +104,13 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
             <option value="verified">Terverifikasi</option>
             <option value="rejected">Ditolak</option>
           </select>
-          <div className="w-px h-4 bg-slate-300 mx-1"></div>
+          <div className="hidden sm:block w-px h-4 bg-slate-300 mx-1"></div>
           <select name="method" defaultValue={filterMethod} className="text-sm bg-transparent border-none focus:ring-0 text-slate-700 cursor-pointer">
             <option value="all">Semua Metode</option>
             <option value="tunai">Tunai</option>
             <option value="transfer">Transfer</option>
           </select>
-          <button type="submit" className="px-3 py-1.5 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors ml-1">
+          <button type="submit" className="w-full sm:w-auto px-4 py-2 sm:px-3 sm:py-1.5 bg-white border border-slate-200 rounded-md text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors">
             Filter
           </button>
         </form>

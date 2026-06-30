@@ -75,17 +75,33 @@ export default async function AdminLayout({
       </main>
 
       {/* Bottom Navigation (Mobile) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.3)] z-40">
-        <nav className="flex justify-around items-center h-16">
-          <Link href="/admin" className="flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-white">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-800 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.3)] z-50 overflow-x-auto pb-safe no-scrollbar">
+        <nav className="flex items-center h-16 min-w-max px-2 gap-1">
+          <Link href="/admin" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <LayoutDashboard className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Dashboard</span>
           </Link>
-          <Link href="/admin/paket" className="flex flex-col items-center justify-center w-full h-full text-slate-400 hover:text-white">
+          <Link href="/admin/jamaah" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
+            <Users className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Jamaah</span>
+          </Link>
+          <Link href="/admin/verifikasi" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
+            <CheckSquare className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Verifikasi</span>
+          </Link>
+          <Link href="/admin/input-setoran" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
+            <PlusCircle className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Setoran</span>
+          </Link>
+          <Link href="/admin/paket" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <Package className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Paket</span>
           </Link>
-          <form action="/auth/signout" method="post" className="w-full h-full">
+          <Link href="/admin/pengaturan" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
+            <Settings className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Seting</span>
+          </Link>
+          <form action="/auth/signout" method="post" className="w-20 h-full shrink-0">
             <button type="submit" className="flex flex-col items-center justify-center w-full h-full text-red-400 hover:text-red-300">
               <LogOut className="w-5 h-5 mb-1" />
               <span className="text-[10px] font-medium">Keluar</span>
