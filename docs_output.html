@@ -1,0 +1,264 @@
+<!doctype html>
+
+<html
+  lang="id"
+  class="layout-wide customizer-hide"
+  dir="ltr"
+  data-skin="default"
+  data-assets-path="/themes/vuexy/"
+  data-template="vuexy-magd"
+  data-bs-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="/branding/favicon.png?v=1773311459">
+    <meta name="description" content="XSender ,Whatsapp gateway Multi device Beta version">
+    <meta name="csrf-token" content="v654UkDTM2VHpv5l3tfaXLbXobq4WgqFbHEsSIbh" />
+    <meta name="keywords" content="waapi,wa gateway, whatsapp blast, wamp, xsender, wa gateway, whatsapp gateway, ">
+
+    <title>Masuk | XSender</title>
+	
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/themes/vuexy/vendor/fonts/iconify-icons.css" />
+
+    <!-- Core CSS -->
+
+    <link rel="stylesheet" href="/themes/vuexy/vendor/libs/node-waves/node-waves.css" />
+
+    <link rel="stylesheet" href="/themes/vuexy/vendor/libs/pickr/pickr-themes.css" />
+
+    <link rel="stylesheet" href="/themes/vuexy/vendor/css/core.css" />
+    <link rel="stylesheet" href="/themes/vuexy/css/default.css" />
+        <link rel="stylesheet" href="/themes/vuexy/css/ewarga-brand.css?v=1773138735" />
+    <!-- Vendors CSS -->
+
+    <link rel="stylesheet" href="/themes/vuexy/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
+
+    <!-- endbuild -->
+
+    <!-- Vendor -->
+    <link rel="stylesheet" href="/themes/vuexy/vendor/libs/@form-validation/form-validation.css" />
+
+    <!-- Page CSS -->
+    <!-- Page -->
+    <link rel="stylesheet" href="/themes/vuexy/vendor/css/pages/page-auth.css" />
+    <link rel="stylesheet" href="/themes/vuexy/css/ewarga-brand.css?v=1773138735" />
+
+    <!-- Helpers -->
+    <script src="/themes/vuexy/vendor/js/helpers.js"></script>
+    <script src="/themes/vuexy/vendor/js/template-customizer.js"></script>
+
+    <script src="/themes/vuexy/js/config.js"></script>
+  </head>
+
+  <body>
+    <!-- Content -->
+
+    <div class="authentication-wrapper authentication-cover">
+      <!-- Logo -->
+      <a href="https://xsender.id" class="app-brand auth-cover-brand">
+        <span class="app-brand-logo demo">
+          <span class="text-primary">
+            <img
+  src="/branding/logo-header.png?v=1773311418"
+  alt="XSender"
+  style="display:block; height:40px; width:auto; max-width:100%;"
+/>
+          </span>
+        </span>
+      </a>
+      <!-- /Logo -->
+      <div class="authentication-inner row m-0">
+                <!-- /Left Text -->
+        <div class="d-none d-xl-flex col-xl-8 p-0">
+          <div class="auth-cover-bg d-flex justify-content-center align-items-center">
+            <img
+              src="/themes/vuexy/img/illustrations/boy-with-laptop-light.png?v=1773048020"
+              alt="auth-login-cover"
+              class="my-5 auth-illustration"
+              
+               />
+          </div>
+        </div>
+        <!-- /Left Text -->
+
+        <!-- Login -->
+        <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6">
+          <div class="w-px-400 mx-auto mt-12 pt-5 position-relative">
+            <h4 class="mb-1">Masuk</h4>
+            <p class="mb-6">Hai, selamat datang di XSender.</p>
+
+                        <div class="d-flex gap-2 mb-6">
+              <button type="button" class="btn btn-sm btn-primary" id="tabEmailLogin">Login via Email</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="tabWaLogin">Login via WhatsApp</button>
+            </div>
+
+            <form id="emailLoginForm" class="mb-6 " action="https://xsender.id/id/login" method="POST">
+              <input type="hidden" name="_token" value="v654UkDTM2VHpv5l3tfaXLbXobq4WgqFbHEsSIbh" autocomplete="off">              <input type="hidden" name="login_method" value="email">
+              <div class="mb-6 form-control-validation">
+                <label for="email" class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control "
+                  id="email"
+                  name="email"
+                  placeholder="email@example.com"
+                  value=""
+                  autofocus />
+                <p class="text-danger"></p>
+              </div>
+              <div class="mb-6 form-password-toggle form-control-validation">
+                <label class="form-label" for="email_password">Inputkan Kata Sandi</label>
+                <div class="input-group input-group-merge">
+                  <input type="password" id="email_password" class="form-control" name="password" placeholder="Inputkan Kata Sandi" />
+                  <span class="input-group-text cursor-pointer"><i class="icon-base ti tabler-eye-off"></i></span>
+                </div>
+              </div>
+              <div class="my-8">
+                <div class="d-flex justify-content-between">
+                  <div class="form-check mb-0 ms-2">
+                    <input class="form-check-input" type="checkbox" id="remember-me" name="remember" />
+                    <label class="form-check-label" for="remember-me">Ingat Saya</label>
+                  </div>
+                  <a href="https://xsender.id/id/password/reset">
+                    <p class="mb-0">Atur Ulang Kata Sandi</p>
+                  </a>
+                </div>
+              </div>
+              <button class="btn btn-primary d-grid w-100">Masuk</button>
+            </form>
+
+            <form id="waLoginForm" class="mb-6 d-none" action="https://xsender.id/id/login" method="POST">
+              <input type="hidden" name="_token" value="v654UkDTM2VHpv5l3tfaXLbXobq4WgqFbHEsSIbh" autocomplete="off">              <input type="hidden" name="login_method" value="whatsapp">
+              <div class="mb-6 form-control-validation">
+                <label for="whatsapp_number" class="form-label">Nomor WhatsApp</label>
+                <input
+                  type="text"
+                  class="form-control "
+                  id="whatsapp_number"
+                  name="whatsapp_number"
+                  inputmode="numeric"
+                  maxlength="20"
+                  placeholder="628xxxxxxxxxx"
+                  value="" />
+                <p class="text-danger"></p>
+              </div>
+              <div class="mb-6 form-control-validation">
+                <label for="otp_code" class="form-label">Kode OTP WhatsApp</label>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-secondary" type="submit" name="otp_action" value="send">Minta OTP</button>
+                  <input
+                    type="text"
+                    class="form-control "
+                    id="otp_code"
+                    name="otp_code"
+                    inputmode="numeric"
+                    maxlength="6"
+                    placeholder="Masukkan 6 digit OTP"
+                    value="" />
+                </div>
+                <p class="text-danger"></p>
+              </div>
+              <button class="btn btn-primary d-grid w-100" type="submit">Verifikasi &amp; Masuk</button>
+            </form>
+
+            <script>
+              (function () {
+                const tabEmail = document.getElementById('tabEmailLogin');
+                const tabWa = document.getElementById('tabWaLogin');
+                const formEmail = document.getElementById('emailLoginForm');
+                const formWa = document.getElementById('waLoginForm');
+                function setMode(mode) {
+                  const emailActive = mode === 'email';
+                  formEmail.classList.toggle('d-none', !emailActive);
+                  formWa.classList.toggle('d-none', emailActive);
+                  tabEmail.classList.toggle('btn-primary', emailActive);
+                  tabEmail.classList.toggle('btn-outline-secondary', !emailActive);
+                  tabWa.classList.toggle('btn-primary', !emailActive);
+                  tabWa.classList.toggle('btn-outline-secondary', emailActive);
+                }
+                tabEmail.addEventListener('click', function () { setMode('email'); });
+                tabWa.addEventListener('click', function () { setMode('whatsapp'); });
+              })();
+            </script>
+          </div>
+        </div>
+        <!-- /Login -->
+      </div>
+    </div>
+
+    <!-- / Content -->
+
+    <!-- Core JS -->
+
+    <script src="/themes/vuexy/vendor/libs/jquery/jquery.js"></script>
+
+    <script src="/themes/vuexy/vendor/libs/popper/popper.js"></script>
+    <script src="/themes/vuexy/vendor/js/bootstrap.js"></script>
+    <script src="/themes/vuexy/vendor/libs/node-waves/node-waves.js"></script>
+
+    <script src="/themes/vuexy/vendor/libs/@algolia/autocomplete-js.js"></script>
+
+    <script src="/themes/vuexy/vendor/libs/pickr/pickr.js"></script>
+
+    <script src="/themes/vuexy/vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
+
+    <script src="/themes/vuexy/vendor/libs/hammer/hammer.js"></script>
+
+    <script src="/themes/vuexy/vendor/js/menu.js"></script>
+
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="/themes/vuexy/vendor/libs/@form-validation/popular.js"></script>
+    <script src="/themes/vuexy/vendor/libs/@form-validation/bootstrap5.js"></script>
+    <script src="/themes/vuexy/vendor/libs/@form-validation/auto-focus.js"></script>
+
+    <!-- Main JS -->
+	<script>
+		let Translate = {};
+		Translate.placeholder = 'Cari [CTRL + K]';
+		Translate.no_result = 'Tidak ada hasil ditemukan';
+	</script>
+    <script src="/themes/vuexy/js/main.js"></script>
+	
+	<script>
+	if (typeof TemplateCustomizer !== 'undefined') {
+		TemplateCustomizer.LANGUAGES.id = {
+			panel_header: 'Penyesuai Template',
+			panel_sub_header: 'Sesuaikan dan pratinjau secara real-time',
+			theming_header: 'Pengaturan Tema',
+			color_label: 'Warna Utama',
+			theme_label: 'Tema',
+			skin_label: 'Tampilan',
+			semiDark_label: 'Semi Gelap',
+			layout_header: 'Tata Letak',
+			layout_label: 'Menu (Navigasi)',
+			layout_header_label: 'Jenis Header',
+			content_label: 'Konten',
+			layout_navbar_label: 'Tipe Navbar',
+			direction_label: 'Arah'
+		};
+	  window.templateCustomizer = new TemplateCustomizer({
+		displayCustomizer: false,
+		lang: 'id',
+		controls: [
+		  'color',
+		  'theme',
+		  'semiDark',
+		  'layoutCollapsed',
+		  'layoutNavbarOptions',
+		  'headerType',
+		]
+	  });
+	}
+	</script>
+
+  </body>
+</html>
