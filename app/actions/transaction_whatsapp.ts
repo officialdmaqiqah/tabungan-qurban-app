@@ -31,7 +31,7 @@ export async function notifyAdminOnDepositReported(txId: string) {
 
 Ada laporan setoran baru:
 
-Nama: ${tx.profiles?.full_name || 'Hamba Allah'}
+Nama: Bpk/Ibu ${tx.profiles?.full_name || 'Hamba Allah'}
 Nominal: ${formatCurrency(tx.amount)}
 Metode: ${tx.method}
 Status: Pending
@@ -104,16 +104,16 @@ export async function notifyJamaahOnDepositApproved(txId: string) {
 
     const progress = target > 0 ? Math.min(100, Math.round((totalSavings / target) * 100)) : 100;
 
-    const message = `Assalamu'alaikum ${tx.profiles.full_name}.
+    const message = `Assalamu'alaikum Bpk/Ibu ${tx.profiles.full_name}.
 
-Alhamdulillah, setoran tabungan qurban panjenengan telah diverifikasi.
+Alhamdulillah, setoran tabungan qurban Anda telah diverifikasi.
 
 Nominal: ${formatCurrency(tx.amount)}
 Total tabungan saat ini: ${formatCurrency(totalSavings)}
 Target: ${target > 0 ? formatCurrency(target) : '-'}
 Progress: ${progress}%
 
-Semoga Allah mudahkan niat qurban panjenengan.
+Semoga Allah mudahkan niat qurban Anda.
 
 Cek dashboard:
 https://tabunganqurban.kubahtimah.com/dashboard`;
@@ -157,9 +157,9 @@ export async function notifyJamaahOnDepositRejected(txId: string, adminNote: str
 
     if (!settings?.send_to_jamaah_on_deposit_rejected) return;
 
-    const message = `Assalamu'alaikum ${tx.profiles.full_name}.
+    const message = `Assalamu'alaikum Bpk/Ibu ${tx.profiles.full_name}.
 
-Mohon maaf, laporan setoran tabungan qurban panjenengan belum bisa diverifikasi.
+Mohon maaf, laporan setoran tabungan qurban Anda belum bisa diverifikasi.
 
 Nominal: ${formatCurrency(tx.amount)}
 Catatan admin: ${adminNote || 'Tidak ada catatan khusus.'}
@@ -292,9 +292,9 @@ export async function sendRegistrationWelcomeWA(userId: string, phone: string, w
     // or maybe they assume it's always enabled if WA is enabled. 
     // The prompt says "jika fitur WhatsApp notification aktif", which is handled by sendWhatsAppMessage (WA_NOTIF_ENABLED).
 
-    const message = `Assalamu'alaikum ${profile.full_name}.
+    const message = `Assalamu'alaikum Bpk/Ibu ${profile.full_name}.
 
-Alhamdulillah, akun Tabungan Qurban MAKT panjenengan berhasil dibuat.
+Alhamdulillah, akun Tabungan Qurban MAKT Anda berhasil dibuat.
 
 Silakan login melalui link berikut:
 https://tabunganqurban.kubahtimah.com/login
@@ -303,7 +303,7 @@ Data login:
 Username: ${phone}
 Password: ***
 
-Segera login dan pilih paket qurban yang panjenengan inginkan di dashboard.`;
+Segera login dan pilih paket qurban yang Anda inginkan di dashboard.`;
 
     await sendWhatsAppMessage({
       to: phone,
