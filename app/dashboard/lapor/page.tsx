@@ -13,6 +13,7 @@ export default function LaporSetoranPage() {
   
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   const [error, setError] = useState<string | null>(null);
   
   const [amount, setAmount] = useState('');
@@ -99,18 +100,25 @@ export default function LaporSetoranPage() {
       setAmount('');
       setFile(null);
       
-      // Optional: Wait 2 seconds then go back to dashboard
-      setTimeout(() => {
-        router.push('/dashboard');
-        router.refresh();
-      }, 2000);
-
     } catch (err: any) {
       setError(err.message || 'Terjadi kesalahan saat melaporkan setoran.');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (success) {
+      if (countdown > 0) {
+        timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+      } else {
+        router.push('/dashboard');
+        router.refresh();
+      }
+    }
+    return () => clearTimeout(timer);
+  }, [success, countdown, router]);
 
   if (success) {
     return (
@@ -119,9 +127,12 @@ export default function LaporSetoranPage() {
           <CheckCircle2 className="w-8 h-8" />
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Laporan Berhasil Diterima</h2>
-        <p className="text-slate-600 max-w-md mx-auto">
+        <p className="text-slate-600 max-w-md mx-auto mb-4">
           Setoran Anda berstatus <strong>Pending</strong> dan akan dicek oleh admin. 
           Saldo Anda akan bertambah setelah setoran divalidasi.
+        </p>
+        <p className="text-sm text-slate-500 bg-slate-50 px-4 py-2 rounded-full border border-slate-100">
+          Mengarahkan kembali ke ringkasan dalam {countdown} detik...
         </p>
       </div>
     );
