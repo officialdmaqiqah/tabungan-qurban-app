@@ -88,21 +88,14 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
       
-      {/* Header Section (Matching LP Hero) */}
-      <header className="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white py-16 px-4 relative overflow-hidden">
+      <header className="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white pt-10 pb-16 px-4 relative overflow-hidden">
         {/* Background Decorative Elements */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 mix-blend-overlay"></div>
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-80 h-80 bg-emerald-500 rounded-full blur-[100px] opacity-35"></div>
         <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/4 w-80 h-80 bg-teal-500 rounded-full blur-[100px] opacity-35"></div>
 
         <div className="container mx-auto max-w-5xl relative z-10">
-          <Link 
-            href="/" 
-            className="inline-flex items-center gap-2 text-emerald-200 hover:text-white mb-6 transition-all font-medium text-sm px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:bg-white/10"
-          >
-            <ArrowLeft className="w-4 h-4" /> Kembali ke Beranda
-          </Link>
-          
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-800/50 border border-emerald-700/50 text-xs font-semibold text-emerald-200 uppercase tracking-wider">
