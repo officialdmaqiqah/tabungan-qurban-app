@@ -114,7 +114,6 @@ export default function LaporSetoranPage() {
         timer = setTimeout(() => setCountdown(c => c - 1), 1000);
       } else {
         router.push('/dashboard');
-        router.refresh();
       }
     }
     return () => clearTimeout(timer);
