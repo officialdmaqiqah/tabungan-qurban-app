@@ -39,7 +39,7 @@ export async function updateWhatsAppSettings(data: any) {
       .eq('id', 1); // Or whatever identifier is used
 
     // If there's an error because send_welcome_on_registration doesn't exist, try falling back
-    if (error && error.code === '42703') {
+    if (error && (error.code === '42703' || error.code === 'PGRST204' || error.message.includes('schema cache'))) {
       const { error: fallbackError } = await supabase
         .from('whatsapp_settings')
         .update({
