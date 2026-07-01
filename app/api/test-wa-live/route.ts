@@ -10,14 +10,17 @@ export async function GET(request: Request) {
     );
 
     // 2. Setup Settings
-    await adminClient.from('whatsapp_settings').update({
-      admin_notification_phone: '628999999999', // dummy admin phone
-      send_to_admin_on_deposit_reported: true,
-      send_to_jamaah_on_deposit_approved: false, // disabled for now as requested
-      send_to_jamaah_on_deposit_rejected: false, // disabled for now as requested
-      is_enabled: true,
-      dry_run: false
-    }).eq('id', 1);
+    const { data: currentSettings } = await adminClient.from('whatsapp_settings').select('id').single();
+    if (currentSettings) {
+      await adminClient.from('whatsapp_settings').update({
+        admin_notification_phone: '628999999999', // dummy admin phone
+        send_to_admin_on_deposit_reported: true,
+        send_to_jamaah_on_deposit_approved: false, // disabled for now as requested
+        send_to_jamaah_on_deposit_rejected: false, // disabled for now as requested
+        is_enabled: true,
+        dry_run: false
+      }).eq('id', currentSettings.id);
+    }
 
     // 3. Test Admin Message
     await sendWhatsAppMessage({

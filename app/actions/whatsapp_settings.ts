@@ -22,6 +22,16 @@ export async function updateWhatsAppSettings(data: any) {
       throw new Error('Unauthorized');
     }
 
+    // Fetch the actual UUID first to avoid type errors
+    const { data: currentSettings } = await supabase
+      .from('whatsapp_settings')
+      .select('id')
+      .single();
+
+    if (!currentSettings) {
+      throw new Error('Pengaturan belum diinisialisasi di database.');
+    }
+
     // Attempt to update
     const { error } = await supabase
       .from('whatsapp_settings')
@@ -36,7 +46,7 @@ export async function updateWhatsAppSettings(data: any) {
         send_welcome_on_registration: data.send_welcome_on_registration,
         updated_at: new Date().toISOString()
       })
-      .eq('id', 1); // Or whatever identifier is used
+      .eq('id', currentSettings.id);
 
     // If there's an error because send_welcome_on_registration doesn't exist, try falling back
     if (error && (error.code === '42703' || error.code === 'PGRST204' || error.message.includes('schema cache'))) {
@@ -52,7 +62,7 @@ export async function updateWhatsAppSettings(data: any) {
           send_manual_reminder_enabled: data.send_manual_reminder_enabled,
           updated_at: new Date().toISOString()
         })
-        .neq('id', 'null'); // Hack to update the only row
+        .eq('id', currentSettings.id);
 
       if (fallbackError) throw fallbackError;
     } else if (error) {
