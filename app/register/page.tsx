@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { toTitleCase, formatWhatsAppNumber } from '@/lib/utils';
+import { sendRegistrationWelcomeWA } from '@/app/actions/transaction_whatsapp';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ShieldCheck, UserPlus, MapPin, Package as PackageIcon } from 'lucide-react';
@@ -21,6 +22,7 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
   const [kategoriJamaah, setKategoriJamaah] = useState('');
   const [gender, setGender] = useState('');
+  const [waOptIn, setWaOptIn] = useState(false);
 
   // Region states
   const [regencies, setRegencies] = useState<{id: string, name: string}[]>([]);
@@ -113,12 +115,20 @@ function RegisterForm() {
             role: 'jamaah',
             kategori_jamaah: kategoriJamaah,
             gender: gender,
-            is_active: true
+            is_active: true,
+            wa_opt_in: waOptIn,
+            wa_opt_in_at: waOptIn ? new Date().toISOString() : null,
+            wa_opt_in_source: 'register',
+            phone_normalized: validPhone
           }
         }
       });
 
       if (signUpError) throw signUpError;
+
+      if (data?.user) {
+        sendRegistrationWelcomeWA(data.user.id, validPhone, waOptIn).catch(e => console.error(e));
+      }
 
       // Assign package if packageId exists
       if (packageId && data?.user) {
@@ -237,6 +247,21 @@ function RegisterForm() {
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
                   placeholder="Minimal 6 karakter"
                 />
+              </div>
+
+              <div className="flex items-start gap-3 mt-4">
+                <div className="flex items-center h-5">
+                  <input
+                    id="waOptIn"
+                    type="checkbox"
+                    checked={waOptIn}
+                    onChange={(e) => setWaOptIn(e.target.checked)}
+                    className="w-4 h-4 border border-slate-300 rounded bg-slate-50 focus:ring-3 focus:ring-emerald-300"
+                  />
+                </div>
+                <label htmlFor="waOptIn" className="text-sm font-medium text-slate-700">
+                  Saya bersedia menerima notifikasi Tabungan Qurban MAKT melalui WhatsApp.
+                </label>
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import InputTunaiForm from './InputTunaiForm';
 import DeleteConfirmButton from '@/components/DeleteConfirmButton';
 import ResetPasswordButton from './ResetPasswordButton';
 import KategoriSelect from './KategoriSelect';
+import ManualReminderButton from './ManualReminderButton';
 
 export default async function JamaahDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -32,11 +33,25 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
   if (!jamaah) notFound();
 
   // Fetch transactions
-  const { data: transactions } = await supabase
+  const { data: transactionsRaw } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_id', jamaahId)
     .order('created_at', { ascending: false });
+
+  const transactions = await Promise.all((transactionsRaw || []).map(async (tx) => {
+    let finalUrl = tx.proof_url;
+    if (finalUrl && !finalUrl.startsWith('http')) {
+      const parts = finalUrl.split('/');
+      const bucket = parts[0];
+      const path = parts.slice(1).join('/');
+      if (bucket && path) {
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+        if (data) finalUrl = data.signedUrl;
+      }
+    }
+    return { ...tx, proof_url: finalUrl };
+  }));
 
   // Calculate stats
   let targetAmount = 0;
@@ -60,9 +75,6 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
 
   const waMessage = `Assalamu'alaikum Bpk/Ibu ${jamaah.full_name},\n\nKami dari Panitia Tabungan Qurban ingin menginformasikan detail tabungan Anda:\n\n- Total Target: ${formatCurrency(targetAmount)}\n- Saldo Saat Ini: ${formatCurrency(verifiedTabungan)}\n- Sisa Tagihan: ${formatCurrency(sisaTarget)}\n\nTerima kasih atas partisipasinya!`;
   const waLink = jamaah.phone ? `https://wa.me/${jamaah.phone.replace(/^0/, '62')}?text=${encodeURIComponent(waMessage)}` : '#';
-
-  const waReminderMessage = `Assalamu'alaikum Bpk/Ibu ${jamaah.full_name},\n\nSemoga selalu dalam lindungan Allah SWT.\nKami dari Panitia Tabungan Qurban ingin mengingatkan bahwa waktu menuju Idul Adha semakin dekat, namun progres tabungan Anda tampaknya sedikit tertinggal dari jadwal.\n\n- Saldo Saat Ini: ${formatCurrency(verifiedTabungan)}\n- Sisa Target: ${formatCurrency(sisaTarget)}\n\nYuk, tambah setoran Anda agar niat mulia berqurban tahun ini dapat terwujud tepat waktu. Terima kasih!`;
-  const waReminderLink = jamaah.phone ? `https://wa.me/${jamaah.phone.replace(/^0/, '62')}?text=${encodeURIComponent(waReminderMessage)}` : '#';
 
   async function resetPackage(formData: FormData) {
     'use server';
@@ -245,15 +257,11 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                     </a>
                   )}
                   {jamaah.phone && isBehindTarget && (
-                    <a 
-                      href={waReminderLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-50 text-orange-700 hover:bg-orange-100 rounded-lg text-xs font-medium transition-colors"
-                    >
-                      <MessageCircle className="w-3.5 h-3.5" />
-                      Kirim Reminder
-                    </a>
+                    <ManualReminderButton 
+                      userId={jamaah.id} 
+                      isOptIn={!!jamaah.wa_opt_in} 
+                      phone={jamaah.phone_normalized || ''} 
+                    />
                   )}
                   <ResetPasswordButton userId={jamaahId} resetAction={forceResetPassword} />
                 </div>

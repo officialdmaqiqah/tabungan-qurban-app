@@ -51,11 +51,25 @@ export default async function DashboardPage() {
   const recPerMonth = daysLeft > 0 ? sisaTarget / (daysLeft / 30) : 0;
 
   // Fetch transaction history
-  const { data: history } = await supabase
+  const { data: historyRaw } = await supabase
     .from('transactions')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
+
+  const history = await Promise.all((historyRaw || []).map(async (tx) => {
+    let finalUrl = tx.proof_url;
+    if (finalUrl && !finalUrl.startsWith('http')) {
+      const parts = finalUrl.split('/');
+      const bucket = parts[0];
+      const path = parts.slice(1).join('/');
+      if (bucket && path) {
+        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
+        if (data) finalUrl = data.signedUrl;
+      }
+    }
+    return { ...tx, proof_url: finalUrl };
+  }));
 
   // Leaderboard & Motivation Logic
   const { data: allProfiles } = await supabase.from('profiles').select('id, full_name, is_anonymous').eq('role', 'jamaah');

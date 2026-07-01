@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, LayoutDashboard, Settings, Users, CheckSquare, Package, PlusCircle, Activity, FileText } from 'lucide-react';
+import { LogOut, LayoutDashboard, Settings, Users, CheckSquare, Package, PlusCircle, Activity, FileText, MessageCircle } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
@@ -61,6 +61,10 @@ export default async function AdminLayout({
             <Activity className="w-5 h-5" />
             <span className="font-medium">Log Aktivitas</span>
           </Link>
+          <Link href="/admin/whatsapp" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all">
+            <MessageCircle className="w-5 h-5" />
+            <span className="font-medium">WhatsApp Notifikasi</span>
+          </Link>
           <form action="/auth/signout" method="post" className="w-full mt-auto pt-8">
             <button type="submit" className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors text-left whitespace-nowrap">
               <LogOut className="w-5 h-5" />
@@ -100,6 +104,10 @@ export default async function AdminLayout({
           <Link href="/admin/pengaturan" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <Settings className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Seting</span>
+          </Link>
+          <Link href="/admin/whatsapp" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
+            <MessageCircle className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">WA</span>
           </Link>
           <form action="/auth/signout" method="post" className="w-20 h-full shrink-0">
             <button type="submit" className="flex flex-col items-center justify-center w-full h-full text-red-400 hover:text-red-300">

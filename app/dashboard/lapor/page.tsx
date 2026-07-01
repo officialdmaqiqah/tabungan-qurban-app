@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { UploadCloud, CheckCircle2, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { notifyAdminOnDepositReported } from '@/app/actions/transaction_whatsapp';
 
 export default function LaporSetoranPage() {
   const router = useRouter();
@@ -70,13 +71,12 @@ export default function LaporSetoranPage() {
 
         if (uploadError) throw uploadError;
 
-        // Get public URL (or just store the path)
-        const { data: publicUrlData } = supabase.storage.from('proofs').getPublicUrl(fileName);
-        proofUrl = publicUrlData.publicUrl;
+        // Store the file path instead of public URL
+        proofUrl = 'proofs/' + uploadData.path;
       }
 
       // Insert transaction
-      const { error: insertError } = await supabase
+      const { data: newTx, error: insertError } = await supabase
         .from('transactions')
         .insert({
           user_id: user.id,
@@ -84,9 +84,16 @@ export default function LaporSetoranPage() {
           method: method,
           proof_url: proofUrl,
           status: 'pending'
-        });
+        })
+        .select('id')
+        .single();
 
       if (insertError) throw insertError;
+
+      // Trigger WA Notification as background task (don't await to avoid blocking)
+      if (newTx?.id) {
+        notifyAdminOnDepositReported(newTx.id).catch(e => console.error(e));
+      }
 
       setSuccess(true);
       setAmount('');

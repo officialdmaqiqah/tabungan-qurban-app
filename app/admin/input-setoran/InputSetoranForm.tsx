@@ -52,11 +52,7 @@ export default function InputSetoranForm({
 
         if (uploadError) throw uploadError;
 
-        const { data: { publicUrl } } = supabase.storage
-          .from('transfer_proofs')
-          .getPublicUrl(filePath);
-
-        proofUrl = publicUrl;
+        proofUrl = 'transfer_proofs/' + filePath;
       }
 
       const formData = new FormData();
