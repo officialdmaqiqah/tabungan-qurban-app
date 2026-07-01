@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { formatCurrency, calculateDaysLeft, getProgressBadge, maskName } from '@/lib/utils';
+import { formatCurrency, calculateDaysLeft, maskName } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 import { Target, TrendingUp, Calendar, AlertCircle, EyeOff, Eye, Trophy } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
@@ -96,7 +96,6 @@ export default async function DashboardPage() {
     "Setiap rupiah yang ditabung untuk qurban, akan menjadi saksi pengorbanan di hari kelak."
   ];
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-  const badge = getProgressBadge(progressPercent);
 
   // Tertinggal Target Logic
   const totalDuration = 365;
@@ -197,9 +196,6 @@ export default async function DashboardPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-2 gap-2">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-slate-900">Progress Tabungan</h3>
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium border ${badge.color}`}>
-              {badge.label}
-            </span>
           </div>
           <span className="text-sm font-medium text-emerald-600">{progressPercent}%</span>
         </div>
