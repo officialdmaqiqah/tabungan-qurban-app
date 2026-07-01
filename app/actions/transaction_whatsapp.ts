@@ -280,17 +280,36 @@ export async function sendRegistrationWelcomeWA(userId: string, phone: string, w
     }
 
     const supabase = await createClient();
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('full_name')
-      .eq('id', userId)
+    
+    // Check settings first
+    const { data: settings } = await supabase
+      .from('whatsapp_settings')
+      .select('send_welcome_on_registration')
       .single();
+      
+    if (!settings?.send_welcome_on_registration) {
+      return { success: false, error: 'send_welcome_on_registration disabled' };
+    }
 
-    if (!profile) throw new Error('Profile not found');
+    // Wait for profile trigger (up to 5 retries / 2.5 seconds)
+    let profile = null;
+    for (let i = 0; i < 5; i++) {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', userId)
+        .single();
+      
+      if (data) {
+        profile = data;
+        break;
+      }
+      await new Promise(res => setTimeout(res, 500));
+    }
 
-    // We don't check settings.send_to_jamaah_on... here because user didn't specify a setting for this yet, 
-    // or maybe they assume it's always enabled if WA is enabled. 
-    // The prompt says "jika fitur WhatsApp notification aktif", which is handled by sendWhatsAppMessage (WA_NOTIF_ENABLED).
+    if (!profile) {
+      throw new Error('Profile not found after retries');
+    }
 
     const message = `Assalamu'alaikum Bpk/Ibu ${profile.full_name}.
 
