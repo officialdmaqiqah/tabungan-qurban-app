@@ -88,18 +88,16 @@ export async function notifyJamaahOnDepositApproved(txId: string) {
 
     // Get active package target
     let target = 0;
-    const { data: activePkg } = await supabase
+    const { data: userPackages } = await supabase
       .from('user_packages')
-      .select('packages(price)')
-      .eq('user_id', tx.user_id)
-      .eq('status', 'active')
-      .single();
+      .select('quantity, qurban_packages(price)')
+      .eq('user_id', tx.user_id);
       
-    if (activePkg?.packages) {
-      const pkg: any = Array.isArray(activePkg.packages) ? activePkg.packages[0] : activePkg.packages;
-      if (pkg?.price) {
-        target = pkg.price;
-      }
+    if (userPackages) {
+      target = userPackages.reduce((sum, item: any) => {
+        const price = item.qurban_packages ? (Array.isArray(item.qurban_packages) ? item.qurban_packages[0]?.price : item.qurban_packages.price) : 0;
+        return sum + (Number(price) || 0) * (item.quantity || 1);
+      }, 0);
     }
 
     const progress = target > 0 ? Math.min(100, Math.round((totalSavings / target) * 100)) : 100;
@@ -231,18 +229,16 @@ export async function sendManualReminderWA(userId: string) {
     const totalSavings = allTxs?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
 
     let target = 0;
-    const { data: activePkg } = await supabase
+    const { data: userPackages } = await supabase
       .from('user_packages')
-      .select('packages(price)')
-      .eq('user_id', userId)
-      .eq('status', 'active')
-      .single();
+      .select('quantity, qurban_packages(price)')
+      .eq('user_id', userId);
       
-    if (activePkg?.packages) {
-      const pkg: any = Array.isArray(activePkg.packages) ? activePkg.packages[0] : activePkg.packages;
-      if (pkg?.price) {
-        target = pkg.price;
-      }
+    if (userPackages) {
+      target = userPackages.reduce((sum, item: any) => {
+        const price = item.qurban_packages ? (Array.isArray(item.qurban_packages) ? item.qurban_packages[0]?.price : item.qurban_packages.price) : 0;
+        return sum + (Number(price) || 0) * (item.quantity || 1);
+      }, 0);
     }
 
     const sisaTarget = Math.max(0, target - totalSavings);
