@@ -132,7 +132,8 @@ function RegisterForm() {
         // since the database handle_new_user trigger might not catch them
         await updateProfileAfterRegistration(data.user.id, kategoriJamaah, gender);
 
-        sendRegistrationWelcomeWA(data.user.id, validPhone, waOptIn).catch(e => console.error(e));
+        // Await the WhatsApp notification so the serverless function doesn't terminate early
+        await sendRegistrationWelcomeWA(data.user.id, validPhone, waOptIn).catch(e => console.error(e));
       }
 
       // Assign package if packageId exists
