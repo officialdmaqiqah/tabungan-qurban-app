@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 interface WhatsAppParams {
   to: string;
@@ -11,7 +12,8 @@ interface WhatsAppParams {
 }
 
 export async function sendWhatsAppMessage(params: WhatsAppParams) {
-  const supabase = await createClient();
+  const supabaseAuth = await createClient();
+  const supabase = createAdminClient();
 
   // 1. Normalisasi nomor ke format 62
   let phone = params.to.replace(/\D/g, ''); // hapus karakter non-digit
@@ -103,7 +105,7 @@ export async function sendWhatsAppMessage(params: WhatsAppParams) {
 
   // Insert log ke database
   try {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabaseAuth.auth.getUser().catch(() => ({ data: { user: null } }));
 
     // Dapatkan nama penerima jika user id tersedia (opsional)
     let recipientName = null;

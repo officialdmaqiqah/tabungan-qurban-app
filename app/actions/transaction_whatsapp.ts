@@ -1,12 +1,13 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { sendWhatsAppMessage } from './whatsapp';
 import { formatCurrency } from '@/lib/utils';
 
 export async function notifyAdminOnDepositReported(txId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Fetch transaction & profile
     const { data: tx } = await supabase
@@ -52,7 +53,7 @@ https://tabunganqurban.kubahtimah.com/admin/verifikasi`;
 
 export async function notifyJamaahOnDepositApproved(txId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Fetch transaction & profile
     const { data: tx } = await supabase
@@ -130,7 +131,7 @@ https://tabunganqurban.kubahtimah.com/dashboard`;
 
 export async function notifyJamaahOnDepositRejected(txId: string, adminNote: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Fetch transaction & profile
     const { data: tx } = await supabase
@@ -182,8 +183,9 @@ https://tabunganqurban.kubahtimah.com/dashboard`;
 // Helper to log skipped messages without sending to provider
 async function logSkipped(txId: string, userId: string, phone: string | null | undefined, reason: string, eventType: string) {
   try {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabaseAuth = await createClient();
+    const supabase = createAdminClient();
+    const { data: { user } } = await supabaseAuth.auth.getUser().catch(() => ({ data: { user: null } }));
     
     await supabase.from('whatsapp_notifications').insert({
       recipient_user_id: userId,
@@ -202,7 +204,7 @@ async function logSkipped(txId: string, userId: string, phone: string | null | u
 
 export async function sendManualReminderWA(userId: string) {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Fetch profile
     const { data: profile } = await supabase
@@ -275,7 +277,7 @@ export async function sendRegistrationWelcomeWA(userId: string, phone: string, w
       return { success: false, error: 'wa_opt_in_false' };
     }
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     
     // Check settings first
     const { data: settings } = await supabase
