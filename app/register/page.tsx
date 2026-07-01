@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { toTitleCase, formatWhatsAppNumber } from '@/lib/utils';
 import { sendRegistrationWelcomeWA } from '@/app/actions/transaction_whatsapp';
+import { updateProfileAfterRegistration } from '@/app/actions/profile';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ShieldCheck, UserPlus, MapPin, Package as PackageIcon } from 'lucide-react';
@@ -127,6 +128,10 @@ function RegisterForm() {
       if (signUpError) throw signUpError;
 
       if (data?.user) {
+        // Update the profile manually to ensure kategori and gender are recorded properly
+        // since the database handle_new_user trigger might not catch them
+        await updateProfileAfterRegistration(data.user.id, kategoriJamaah, gender);
+
         sendRegistrationWelcomeWA(data.user.id, validPhone, waOptIn).catch(e => console.error(e));
       }
 
