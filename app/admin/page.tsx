@@ -5,30 +5,20 @@ import { Users, Wallet, Target, Clock, ShieldAlert, Check, Download } from 'luci
 export default async function AdminDashboardOverview() {
   const supabase = await createClient();
 
-  // 1. Get total jamaah
-  const { count: totalJamaah } = await supabase
-    .from('profiles')
-    .select('*', { count: 'exact', head: true })
-    .eq('role', 'jamaah');
+  // Run all independent queries concurrently to eliminate waterfalls
+  const [
+    { count: totalJamaah },
+    { data: verifiedTxs },
+    { count: pendingCount },
+    { data: userPackages }
+  ] = await Promise.all([
+    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'jamaah'),
+    supabase.from('transactions').select('amount').eq('status', 'verified'),
+    supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('user_packages').select('quantity, qurban_packages(price)')
+  ]);
 
-  // 2. Get total terkumpul (verified transactions)
-  const { data: verifiedTxs } = await supabase
-    .from('transactions')
-    .select('amount')
-    .eq('status', 'verified');
-  
   const totalTerkumpul = verifiedTxs?.reduce((sum, tx) => sum + Number(tx.amount), 0) || 0;
-
-  // 3. Get pending verification count
-  const { count: pendingCount } = await supabase
-    .from('transactions')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'pending');
-
-  // 4. Get total target from all chosen packages
-  const { data: userPackages } = await supabase
-    .from('user_packages')
-    .select('quantity, qurban_packages(price)');
 
   const totalTarget = userPackages?.reduce((sum, pkg: any) => {
     const price = Number(pkg.qurban_packages?.price) || 0;

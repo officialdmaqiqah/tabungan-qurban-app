@@ -10,25 +10,31 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/login');
 
-  const { data: userProfile } = await supabase.from('profiles').select('kategori_jamaah, is_anonymous').eq('id', user.id).single();
-
-  // Fetch target (user_packages)
-  const { data: userPackages } = await supabase
-    .from('user_packages')
-    .select('package_id, quantity, qurban_packages(name, price)')
-    .eq('user_id', user.id);
+  // Run all independent queries concurrently to eliminate waterfalls
+  const [
+    { data: userProfile },
+    { data: userPackages },
+    { data: verifiedTransactions },
+    { data: settings },
+    { data: historyRaw },
+    { data: allProfiles },
+    { data: allPackages },
+    { data: allTransactions }
+  ] = await Promise.all([
+    supabase.from('profiles').select('kategori_jamaah, is_anonymous').eq('id', user.id).single(),
+    supabase.from('user_packages').select('package_id, quantity, qurban_packages(name, price)').eq('user_id', user.id),
+    supabase.from('transactions').select('amount').eq('user_id', user.id).eq('status', 'verified'),
+    supabase.from('program_settings').select('*').single(),
+    supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+    supabase.from('profiles').select('id, full_name, is_anonymous').eq('role', 'jamaah'),
+    supabase.from('user_packages').select('user_id, quantity, qurban_packages(price)'),
+    supabase.from('transactions').select('user_id, amount').eq('status', 'verified')
+  ]);
 
   let targetAmount = 0;
   if (userPackages) {
     targetAmount = userPackages.reduce((sum, item: any) => sum + ((Number(item.qurban_packages?.price) || 0) * (item.quantity || 1)), 0);
   }
-
-  // Fetch verified transactions (Total tabungan)
-  const { data: verifiedTransactions } = await supabase
-    .from('transactions')
-    .select('amount')
-    .eq('user_id', user.id)
-    .eq('status', 'verified');
 
   const totalTabungan = verifiedTransactions?.reduce((sum, item) => sum + Number(item.amount), 0) || 0;
   
@@ -37,25 +43,12 @@ export default async function DashboardPage() {
   const kelebihanTabungan = Math.max(0, totalTabungan - targetAmount);
   const progressPercent = targetAmount > 0 ? Math.min(100, Math.round((totalTabungan / targetAmount) * 100)) : 0;
 
-  // Fetch program settings for Qurban date
-  const { data: settings } = await supabase
-    .from('program_settings')
-    .select('*')
-    .single();
-
   const daysLeft = settings ? calculateDaysLeft(settings.qurban_date) : 0;
 
   // Calculate Recommendations
   const recPerDay = daysLeft > 0 ? sisaTarget / daysLeft : 0;
   const recPerWeek = daysLeft > 0 ? sisaTarget / (daysLeft / 7) : 0;
   const recPerMonth = daysLeft > 0 ? sisaTarget / (daysLeft / 30) : 0;
-
-  // Fetch transaction history
-  const { data: historyRaw } = await supabase
-    .from('transactions')
-    .select('*')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
 
   const history = await Promise.all((historyRaw || []).map(async (tx) => {
     let finalUrl = tx.proof_url;
@@ -72,9 +65,6 @@ export default async function DashboardPage() {
   }));
 
   // Leaderboard & Motivation Logic
-  const { data: allProfiles } = await supabase.from('profiles').select('id, full_name, is_anonymous').eq('role', 'jamaah');
-  const { data: allPackages } = await supabase.from('user_packages').select('user_id, quantity, qurban_packages(price)');
-  const { data: allTransactions } = await supabase.from('transactions').select('user_id, amount').eq('status', 'verified');
 
   const leaderboardRaw = allProfiles?.map(prof => {
     const profPackages = allPackages?.filter(p => p.user_id === prof.id) || [];
