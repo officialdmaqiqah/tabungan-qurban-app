@@ -43,7 +43,14 @@ export default async function Home() {
   const { data: packages } = await serviceSupabase
     .from('qurban_packages')
     .select('*')
+    .eq('is_active', true)
     .order('price', { ascending: true });
+
+  const { data: bankAccounts } = await serviceSupabase
+    .from('bank_accounts')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
 
   // Fetch program settings
   const { data: settings } = await serviceSupabase
@@ -588,13 +595,12 @@ export default async function Home() {
 
       {/* ================= SECTION 7: PERTANYAAN UMUM (FAQ) ================= */}
       <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Tanya Jawab</h2>
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Informasi Tambahan</h2>
-            <p className="text-slate-600 text-sm sm:text-base">Jawaban atas keraguan umum seputar program tabungan qurban.</p>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">Pertanyaan Seputar Tabungan</h2>
+            <p className="text-slate-600">Jawaban cepat untuk pertanyaan yang sering diajukan jamaah.</p>
           </div>
-          <FAQ />
+          <FAQ bankAccounts={bankAccounts || []} />
         </div>
       </section>
 
