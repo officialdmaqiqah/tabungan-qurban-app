@@ -83,13 +83,13 @@ export default function HeroCalculator({ packages, qurbanDate }: { packages: Pac
 
           {/* Time Display (Countdown) */}
           <div className="bg-black/30 border border-emerald-500/20 rounded-xl p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-900/50 rounded-full flex items-center justify-center text-amber-400 border border-emerald-500/30">
-                <Clock className="w-5 h-5" />
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-full bg-emerald-800/50 flex items-center justify-center border border-emerald-700">
+                <Clock className="w-5 h-5 text-emerald-400" />
               </div>
               <div>
-                <p className="text-[10px] text-emerald-200/70 uppercase tracking-wider font-semibold">Sisa Waktu</p>
-                <p className="text-sm font-medium text-white">Menuju Idul Adha</p>
+                <p className="text-[10px] font-bold text-emerald-500/80 uppercase tracking-wider mb-0.5">Sisa Waktu</p>
+                <p className="text-sm font-medium text-white">Menuju Idul Adha 2027</p>
               </div>
             </div>
             <div className="text-right">
