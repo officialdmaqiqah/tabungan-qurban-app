@@ -118,9 +118,12 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Buku Tabungan</h1>
+        <div>
+          <div className="md:hidden text-sm text-slate-500 mb-1 font-medium">Halo, {userProfile?.full_name?.split(' ')[0]} 👋</div>
+          <h1 className="text-2xl font-bold text-slate-900">Buku Tabungan</h1>
+        </div>
         
-        <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-100">
+        <div className="flex items-center justify-between md:justify-end gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-100 self-end md:self-auto">
           <div className="flex flex-col text-right">
             <span className="text-sm font-semibold text-slate-900 flex items-center gap-1 justify-end">
               {userProfile?.is_anonymous ? <EyeOff className="w-3.5 h-3.5 text-slate-500" /> : <Eye className="w-3.5 h-3.5 text-emerald-600" />}
