@@ -16,7 +16,12 @@ import {
   MessageSquare,
   Lock,
   TrendingUp,
-  Eye
+  Eye,
+  UserPlus,
+  UploadCloud,
+  LineChart,
+  BadgeCheck,
+  BellRing
 } from "lucide-react";
 import FAQ from "@/components/FAQ";
 import HeroCalculator from "@/components/HeroCalculator";
@@ -209,72 +214,175 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ================= SECTION 3: PRESENTASI SOLUSI & FITUR (THE SOLUTION) ================= */}
-      <section className="py-24 bg-gradient-to-b from-slate-50 to-white border-y border-slate-100">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
-            
-            <div className="lg:col-span-5 space-y-6">
-              <span className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest">Solusi Terbaik Untuk Anda</span>
-              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
-                Tabungan Qurban MAKT Menjadikan Qurban Terencana & Terwujud
-              </h2>
-              <p className="text-slate-600 leading-relaxed">
-                Platform digital resmi Masjid Agung Kubah Timah dirancang khusus membantu jamaah merencanakan ibadah qurban secara bertahap, aman, dan disiplin.
-              </p>
+      {/* ================= SECTION 2.75: LANGKAH MUDAH MEMULAI (HOW IT WORKS) ================= */}
+      <section className="py-24 bg-slate-50 border-t border-slate-200/50 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-0 right-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Cara Mudah Ikut Serta</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">5 Langkah Menuju Qurban Anda</h2>
+            <p className="text-slate-600 text-sm sm:text-base">
+              Proses yang transparan dan mudah dipahami, dari mulai daftar hingga qurban terlaksana.
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto">
+            {/* Desktop Timeline Connection Line */}
+            <div className="hidden lg:block relative h-4 bg-emerald-100 rounded-full mb-12 shadow-inner overflow-hidden">
+              <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-600 to-teal-400 w-full"></div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4 relative -mt-4 lg:-mt-20">
               
-              <div className="pt-2">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-full font-bold transition-all shadow-md hover:shadow-lg text-sm"
-                >
-                  Mulai Menabung Sekarang <ArrowRight className="w-4 h-4" />
-                </Link>
+              {/* Step 1 */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 text-center relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-50 to-teal-100 border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-5 text-emerald-600">
+                  <UserPlus className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">1. Daftar</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Cukup isi data diri dasar & No. WhatsApp aktif.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 text-center relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-50 to-teal-100 border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-5 text-emerald-600">
+                  <Package className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">2. Pilih Paket</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Tentukan niat (Kambing, 1/7 Sapi, atau Custom).
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 text-center relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-50 to-teal-100 border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-5 text-emerald-600">
+                  <Wallet className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">3. Setor</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Lakukan penyetoran fleksibel (Tunai ke panitia atau Transfer Bank Resmi).
+                </p>
+              </div>
+
+              {/* Step 4 */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 text-center relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-50 to-teal-100 border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-5 text-emerald-600">
+                  <UploadCloud className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">4. Lapor</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Upload bukti transfer langsung via HP.
+                </p>
+              </div>
+
+              {/* Step 5 */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 text-center relative z-10 hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-20 h-20 mx-auto bg-gradient-to-br from-emerald-50 to-teal-100 border-4 border-white shadow-lg rounded-full flex items-center justify-center mb-5 text-emerald-600">
+                  <LineChart className="w-8 h-8" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">5. Pantau</h3>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  Lacak riwayat tervalidasi dan sisa target setiap saat.
+                </p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION 3: PRESENTASI SOLUSI & FITUR (BENTO GRID) ================= */}
+      <section className="py-24 bg-white border-y border-slate-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <span className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3 block">Fitur Unggulan Aplikasi</span>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 leading-tight mb-4">
+              Semua Yang Anda Butuhkan Untuk Qurban Terencana
+            </h2>
+            <p className="text-slate-600 leading-relaxed text-sm sm:text-base">
+              Kami merancang sistem ini untuk memberikan kemudahan, transparansi, dan kenyamanan maksimal bagi para jamaah.
+            </p>
+          </div>
+
+          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            {/* Bento Box 1: Large Feature */}
+            <div className="md:col-span-2 bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 md:p-10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity duration-500">
+                <LineChart className="w-48 h-48 text-white" />
+              </div>
+              <div className="relative z-10 h-full flex flex-col justify-between">
+                <div>
+                  <div className="w-12 h-12 bg-white/10 backdrop-blur-md text-emerald-400 rounded-2xl flex items-center justify-center mb-6">
+                    <Target className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">Kalkulator Target Pintar</h3>
+                  <p className="text-slate-300 leading-relaxed max-w-md">
+                    Sistem akan secara otomatis memantau total dana terkumpul dan menghitung sisa target yang harus dicapai berdasarkan harga paket qurban pilihan Anda secara real-time.
+                  </p>
+                </div>
+                <div className="mt-8">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-emerald-300 text-sm font-medium border border-white/10">
+                    <Sparkles className="w-4 h-4" /> Pantau Kapan Saja
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="lg:col-span-7 grid sm:grid-cols-2 gap-6">
-              {/* Feature 1 */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <PiggyBank className="w-5 h-5" />
+            {/* Bento Box 2 */}
+            <div className="bg-emerald-50 rounded-3xl p-8 md:p-10 border border-emerald-100 flex flex-col justify-between group hover:shadow-xl hover:shadow-emerald-500/10 transition-all">
+              <div>
+                <div className="w-12 h-12 bg-white text-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                  <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">Setoran Sangat Fleksibel</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Bebas setor nominal berapa saja, kapan saja (harian, mingguan, bulanan) tanpa ada paksaan potongan saldo.
+                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-emerald-700 transition-colors">Transparansi 100%</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Setiap transaksi divalidasi dengan cermat. Riwayat tersimpan permanen dan mutasi dapat dipantau terbuka.
                 </p>
               </div>
+            </div>
 
-              {/* Feature 2 */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5" />
+            {/* Bento Box 3 */}
+            <div className="bg-amber-50 rounded-3xl p-8 md:p-10 border border-amber-100 flex flex-col justify-between group hover:shadow-xl hover:shadow-amber-500/10 transition-all">
+              <div>
+                <div className="w-12 h-12 bg-white text-amber-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                  <PiggyBank className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">Verifikasi & Transparansi 100%</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Setiap transaksi diverifikasi admin, riwayat tercatat rapi di dasbor akun, dan Anda mendapat notifikasi otomatis.
+                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-700 transition-colors">Setoran Sangat Fleksibel</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Bebas nominal. Rp 5.000, Rp 50.000, atau Rp 500.000? Tidak masalah. Tidak ada paksaan tenggat waktu cicilan.
                 </p>
               </div>
+            </div>
 
-              {/* Feature 3 */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <Target className="w-5 h-5" />
+            {/* Bento Box 4 */}
+            <div className="bg-teal-50 rounded-3xl p-8 md:p-10 border border-teal-100 flex flex-col justify-between group hover:shadow-xl hover:shadow-teal-500/10 transition-all">
+              <div>
+                <div className="w-12 h-12 bg-white text-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                  <BellRing className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">Kalkulator Target Pintar</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Sistem otomatis menghitung sisa target dana yang harus dicapai berdasarkan paket qurban pilihan Anda.
+                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-teal-700 transition-colors">Notifikasi WhatsApp</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Setiap kali bukti setoran divalidasi admin, Anda akan langsung menerima tanda terima resmi via pesan WhatsApp.
                 </p>
               </div>
+            </div>
 
-              {/* Feature 4 */}
-              <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5" />
+            {/* Bento Box 5 */}
+            <div className="bg-slate-50 rounded-3xl p-8 md:p-10 border border-slate-200 flex flex-col justify-between group hover:shadow-xl transition-all">
+              <div>
+                <div className="w-12 h-12 bg-white text-slate-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
+                  <Users className="w-6 h-6" />
                 </div>
-                <h3 className="text-base font-bold text-slate-900">Pengurusan Hewan Amanah</h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Pembelian, pemeliharaan, hingga pemotongan hewan kurban ditangani langsung oleh panitia profesional masjid.
+                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-slate-700 transition-colors">Pengurusan Amanah</h3>
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Dari pemilihan hewan ternak yang sehat hingga penyembelihan yang sesuai syariat, ditangani panitia profesional.
                 </p>
               </div>
             </div>
