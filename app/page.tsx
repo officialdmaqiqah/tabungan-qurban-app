@@ -382,72 +382,42 @@ export default async function Home() {
       </section>
 
       {/* ================= SECTION 5: PENAWARAN & PAKET HARGA (THE OFFER) ================= */}
-      <section className="py-24 relative overflow-hidden bg-slate-950" id="paket">
-        {/* Decorative Background */}
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
-        <div className="absolute top-1/4 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2"></div>
-        <div className="absolute bottom-1/4 right-0 w-[30rem] h-[30rem] bg-teal-500/10 rounded-full blur-[100px] translate-x-1/3"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="py-24 bg-slate-50" id="paket">
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm border border-emerald-500/30">
-              <Sparkles className="w-3.5 h-3.5" /> Pilihan Investasi Akhirat
-            </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight drop-shadow-sm">Paket Rencana Qurban Terbaik</h2>
-            <p className="text-emerald-50 text-base sm:text-lg leading-relaxed opacity-80">
+            <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Pilihan Investasi Akhirat</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Paket Rencana Qurban Terbaik</h2>
+            <p className="text-slate-600 text-sm sm:text-base">
               Pilih paket rencana qurban Anda hari ini. Mulai mencicil secara fleksibel demi menyempurnakan ibadah Anda.
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto relative">
+          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
             {packages?.map((pkg) => (
-              <div key={pkg.id} className="relative w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] max-w-md group flex flex-col">
-                {/* Glow effect behind card */}
-                <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl blur-xl"></div>
-                
-                <div className="relative h-full bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-emerald-500/10 hover:border-emerald-300 transition-all duration-500 flex flex-col transform group-hover:-translate-y-2">
-                  <div className="p-8 pb-6 bg-white border-b border-slate-100 flex-1 relative overflow-hidden">
-                    {/* Decorative shape inside card top right */}
-                    <div className="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 bg-emerald-50 rounded-full opacity-50 blur-2xl group-hover:bg-emerald-100 group-hover:scale-150 transition-all duration-700"></div>
-                    
-                    <div className="relative">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 text-emerald-700 text-xs font-bold rounded-full mb-6 shadow-sm">
-                        <ShieldCheck className="w-3.5 h-3.5" /> Amanah & Syariah
-                      </div>
-                      
-                      <h3 className="text-2xl font-bold text-slate-900 mb-3 group-hover:text-emerald-600 transition-colors duration-300">{pkg.name}</h3>
-                      
-                      <div className="pt-3 pb-5 relative">
-                        <span className="text-[11px] font-bold text-slate-400 block mb-1 uppercase tracking-widest">Setoran Rencana Mulai</span>
-                        <div className="text-4xl font-extrabold text-slate-900 tracking-tight flex items-baseline gap-1">
-                          {formatCurrency(pkg.price)}
-                        </div>
-                        <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50/80 text-emerald-700 rounded-lg border border-emerald-100/50">
-                          <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                          </span>
-                          <span className="text-xs font-semibold">
-                            Setara ± Rp {Math.round(pkg.price / 365).toLocaleString('id-ID')}/hari
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="h-px w-full bg-gradient-to-r from-slate-100 via-slate-200 to-transparent mb-5"></div>
-                      <p className="text-slate-600 text-sm leading-relaxed min-h-[60px]">{pkg.description}</p>
-                    </div>
-                  </div>
+              <div key={pkg.id} className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] max-w-md bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-emerald-500 transition-all duration-300 group flex flex-col">
+                <div className="p-8 pb-6 bg-white border-b border-slate-100 flex-1">
+                  <div className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full mb-4">Amanah & Syariah</div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">{pkg.name}</h3>
                   
-                  <div className="p-6 bg-slate-50/80 mt-auto backdrop-blur-sm relative z-10 border-t border-white/50">
-                    <Link 
-                      href={`/register?packageId=${pkg.id}`}
-                      className="w-full py-4 px-4 bg-gradient-to-r from-slate-900 to-slate-800 hover:from-emerald-600 hover:to-teal-500 text-white rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl hover:shadow-emerald-500/25 group/btn"
-                    >
-                      <span>Pilih Paket Ini</span> 
-                      <ArrowRight className="w-5 h-5 opacity-70 group-hover/btn:opacity-100 group-hover/btn:translate-x-1 transition-all" />
-                    </Link>
+                  <div className="pt-2 pb-4">
+                    <span className="text-xs text-slate-400 block mb-1">Setoran Rencana Mulai Dari</span>
+                    <div className="text-3xl font-black text-slate-950">
+                      {formatCurrency(pkg.price)}
+                    </div>
+                    <span className="text-xs text-emerald-600 font-semibold mt-1 block bg-emerald-50 inline-block px-2 py-0.5 rounded-md">
+                      Setara ± Rp {Math.round(pkg.price / 365).toLocaleString('id-ID')}/hari selama setahun
+                    </span>
                   </div>
+
+                  <p className="text-slate-500 text-xs sm:text-sm leading-relaxed min-h-[60px]">{pkg.description}</p>
+                </div>
+                <div className="p-6 bg-slate-50/50 mt-auto">
+                  <Link 
+                    href={`/register?packageId=${pkg.id}`}
+                    className="w-full py-3.5 px-4 bg-slate-900 hover:bg-emerald-600 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 group-hover:shadow-lg"
+                  >
+                    Pilih Paket & Mulai Nabung <ArrowUpRight className="w-5 h-5 opacity-70 group-hover:opacity-100" />
+                  </Link>
                 </div>
               </div>
             ))}
