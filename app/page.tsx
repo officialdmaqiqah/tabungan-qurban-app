@@ -62,7 +62,7 @@ export default async function Home() {
     <div className="flex-1 flex flex-col bg-slate-50 font-sans text-slate-800">
       
       {/* ================= SECTION 1: HERO SECTION (ABOVE THE FOLD) ================= */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white pt-20 lg:pt-28 pb-24 lg:pb-36">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white pt-10 lg:pt-12 pb-24 lg:pb-36">
         {/* Background Decorative Elements */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-15 mix-blend-overlay"></div>
         <div className="absolute top-0 right-0 -translate-y-12 translate-x-1/4 w-[500px] h-[500px] bg-emerald-500 rounded-full blur-[150px] opacity-35"></div>
