@@ -160,90 +160,125 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      {/* Grid Layout Start */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+      {/* UNIFIED MASTER CARD */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 rounded-[2.5rem] shadow-2xl border border-emerald-800 text-white">
+        {/* Background Decor */}
+        <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500 rounded-full mix-blend-overlay filter blur-3xl opacity-30 translate-x-1/3 -translate-y-1/3"></div>
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl opacity-20"></div>
         
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-7 xl:col-span-8 space-y-6">
-          
-          {/* Total Tabungan (Bank Card Style) */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 p-8 rounded-[2rem] shadow-lg border border-emerald-700 text-white flex flex-col justify-between group aspect-[16/9] sm:aspect-[21/9] lg:aspect-[16/9] xl:aspect-[21/9] max-h-[280px]">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500 rounded-full mix-blend-overlay filter blur-3xl opacity-50 group-hover:opacity-70 transition-opacity"></div>
-            <div className="absolute -bottom-10 -left-10 w-56 h-56 bg-teal-500 rounded-full mix-blend-overlay filter blur-3xl opacity-40"></div>
-            
-            <div className="relative z-10 flex items-center justify-between mb-2">
-              <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl flex items-center justify-center border border-white/20">
-                <TrendingUp className="w-6 h-6 text-emerald-300" />
-              </div>
-              <span className="px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold border border-white/10 tracking-wider uppercase">Saldo Aktif</span>
-            </div>
-            <div className="relative z-10 mt-auto">
-              <p className="text-emerald-100/80 font-medium text-sm mb-1 uppercase tracking-wider">Total Tabungan</p>
-              <p className="text-4xl md:text-5xl font-bold tracking-tight">{formatCurrency(totalTabungan)}</p>
-              
-              {/* Fake card chip / dots for bank card aesthetic */}
-              <div className="flex items-center gap-1 mt-6 opacity-60">
-                 <div className="w-8 h-5 rounded bg-white/20"></div>
-                 <div className="w-2 h-2 rounded-full bg-white/40 ml-2"></div>
-                 <div className="w-2 h-2 rounded-full bg-white/40"></div>
-                 <div className="w-2 h-2 rounded-full bg-white/40"></div>
-                 <div className="w-2 h-2 rounded-full bg-white/40"></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
-              <div>
-                <h3 className="font-bold text-slate-900 text-lg">Progress Qurban Anda</h3>
-                <p className="text-sm text-slate-500 mt-1">Perjalanan menuju niat suci</p>
-              </div>
-              <div className="px-4 py-1.5 bg-emerald-50 text-emerald-700 rounded-full font-bold text-sm border border-emerald-100">
-                {progressPercent}% Tercapai
-              </div>
-            </div>
-            <div className="w-full bg-slate-100 rounded-full h-5 overflow-hidden shadow-inner relative">
-              <div 
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-400 via-emerald-500 to-teal-500 rounded-full transition-all duration-1000 ease-out flex items-center justify-end pr-2"
-                style={{ width: `${progressPercent}%` }}
-              >
-                {progressPercent > 15 && <Sparkles className="w-3 h-3 text-white/50" />}
-              </div>
-            </div>
-            
-            {/* Pesan Motivasi Inline */}
-            {targetAmount > 0 && (
-              <div className="mt-5 text-sm italic font-medium text-slate-600 border-l-4 border-amber-400 pl-4 bg-amber-50/50 py-3 rounded-r-xl">
-                "{randomQuote}"
-              </div>
-            )}
-
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-5 border-t border-slate-100 gap-2">
-              <div className="text-sm text-slate-600 flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center border border-slate-200">
-                  <Target className="w-4 h-4 text-slate-400" />
+        <div className="relative z-10 p-6 sm:p-8 md:p-10">
+          {/* Header & Balance */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 md:mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20 shadow-inner">
+                  <TrendingUp className="w-6 h-6 text-emerald-300" />
                 </div>
-                <div>
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Paket Pilihan</span>
-                  <span className="font-medium text-slate-700">
-                    {userPackages && userPackages.length > 0 
-                      ? userPackages.map((up: any) => `${up.qurban_packages?.name} (x${up.quantity})`).join(', ')
-                      : '-'}
+                <span className="px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold border border-white/10 tracking-widest uppercase shadow-sm">Saldo Aktif</span>
+              </div>
+              <p className="text-emerald-100/70 text-sm font-medium mb-1 uppercase tracking-wider">Total Tabungan</p>
+              <p className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">{formatCurrency(totalTabungan)}</p>
+              
+              {userPackages && userPackages.length > 0 && (
+                <div className="mt-4 inline-flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full">
+                  <Target className="w-4 h-4 text-emerald-300" /> 
+                  <span className="text-xs font-medium text-emerald-50">
+                    {userPackages.map((up: any) => `${up.qurban_packages?.name} (x${up.quantity})`).join(', ')}
                   </span>
                 </div>
+              )}
+            </div>
+            
+            {/* Motivasi */}
+            {targetAmount > 0 && (
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 max-w-xs shadow-inner hidden sm:block">
+                <div className="flex gap-3">
+                  <span className="text-xl">💡</span>
+                  <p className="text-sm text-emerald-50 font-medium italic leading-relaxed">"{randomQuote}"</p>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="block text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Target Dana</span>
-                <span className="text-xl font-bold text-slate-900">{formatCurrency(targetAmount)}</span>
+            )}
+          </div>
+
+          {/* Integrated Progress */}
+          <div className="mb-8 md:mb-10">
+            <div className="flex justify-between items-end mb-3">
+              <span className="text-sm font-semibold text-emerald-100/90 tracking-wide">Progress Qurban</span>
+              <span className="text-2xl font-bold text-white flex items-center gap-1">
+                {progressPercent}% <Sparkles className="w-4 h-4 text-amber-300" />
+              </span>
+            </div>
+            <div className="w-full bg-black/30 rounded-full h-4 overflow-hidden backdrop-blur-sm border border-white/10 shadow-inner p-0.5">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-amber-300 rounded-full transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(52,211,153,0.5)]"
+                style={{ width: `${progressPercent}%` }}
+              >
               </div>
             </div>
           </div>
 
+          {/* Three Pillars (Target, Sisa, Waktu) */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-6 md:gap-8 pt-6 border-t border-white/10">
+            <div className="bg-white/5 backdrop-blur-sm border border-white/5 rounded-2xl p-4">
+              <p className="text-[9px] sm:text-[11px] text-emerald-200/80 uppercase tracking-widest font-bold mb-1 sm:mb-2">Target Dana</p>
+              <p className="text-sm sm:text-lg md:text-xl font-bold truncate">{formatCurrency(targetAmount)}</p>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/5 rounded-2xl p-4">
+              <p className="text-[9px] sm:text-[11px] text-emerald-200/80 uppercase tracking-widest font-bold mb-1 sm:mb-2">{kelebihanTabungan > 0 ? 'Kelebihan' : 'Kekurangan'}</p>
+              <p className={`text-sm sm:text-lg md:text-xl font-bold truncate ${kelebihanTabungan > 0 ? 'text-teal-300' : ''}`}>{formatCurrency(kelebihanTabungan > 0 ? kelebihanTabungan : sisaTarget)}</p>
+            </div>
+            <div className="bg-white/5 backdrop-blur-sm border border-white/5 rounded-2xl p-4">
+              <p className="text-[9px] sm:text-[11px] text-emerald-200/80 uppercase tracking-widest font-bold mb-1 sm:mb-2">Sisa Waktu</p>
+              <p className="text-sm sm:text-lg md:text-xl font-bold truncate flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 hidden sm:block text-emerald-300" />
+                {daysLeft > 0 ? `${daysLeft} Hari` : 'Hari H'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      {sisaTarget > 0 && daysLeft > 0 && (
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100">
+           <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+              💡
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-lg">Rekomendasi Setoran</h3>
+              <p className="text-xs text-slate-500">Pilih ritme menabung yang pas untuk Anda</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 md:gap-6">
+            <div className="bg-slate-50 rounded-2xl p-4 md:p-6 border border-slate-100 flex flex-col items-center justify-center text-center group hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-default">
+                <span className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 group-hover:text-emerald-700 transition-colors">Harian</span>
+                <span className="text-sm sm:text-lg md:text-2xl font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerDay)}</span>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-4 md:p-6 border border-slate-100 flex flex-col items-center justify-center text-center group hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-default">
+                <span className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 group-hover:text-emerald-700 transition-colors">Mingguan</span>
+                <span className="text-sm sm:text-lg md:text-2xl font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerWeek)}</span>
+            </div>
+            <div className="bg-slate-50 rounded-2xl p-4 md:p-6 border border-slate-100 flex flex-col items-center justify-center text-center group hover:bg-emerald-50 hover:border-emerald-200 transition-all cursor-default">
+                <span className="text-[10px] md:text-xs text-slate-500 font-bold uppercase tracking-widest mb-2 group-hover:text-emerald-700 transition-colors">Bulanan</span>
+                <span className="text-sm sm:text-lg md:text-2xl font-bold text-slate-800 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerMonth)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Grid Layout Start for Bottom Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+        
+        {/* LEFT COLUMN: History */}
+        <div className="lg:col-span-7 xl:col-span-8">
           {/* Transaction History */}
-          <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden h-full">
             <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-              <h3 className="font-bold text-slate-900 text-lg">Riwayat Setoran</h3>
+              <div>
+                <h3 className="font-bold text-slate-900 text-lg">Riwayat Setoran</h3>
+                <p className="text-xs text-slate-500 mt-1">Daftar transaksi tabungan Anda</p>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-slate-600">
@@ -300,100 +335,48 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-          
-          <div className="grid grid-cols-2 gap-4">
-            {/* Sisa Target Card */}
-            <div className="bg-white p-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow">
-              <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mb-3">
-                <Target className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">{kelebihanTabungan > 0 ? 'Kelebihan' : 'Kekurangan'}</p>
-                <p className={`text-lg font-bold tracking-tight ${kelebihanTabungan > 0 ? 'text-emerald-600' : 'text-slate-900'}`}>{formatCurrency(kelebihanTabungan > 0 ? kelebihanTabungan : sisaTarget)}</p>
-              </div>
-            </div>
-
-            {/* Sisa Hari Card */}
-            <div className="bg-white p-5 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 flex flex-col justify-between hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-shadow">
-              <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mb-3">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Sisa Waktu</p>
-                <p className="text-lg font-bold tracking-tight text-slate-900">{daysLeft > 0 ? `${daysLeft} Hari Lagi` : 'Hari H'}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Recommendations (Vertical List) */}
-          {sisaTarget > 0 && daysLeft > 0 && (
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-amber-500 text-sm">
-                  💡
-                </div>
-                <h3 className="font-bold text-slate-900 text-md">Rekomendasi Setoran</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="bg-white rounded-2xl p-4 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100 hover:border-emerald-200 transition-colors flex justify-between items-center group">
-                  <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Per Hari</p>
-                  <p className="font-bold text-lg text-emerald-700 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerDay)}</p>
-                </div>
-                <div className="bg-white rounded-2xl p-4 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100 hover:border-emerald-200 transition-colors flex justify-between items-center group">
-                  <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Per Minggu</p>
-                  <p className="font-bold text-lg text-emerald-700 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerWeek)}</p>
-                </div>
-                <div className="bg-white rounded-2xl p-4 shadow-[0_2px_10px_rgb(0,0,0,0.02)] border border-slate-100 hover:border-emerald-200 transition-colors flex justify-between items-center group">
-                  <p className="text-slate-500 text-[11px] font-bold uppercase tracking-wider">Per Bulan</p>
-                  <p className="font-bold text-lg text-emerald-700 group-hover:text-emerald-600 transition-colors">{formatCurrency(recPerMonth)}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
+        {/* RIGHT COLUMN: Leaderboard */}
+        <div className="lg:col-span-5 xl:col-span-4">
           {/* Leaderboard */}
-          <div className="bg-white p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full mix-blend-multiply filter blur-2xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
+          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 relative overflow-hidden h-full">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-50 rounded-full mix-blend-multiply filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/2"></div>
             
-            <div className="relative z-10 flex flex-col mb-5">
-              <h3 className="font-bold text-slate-900 text-md flex items-center gap-2 mb-1">
-                <Trophy className="w-4 h-4 text-amber-500 fill-amber-500" /> Leaderboard Qurban
+            <div className="relative z-10 flex flex-col mb-6">
+              <h3 className="font-bold text-slate-900 text-lg flex items-center gap-2 mb-1">
+                <Trophy className="w-5 h-5 text-amber-500 fill-amber-500" /> Leaderboard Qurban
               </h3>
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center mt-1">
                  <p className="text-xs text-slate-500">Semangat menabung jamaah</p>
-                 <span className="text-[9px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 border border-amber-100 px-2 py-1 rounded-full">Top 5</span>
+                 <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 bg-amber-50 border border-amber-100 px-3 py-1 rounded-full">Top 5</span>
               </div>
             </div>
             
             {leaderboard.length > 0 ? (
-              <div className="relative z-10 space-y-2">
+              <div className="relative z-10 space-y-3">
                 {leaderboard.map((l, idx) => (
-                  <div key={l.id} className={`flex flex-col p-3 rounded-2xl border transition-all duration-300 hover:shadow-md ${l.isCurrentUser ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200' : 'bg-white border-slate-100 hover:border-emerald-100'}`}>
-                    <div className="flex items-center justify-between mb-2">
+                  <div key={l.id} className={`flex flex-col p-4 rounded-2xl border transition-all duration-300 hover:shadow-md ${l.isCurrentUser ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200' : 'bg-white border-slate-100 hover:border-emerald-100'}`}>
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${idx === 0 ? 'bg-gradient-to-br from-yellow-300 to-amber-500 text-white' : idx === 1 ? 'bg-gradient-to-br from-slate-200 to-slate-400 text-white' : idx === 2 ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-white' : 'bg-slate-50 text-slate-500 border border-slate-100'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-sm ${idx === 0 ? 'bg-gradient-to-br from-yellow-300 to-amber-500 text-white' : idx === 1 ? 'bg-gradient-to-br from-slate-200 to-slate-400 text-white' : idx === 2 ? 'bg-gradient-to-br from-orange-300 to-orange-500 text-white' : 'bg-slate-50 text-slate-500 border border-slate-100'}`}>
                           {idx === 0 ? '👑' : idx + 1}
                         </div>
                         <div className="flex flex-col">
-                          <span className={`font-bold text-xs ${l.isCurrentUser ? 'text-emerald-800' : 'text-slate-700'}`}>{l.name}</span>
-                          {l.isCurrentUser && <span className="text-[9px] text-emerald-600 font-medium">Ini Anda</span>}
+                          <span className={`font-bold text-sm ${l.isCurrentUser ? 'text-emerald-800' : 'text-slate-700'}`}>{l.name}</span>
+                          {l.isCurrentUser && <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Ini Anda</span>}
                         </div>
                       </div>
-                      <span className={`text-xs font-bold ${idx === 0 ? 'text-amber-600' : 'text-emerald-600'}`}>{l.progress}%</span>
+                      <span className={`text-sm font-bold ${idx === 0 ? 'text-amber-600' : 'text-emerald-600'}`}>{l.progress}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                       <div className={`h-full rounded-full transition-all duration-1000 ${idx === 0 ? 'bg-gradient-to-r from-amber-400 to-orange-500' : 'bg-gradient-to-r from-emerald-400 to-teal-500'}`} style={{ width: `${l.progress}%` }}></div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="relative z-10 text-xs text-slate-500 text-center py-4 bg-slate-50 rounded-2xl">Belum ada data jamaah yang menabung.</p>
+              <p className="relative z-10 text-sm text-slate-500 text-center py-8 bg-slate-50 rounded-2xl border border-slate-100 border-dashed">Belum ada data jamaah yang menabung.</p>
             )}
           </div>
-
         </div>
       </div>
     </div>
