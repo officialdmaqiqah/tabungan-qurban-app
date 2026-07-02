@@ -43,7 +43,6 @@ export default async function Home() {
   const { data: packages } = await serviceSupabase
     .from('qurban_packages')
     .select('*')
-    .eq('is_active', true)
     .order('price', { ascending: true });
 
   const { data: bankAccounts } = await serviceSupabase
