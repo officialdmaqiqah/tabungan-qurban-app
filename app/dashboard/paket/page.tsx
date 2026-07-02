@@ -59,27 +59,66 @@ export default async function PaketJamaahPage() {
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allPackages?.length === 0 ? (
-          <div className="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-100 text-slate-500">
-            Belum ada paket qurban yang tersedia saat ini.
+      <div className="lg:grid lg:grid-cols-12 lg:gap-8 items-start">
+        <div className="lg:col-span-8 space-y-6">
+          <div className="grid md:grid-cols-2 gap-6">
+            {allPackages?.length === 0 ? (
+              <div className="col-span-full p-8 text-center bg-white rounded-2xl border border-slate-100 text-slate-500">
+                Belum ada paket qurban yang tersedia saat ini.
+              </div>
+            ) : (
+              allPackages?.map((pkg) => (
+                <PackageCard 
+                  key={pkg.id} 
+                  pkg={pkg} 
+                  selectedQuantity={selectedPackagesMap[pkg.id] || 0} 
+                  onSelect={async (id, qty) => {
+                    'use server';
+                    const fd = new FormData();
+                    fd.append('package_id', id);
+                    fd.append('quantity', qty.toString());
+                    await selectPackage(fd);
+                  }} 
+                />
+              ))
+            )}
           </div>
-        ) : (
-          allPackages?.map((pkg) => (
-            <PackageCard 
-              key={pkg.id} 
-              pkg={pkg} 
-              selectedQuantity={selectedPackagesMap[pkg.id] || 0} 
-              onSelect={async (id, qty) => {
-                'use server';
-                const fd = new FormData();
-                fd.append('package_id', id);
-                fd.append('quantity', qty.toString());
-                await selectPackage(fd);
-              }} 
-            />
-          ))
-        )}
+        </div>
+
+        <div className="hidden lg:block lg:col-span-4 sticky top-8">
+          <div className="bg-gradient-to-b from-emerald-50/50 to-white border border-emerald-100/50 p-6 rounded-[2rem] shadow-sm">
+            <h3 className="font-bold text-slate-900 mb-4 text-lg">Mengapa Qurban di Sini?</h3>
+            <div className="space-y-4">
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 font-bold">1</div>
+                <div>
+                  <p className="font-bold text-sm text-slate-800">Sesuai Syariat</p>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Hewan qurban dipilih sesuai kriteria syariat, sehat, dan cukup umur.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 font-bold">2</div>
+                <div>
+                  <p className="font-bold text-sm text-slate-800">Tepat Sasaran</p>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Daging qurban didistribusikan kepada warga sekitar dan yang berhak menerima.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 items-start">
+                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center flex-shrink-0 font-bold">3</div>
+                <div>
+                  <p className="font-bold text-sm text-slate-800">Transparan</p>
+                  <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">Seluruh dana tabungan dan laporan pembelian dapat dipantau langsung.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8 pt-6 border-t border-slate-100">
+              <p className="text-xs text-slate-500 italic text-center">
+                "Maka dirikanlah shalat karena Tuhanmu; dan berkorbanlah." (Al-Kautsar: 2)
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
