@@ -382,20 +382,20 @@ export default async function Home() {
       </section>
 
       {/* ================= SECTION 5: PENAWARAN & PAKET HARGA (THE OFFER) ================= */}
-      <section className="py-24 relative overflow-hidden" id="paket">
+      <section className="py-24 relative overflow-hidden bg-slate-950" id="paket">
         {/* Decorative Background */}
-        <div className="absolute inset-0 bg-slate-50"></div>
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-        <div className="absolute top-1/4 left-0 w-96 h-96 bg-emerald-400/10 rounded-full blur-3xl -translate-x-1/2"></div>
-        <div className="absolute bottom-1/4 right-0 w-[30rem] h-[30rem] bg-teal-400/10 rounded-full blur-3xl translate-x-1/3"></div>
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+        <div className="absolute top-1/4 left-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] -translate-x-1/2"></div>
+        <div className="absolute bottom-1/4 right-0 w-[30rem] h-[30rem] bg-teal-500/10 rounded-full blur-[100px] translate-x-1/3"></div>
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100/80 text-emerald-700 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm border border-emerald-200">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold uppercase tracking-widest mb-4 shadow-sm border border-emerald-500/30">
               <Sparkles className="w-3.5 h-3.5" /> Pilihan Investasi Akhirat
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-700 mb-6 tracking-tight">Paket Rencana Qurban Terbaik</h2>
-            <p className="text-slate-600 text-base sm:text-lg leading-relaxed">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 tracking-tight drop-shadow-sm">Paket Rencana Qurban Terbaik</h2>
+            <p className="text-emerald-50 text-base sm:text-lg leading-relaxed opacity-80">
               Pilih paket rencana qurban Anda hari ini. Mulai mencicil secara fleksibel demi menyempurnakan ibadah Anda.
             </p>
           </div>
