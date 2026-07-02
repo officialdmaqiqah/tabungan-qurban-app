@@ -32,7 +32,7 @@ export default async function DashboardLayout({
         <nav className="p-4 space-y-2">
           <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all">
             <Home className="w-5 h-5" />
-            <span className="font-medium">Ringkasan</span>
+            <span className="font-medium">Buku Tabungan</span>
           </Link>
           <Link href="/dashboard/paket" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all">
             <Package className="w-5 h-5" />
@@ -61,7 +61,7 @@ export default async function DashboardLayout({
         <nav className="flex justify-around items-center h-16">
           <Link href="/dashboard" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
             <Home className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Ringkasan</span>
+            <span className="text-[10px] font-medium">Buku Tabungan</span>
           </Link>
           <Link href="/dashboard/paket" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
             <Package className="w-5 h-5 mb-1" />

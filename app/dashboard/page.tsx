@@ -118,7 +118,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-slate-900">Ringkasan Tabungan</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Buku Tabungan</h1>
         
         <div className="flex items-center gap-3 bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-100">
           <div className="flex flex-col text-right">
