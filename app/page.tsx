@@ -180,29 +180,38 @@ export default async function Home() {
             <div className="text-center lg:text-left space-y-6">
               <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-emerald-800/50 border border-emerald-700/50 text-emerald-200 text-xs font-semibold uppercase tracking-wider">
                 <Sparkles className="w-3.5 h-3.5" />
-                Aplikasi Dalam Genggaman
+                Kami Hadirkan Solusi Untuk Semua Kendala Anda
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
-                Pantau Tabungan Qurban Anda Kapan Saja, Dari Mana Saja.
-              </h2>
-              <p className="text-emerald-100/80 leading-relaxed text-lg max-w-lg mx-auto lg:mx-0">
-                Kami hadirkan solusi untuk semua kendala Anda. Dengan aplikasi Tabungan Qurban MAKT, niat berqurban kini bisa dicicil bertahap dengan pantauan mutlak di tangan Anda.
-              </p>
               
-              <ul className="space-y-4 pt-4 text-emerald-50 text-left max-w-md mx-auto lg:mx-0">
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span><strong>Ringan:</strong> Bebas setor berapapun tanpa batas minimum. Berqurban tak lagi terasa berat.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span><strong>Aman:</strong> Dana langsung terkunci di rekening qurban masjid, anti bocor terpakai hal lain.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span><strong>Transparan:</strong> Saldo dan riwayat terekam otomatis, pantau progress 100% dari HP Anda.</span>
-                </li>
-              </ul>
+              <div className="space-y-4">
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight uppercase tracking-tight">
+                  Tabungan Qurban <br />
+                  <span className="text-emerald-300">Masjid Agung Kubah Timah</span>
+                </h2>
+                <p className="text-emerald-50/90 leading-relaxed text-lg max-w-lg mx-auto lg:mx-0 font-medium">
+                  Niat berqurban kini bisa dicicil bertahap dengan pantauan mutlak di tangan Anda.
+                </p>
+              </div>
+              
+              <div className="pt-4">
+                <h3 className="text-lg sm:text-xl font-bold text-emerald-100 mb-4 pb-4 border-b border-emerald-800/50">
+                  Pantau Tabungan Qurban Anda Kapan Saja, Dari Mana Saja
+                </h3>
+                <ul className="space-y-4 text-emerald-50 text-left max-w-md mx-auto lg:mx-0">
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                    <span><strong>Ringan:</strong> Bebas setor berapapun tanpa batas minimum. Berqurban tak lagi terasa berat.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                    <span><strong>Aman:</strong> Dana langsung terkunci di rekening qurban masjid, anti bocor terpakai hal lain.</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                    <span><strong>Transparan:</strong> Saldo dan riwayat terekam otomatis, pantau progress 100% dari HP Anda.</span>
+                  </li>
+                </ul>
+              </div>
             </div>
 
             <div className="flex justify-center lg:justify-end relative">
