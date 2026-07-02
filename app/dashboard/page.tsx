@@ -21,7 +21,7 @@ export default async function DashboardPage() {
     { data: allPackages },
     { data: allTransactions }
   ] = await Promise.all([
-    supabase.from('profiles').select('kategori_jamaah, is_anonymous').eq('id', user.id).single(),
+    supabase.from('profiles').select('full_name, kategori_jamaah, is_anonymous').eq('id', user.id).single(),
     supabase.from('user_packages').select('package_id, quantity, qurban_packages(name, price)').eq('user_id', user.id),
     supabase.from('transactions').select('amount').eq('user_id', user.id).eq('status', 'verified'),
     supabase.from('program_settings').select('*').single(),
