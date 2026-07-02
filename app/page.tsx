@@ -411,9 +411,9 @@ export default async function Home() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Bukti Nyata & Transparansi</h2>
+            <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Harapan Jamaah & Transparansi</h2>
             <p className="text-3xl sm:text-4xl font-bold text-slate-900">
-              Kisah Sukses & Laporan Transparansi Dana Terkumpul
+              Semangat Berniat Qurban & Laporan Transparansi Dana
             </p>
           </div>
 
@@ -446,15 +446,15 @@ export default async function Home() {
             {/* Testimonial 1 */}
             <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 relative space-y-4 flex flex-col justify-between">
               <p className="text-slate-600 text-sm leading-relaxed italic">
-                "Tahun-tahun sebelumnya saya sering batal qurban karena tabungan selalu kepakai buat kebutuhan lain. Sejak pakai sistem cicilan masjid ini, saya bisa konsisten menyisihkan Rp 10.000 sehari dan akhirnya bisa berqurban sapi kelompok."
+                "Semoga dengan adanya fasilitas tabungan dari masjid ini, dari hasil markir sedikit demi sedikit, impian saya untuk bisa ikut berqurban tahun depan akhirnya bisa terwujud. Aamiin."
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200/60">
                 <div className="w-10 h-10 bg-emerald-100 text-emerald-800 font-bold rounded-full flex items-center justify-center text-sm shrink-0">
-                  H
+                  S
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">H. Hermawan</h4>
-                  <p className="text-xs text-slate-500">Jamaah Kategori Umum</p>
+                  <h4 className="text-sm font-bold text-slate-900">Sulaiman</h4>
+                  <p className="text-xs text-slate-500">Juru Parkir MAKT</p>
                 </div>
               </div>
             </div>
@@ -462,15 +462,15 @@ export default async function Home() {
             {/* Testimonial 2 */}
             <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 relative space-y-4 flex flex-col justify-between">
               <p className="text-slate-600 text-sm leading-relaxed italic">
-                "Sangat terbantu! Sistemnya sangat transparan, setiap kali saya kirim bukti transfer setoran, langsung divalidasi dan jumlah tabungan di halaman akun saya bertambah. Jadi tenang karena tercatat resmi."
+                "Alhamdulillah ada program resmi dari masjid. Dulu uang selalu habis terpakai untuk dapur. Sekarang niatnya mau langsung saya tabung biarpun cuma lima ribu sehari. Semoga niat qurban keluarga kami dimudahkan."
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200/60">
                 <div className="w-10 h-10 bg-emerald-100 text-emerald-800 font-bold rounded-full flex items-center justify-center text-sm shrink-0">
-                  R
+                  F
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Rina Handayani</h4>
-                  <p className="text-xs text-slate-500">Ibu Rumah Tangga</p>
+                  <h4 className="text-sm font-bold text-slate-900">Ibu Fatimah</h4>
+                  <p className="text-xs text-slate-500">Pedagang Pasar Pagi</p>
                 </div>
               </div>
             </div>
@@ -478,15 +478,15 @@ export default async function Home() {
             {/* Testimonial 3 */}
             <div className="bg-slate-50 rounded-3xl p-8 border border-slate-100 relative space-y-4 flex flex-col justify-between">
               <p className="text-slate-600 text-sm leading-relaxed italic">
-                "Sebagai remaja masjid, rasanya senang sekali bisa ikut qurban kambing dari hasil menyisihkan uang jajan bulanan. Platform ini membuat kami anak muda jadi lebih termotivasi untuk belajar berqurban sejak dini."
+                "Sistem cicil bebas nominal ini sangat cocok untuk kantong pelajar dan mahasiswa. Bismillah, dengan menyisihkan uang saku bulanan, semoga tahun ini bisa belajar qurban pakai uang sendiri."
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-slate-200/60">
                 <div className="w-10 h-10 bg-emerald-100 text-emerald-800 font-bold rounded-full flex items-center justify-center text-sm shrink-0">
-                  F
+                  R
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">Fahri</h4>
-                  <p className="text-xs text-slate-500">Remaja/Pemuda Masjid</p>
+                  <h4 className="text-sm font-bold text-slate-900">Reza</h4>
+                  <p className="text-xs text-slate-500">Remaja Masjid</p>
                 </div>
               </div>
             </div>
