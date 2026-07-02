@@ -47,18 +47,15 @@ export default async function PaketJamaahPage() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-slate-900">Pilih Paket Qurban</h1>
-        <p className="text-sm text-slate-500 max-w-2xl">Silakan pilih paket qurban yang ingin Anda tabung tahun ini. Anda bisa memilih lebih dari satu paket untuk disesuaikan dengan niat qurban Anda.</p>
+      <div className="flex flex-col gap-1.5 md:gap-2">
+        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Pilih Paket Qurban</h1>
+        <p className="text-xs md:text-sm text-slate-500 max-w-2xl">Silakan pilih paket qurban yang ingin Anda tabung tahun ini. Anda bisa memilih lebih dari satu paket.</p>
       </div>
 
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 p-5 md:p-6 rounded-[2rem] flex flex-col sm:flex-row items-start gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0 text-amber-500 border border-amber-100/50">
-          <Lock className="w-6 h-6" />
-        </div>
-        <div className="text-amber-900 text-sm">
-          <p className="font-bold text-base mb-1">Perhatian</p>
-          <p className="leading-relaxed opacity-80">Paket yang sudah Anda pilih akan <strong>terkunci</strong> dan menjadi target tabungan Anda. Jika Anda ingin mengubah atau membatalkan paket yang sudah dipilih, silakan hubungi Admin Masjid.</p>
+      <div className="bg-amber-50/80 border border-amber-200/60 p-3 rounded-xl flex items-start gap-2.5">
+        <Lock className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+        <div className="text-amber-800 text-xs md:text-sm leading-relaxed">
+          Paket yang dipilih akan <strong>terkunci</strong> sebagai target tabungan. Hubungi Admin jika ingin mengubahnya.
         </div>
       </div>
 

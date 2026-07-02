@@ -138,85 +138,85 @@ export default function LaporSetoranPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 md:space-y-8">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold text-slate-900">Lapor Setoran</h1>
-        <p className="text-sm text-slate-500 max-w-xl">Laporkan setoran yang telah Anda lakukan ke rekening resmi atau serahkan tunai ke panitia masjid.</p>
+    <div className="max-w-2xl mx-auto space-y-5 md:space-y-6">
+      <div className="flex flex-col gap-1.5 md:gap-2">
+        <h1 className="text-xl md:text-2xl font-bold text-slate-900">Lapor Setoran</h1>
+        <p className="text-xs md:text-sm text-slate-500 max-w-xl">Laporkan setoran yang telah Anda lakukan ke rekening resmi atau serahkan tunai ke panitia masjid.</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-5 bg-red-50 text-red-600 rounded-2xl border border-red-100 flex items-start gap-3">
-          <div className="flex-1 font-medium">{error}</div>
+        <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-xl border border-red-100 flex items-start gap-2.5">
+          <div className="flex-1 text-sm font-medium">{error}</div>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-8">
+      <form onSubmit={handleSubmit} className="bg-white p-5 md:p-8 rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 space-y-6">
         <div>
-          <label className="block text-sm font-bold text-slate-700 mb-3">Jumlah Setoran (Rp)</label>
+          <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">Jumlah Setoran (Rp)</label>
           <div className="relative">
-            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">Rp</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">Rp</span>
             <input 
               type="number"
               required
               min="1000"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full pl-14 pr-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all text-xl font-bold text-slate-800"
+              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all text-lg font-bold text-slate-800"
               placeholder="500000"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-slate-700 mb-3">Metode Setoran</label>
-          <div className="grid grid-cols-2 gap-4">
+          <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">Metode Setoran</label>
+          <div className="grid grid-cols-2 gap-3 md:gap-4">
             <button
               type="button"
               onClick={() => setMethod('transfer')}
-              className={`p-4 rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all border-2 ${
+              className={`p-3 md:p-4 rounded-[1rem] md:rounded-2xl flex flex-col items-center justify-center gap-1.5 md:gap-2 text-sm md:text-base font-bold transition-all border-2 ${
                 method === 'transfer' ? 'border-emerald-500 bg-emerald-50/50 text-emerald-700 shadow-sm' : 'border-slate-100 text-slate-500 hover:bg-slate-50 hover:border-slate-200'
               }`}
             >
-              <CreditCard className={`w-6 h-6 ${method === 'transfer' ? 'text-emerald-500' : 'text-slate-400'}`} />
+              <CreditCard className={`w-5 h-5 md:w-6 md:h-6 ${method === 'transfer' ? 'text-emerald-500' : 'text-slate-400'}`} />
               Transfer Bank
             </button>
             <button
               type="button"
               onClick={() => setMethod('tunai')}
-              className={`p-4 rounded-2xl flex flex-col items-center justify-center gap-2 font-bold transition-all border-2 ${
+              className={`p-3 md:p-4 rounded-[1rem] md:rounded-2xl flex flex-col items-center justify-center gap-1.5 md:gap-2 text-sm md:text-base font-bold transition-all border-2 ${
                 method === 'tunai' ? 'border-emerald-500 bg-emerald-50/50 text-emerald-700 shadow-sm' : 'border-slate-100 text-slate-500 hover:bg-slate-50 hover:border-slate-200'
               }`}
             >
-              <CheckCircle2 className={`w-6 h-6 ${method === 'tunai' ? 'text-emerald-500' : 'text-slate-400'}`} />
+              <CheckCircle2 className={`w-5 h-5 md:w-6 md:h-6 ${method === 'tunai' ? 'text-emerald-500' : 'text-slate-400'}`} />
               Tunai ke Panitia
             </button>
           </div>
         </div>
 
         {method === 'transfer' && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="space-y-5 md:space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
             {bankAccounts.length > 0 && (
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5 flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm text-blue-500 flex-shrink-0">
-                  <CreditCard className="w-5 h-5" />
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl md:rounded-2xl p-4 md:p-5 flex items-start gap-3 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-white flex items-center justify-center shadow-sm text-blue-500 flex-shrink-0">
+                  <CreditCard className="w-4 h-4 md:w-5 md:h-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-blue-900 font-bold mb-3">Transfer ke Rekening Resmi:</p>
-                  <div className="space-y-3">
+                  <p className="text-xs md:text-sm text-blue-900 font-bold mb-2 md:mb-3">Transfer ke Rekening Resmi:</p>
+                  <div className="space-y-2 md:space-y-3">
                     {bankAccounts.map((bank, i) => (
-                      <div key={i} className="bg-white px-4 py-3 rounded-xl border border-blue-100/50 shadow-sm">
-                        <p className="font-black text-slate-900 tracking-tight">{bank.bank_name} - {bank.account_number}</p>
-                        <p className="text-sm text-slate-500 font-medium">a.n. {bank.account_name}</p>
+                      <div key={i} className="bg-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl border border-blue-100/50 shadow-sm">
+                        <p className="font-bold text-sm md:text-base text-slate-900 tracking-tight">{bank.bank_name} - {bank.account_number}</p>
+                        <p className="text-xs md:text-sm text-slate-500 font-medium">a.n. {bank.account_name}</p>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs font-medium text-blue-700 mt-3 bg-blue-100/50 inline-block px-3 py-1.5 rounded-lg">Pastikan nominal transfer sesuai dengan yang Anda laporkan di atas.</p>
+                  <p className="text-[10px] md:text-xs font-medium text-blue-700 mt-2.5 bg-blue-100/50 inline-block px-2.5 py-1 rounded-lg">Pastikan nominal transfer sesuai di atas.</p>
                 </div>
               </div>
             )}
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-3">Unggah Bukti Transfer</label>
-              <div className={`mt-1 flex justify-center px-6 py-10 border-2 ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-200 hover:border-emerald-400'} border-dashed rounded-3xl bg-slate-50 hover:bg-emerald-50/20 transition-colors group cursor-pointer relative`}>
+              <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">Unggah Bukti Transfer</label>
+              <div className={`mt-1 flex justify-center px-4 md:px-6 py-6 md:py-10 border-2 ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-200 hover:border-emerald-400'} border-dashed rounded-2xl md:rounded-3xl bg-slate-50 hover:bg-emerald-50/20 transition-colors group cursor-pointer relative`}>
                 <input 
                   id="file-upload" 
                   name="file-upload" 
@@ -225,16 +225,16 @@ export default function LaporSetoranPage() {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
                 />
-                <div className="space-y-3 text-center pointer-events-none">
-                  <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center transition-colors ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-400 group-hover:text-emerald-500 shadow-sm'}`}>
-                    {file ? <CheckCircle2 className="h-8 w-8" /> : <UploadCloud className="h-8 w-8" />}
+                <div className="space-y-2.5 md:space-y-3 text-center pointer-events-none">
+                  <div className={`mx-auto w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-colors ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-400 group-hover:text-emerald-500 shadow-sm'}`}>
+                    {file ? <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8" /> : <UploadCloud className="h-6 w-6 md:h-8 md:w-8" />}
                   </div>
-                  <div className="flex flex-col text-sm text-slate-600 justify-center gap-1">
-                    <span className="font-bold text-emerald-600 text-base">{file ? 'File Dipilih' : 'Klik atau seret file ke sini'}</span>
-                    <span className="text-xs text-slate-500">JPG, PNG, atau PDF (Max. 2MB)</span>
+                  <div className="flex flex-col text-xs md:text-sm text-slate-600 justify-center gap-0.5 md:gap-1">
+                    <span className="font-bold text-emerald-600 text-sm md:text-base">{file ? 'File Dipilih' : 'Klik/seret file ke sini'}</span>
+                    <span className="text-[10px] md:text-xs text-slate-500">JPG, PNG, atau PDF (Max. 2MB)</span>
                   </div>
                   {file && (
-                    <p className="text-sm font-bold text-slate-700 mt-2 truncate max-w-xs bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100">{file.name}</p>
+                    <p className="text-xs md:text-sm font-bold text-slate-700 mt-2 truncate max-w-[200px] md:max-w-xs mx-auto bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100">{file.name}</p>
                   )}
                 </div>
               </div>

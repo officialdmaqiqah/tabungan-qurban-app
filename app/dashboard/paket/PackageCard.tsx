@@ -57,46 +57,46 @@ export default function PackageCard({ pkg, selectedQuantity, onSelect }: Package
   return (
     <>
       <div 
-        className={`bg-white p-6 md:p-8 rounded-[2rem] border ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500 shadow-xl shadow-emerald-500/10' : 'border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-slate-200'} transition-all duration-300 flex flex-col`}
+        className={`bg-white p-5 md:p-6 rounded-[2rem] border ${isSelected ? 'border-emerald-500 ring-1 ring-emerald-500 shadow-xl shadow-emerald-500/10' : 'border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-slate-200'} transition-all duration-300 flex flex-col`}
       >
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-6">
-            <div className={`text-3xl p-4 rounded-2xl bg-gradient-to-br ${isSapi ? 'from-blue-50 to-indigo-50 text-blue-500' : 'from-amber-50 to-orange-50 text-amber-500'} flex items-center justify-center shadow-sm border border-white/50`}>
+          <div className="flex items-center justify-between mb-4 md:mb-5">
+            <div className={`text-2xl p-3 rounded-2xl bg-gradient-to-br ${isSapi ? 'from-blue-50 to-indigo-50 text-blue-500' : 'from-amber-50 to-orange-50 text-amber-500'} flex items-center justify-center shadow-sm border border-white/50`}>
               {iconText}
             </div>
-            <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-1.5 md:gap-2">
               {badgeText && (
-                <span className={`text-[10px] font-bold px-3 py-1.5 rounded-lg ${badgeColor} tracking-wider`}>
+                <span className={`text-[10px] font-bold px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg ${badgeColor} tracking-wider`}>
                   {badgeText}
                 </span>
               )}
               {isSelected && (
-                <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-100/80 px-3 py-1.5 rounded-lg shadow-sm border border-emerald-200/50">
+                <span className="flex items-center gap-1.5 text-[10px] md:text-xs font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg shadow-sm border border-emerald-200/50">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Terpilih {selectedQuantity}
                 </span>
               )}
             </div>
           </div>
           
-          <h3 className="text-xl font-bold text-slate-900 leading-tight">{pkg.name}</h3>
-          <p className="text-3xl font-black text-emerald-600 mt-3 mb-5 tracking-tight">{formatCurrency(pkg.price)}</p>
+          <h3 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">{pkg.name}</h3>
+          <p className="text-2xl md:text-3xl font-black text-emerald-600 mt-2 mb-4 tracking-tight">{formatCurrency(pkg.price)}</p>
           
           {pkg.description && (
-            <p className="text-sm text-slate-500 mb-8 leading-relaxed">{pkg.description}</p>
+            <p className="text-xs md:text-sm text-slate-500 mb-6 md:mb-8 leading-relaxed">{pkg.description}</p>
           )}
         </div>
 
         {isSelected ? (
           <button 
             disabled
-            className="w-full bg-slate-50 text-slate-400 font-bold py-3.5 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 border border-slate-200"
+            className="w-full bg-slate-50 text-slate-400 text-sm md:text-base font-bold py-3 rounded-xl cursor-not-allowed flex items-center justify-center gap-2 border border-slate-200"
           >
             <Lock className="w-4 h-4" /> Paket Terkunci
           </button>
         ) : (
           <button 
             onClick={() => setShowModal(true)}
-            className="w-full bg-emerald-600 text-white font-bold py-3.5 rounded-xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full bg-emerald-600 text-white text-sm md:text-base font-bold py-3 rounded-xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
           >
             Pilih Paket Ini
           </button>
