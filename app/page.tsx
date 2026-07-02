@@ -181,21 +181,21 @@ export default async function Home() {
                 Pantau Tabungan Qurban Anda Kapan Saja, Dari Mana Saja.
               </h2>
               <p className="text-emerald-100/80 leading-relaxed text-lg max-w-lg mx-auto lg:mx-0">
-                Lupakan buku tabungan kertas yang mudah hilang. Dengan aplikasi Tabungan Qurban MAKT, saldo, riwayat transaksi, hingga sisa target dana qurban Anda tercatat otomatis dan aman secara digital.
+                Kami hadirkan solusi untuk semua kendala Anda. Dengan aplikasi Tabungan Qurban MAKT, niat berqurban kini bisa dicicil bertahap dengan pantauan mutlak di tangan Anda.
               </p>
               
               <ul className="space-y-4 pt-4 text-emerald-50 text-left max-w-md mx-auto lg:mx-0">
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span>Cek progress target harian/bulanan secara real-time.</span>
+                  <span><strong>Ringan:</strong> Bebas setor berapapun tanpa batas minimum. Berqurban tak lagi terasa berat.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span>Notifikasi instan via WhatsApp setiap setoran berhasil.</span>
+                  <span><strong>Aman:</strong> Dana langsung terkunci di rekening qurban masjid, anti bocor terpakai hal lain.</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <span>Mode Privasi untuk menyembunyikan nama Anda (Hamba Allah).</span>
+                  <span><strong>Transparan:</strong> Saldo dan riwayat terekam otomatis, pantau progress 100% dari HP Anda.</span>
                 </li>
               </ul>
             </div>
