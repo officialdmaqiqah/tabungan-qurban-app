@@ -23,6 +23,7 @@ import HeroCalculator from "@/components/HeroCalculator";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { formatCurrency } from "@/lib/utils";
+import PhoneMockup from "@/components/PhoneMockup";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -159,6 +160,50 @@ export default async function Home() {
               <p className="text-slate-600 text-sm leading-relaxed">
                 Khawatir menyetorkan uang cicilan karena <span className="font-semibold text-rose-700">pencatatan manual yang tidak transparan</span> dan sulit memantau sudah berapa saldo yang terkumpul.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= SECTION 2.5: APP PREVIEW (MOCKUP) ================= */}
+      <section className="py-24 bg-emerald-950 relative overflow-hidden border-t border-emerald-900/50">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500 rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
+            <div className="text-center lg:text-left space-y-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-emerald-800/50 border border-emerald-700/50 text-emerald-200 text-xs font-semibold uppercase tracking-wider">
+                <Sparkles className="w-3.5 h-3.5" />
+                Aplikasi Dalam Genggaman
+              </div>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
+                Pantau Tabungan Qurban Anda Kapan Saja, Dari Mana Saja.
+              </h2>
+              <p className="text-emerald-100/80 leading-relaxed text-lg max-w-lg mx-auto lg:mx-0">
+                Lupakan buku tabungan kertas yang mudah hilang. Dengan aplikasi Tabungan Qurban MAKT, saldo, riwayat transaksi, hingga sisa target dana qurban Anda tercatat otomatis dan aman secara digital.
+              </p>
+              
+              <ul className="space-y-4 pt-4 text-emerald-50 text-left max-w-md mx-auto lg:mx-0">
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <span>Cek progress target harian/bulanan secara real-time.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <span>Notifikasi instan via WhatsApp setiap setoran berhasil.</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <span>Mode Privasi untuk menyembunyikan nama Anda (Hamba Allah).</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex justify-center lg:justify-end relative">
+              <div className="absolute -inset-4 bg-emerald-500/20 blur-2xl rounded-full"></div>
+              {/* Note: The image uploaded by user will be saved as /app-mockup.jpg */}
+              <PhoneMockup imageSrc="/app-mockup.jpg" altText="Tampilan Aplikasi Tabungan Qurban" />
             </div>
           </div>
         </div>
