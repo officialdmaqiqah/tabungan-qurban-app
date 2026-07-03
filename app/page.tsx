@@ -184,9 +184,9 @@ export default async function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-6xl mx-auto">
             <div className="text-center lg:text-left space-y-6">
-              <div className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-emerald-800/50 border border-emerald-700/50 text-emerald-200 text-xs font-semibold uppercase tracking-wider">
-                <Sparkles className="w-3.5 h-3.5" />
-                Kami Hadirkan Solusi Untuk Semua Kendala Anda
+              <div className="inline-flex items-start sm:items-center gap-2.5 px-4 py-3 sm:px-4 sm:py-2 rounded-2xl sm:rounded-full bg-emerald-800/50 border border-emerald-700/50 text-emerald-200 text-[11px] sm:text-xs font-semibold uppercase tracking-wider max-w-full text-left">
+                <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 flex-shrink-0 mt-0.5 sm:mt-0" />
+                <span className="leading-snug">Kami Hadirkan Solusi Untuk Semua Kendala Anda</span>
               </div>
               
               <div className="space-y-4">
