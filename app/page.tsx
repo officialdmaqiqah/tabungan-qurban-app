@@ -186,7 +186,7 @@ export default async function Home() {
             <div className="text-center lg:text-left space-y-6">
               <div className="inline-flex items-start sm:items-center gap-2.5 px-4 py-3 sm:px-4 sm:py-2 rounded-2xl sm:rounded-full bg-emerald-800/50 border border-emerald-700/50 text-emerald-200 text-[11px] sm:text-xs font-semibold uppercase tracking-wider max-w-full text-left">
                 <Sparkles className="w-4 h-4 sm:w-3.5 sm:h-3.5 flex-shrink-0 mt-0.5 sm:mt-0" />
-                <span className="leading-snug">Kami Hadirkan Solusi Untuk Semua Kendala Anda</span>
+                <span className="leading-snug">Kami Hadirkan Solusi Untuk Anda</span>
               </div>
               
               <div className="space-y-4">
