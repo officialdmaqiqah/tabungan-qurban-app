@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { UploadCloud, CheckCircle2, CreditCard } from 'lucide-react';
+import { UploadCloud, CheckCircle2, CreditCard, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { notifyAdminOnDepositReported } from '@/app/actions/transaction_whatsapp';
 
@@ -215,33 +215,52 @@ export default function LaporSetoranPage() {
                   </div>
                 </div>
               )}
-              <div>
-                <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">Unggah Bukti Transfer</label>
-                <div className={`mt-1 flex justify-center px-4 md:px-6 py-6 md:py-10 border-2 ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-200 hover:border-emerald-400'} border-dashed rounded-2xl md:rounded-3xl bg-slate-50 hover:bg-emerald-50/20 transition-colors group cursor-pointer relative`}>
-                  <input 
-                    id="file-upload" 
-                    name="file-upload" 
-                    type="file" 
-                    accept="image/jpeg,image/png,application/pdf"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
-                    onChange={(e) => setFile(e.target.files?.[0] || null)}
-                  />
-                  <div className="space-y-2.5 md:space-y-3 text-center pointer-events-none">
-                    <div className={`mx-auto w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-colors ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-400 group-hover:text-emerald-500 shadow-sm'}`}>
-                      {file ? <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8" /> : <UploadCloud className="h-6 w-6 md:h-8 md:w-8" />}
-                    </div>
-                    <div className="flex flex-col text-xs md:text-sm text-slate-600 justify-center gap-0.5 md:gap-1">
-                      <span className="font-bold text-emerald-600 text-sm md:text-base">{file ? 'File Dipilih' : 'Klik/seret file ke sini'}</span>
-                      <span className="text-[10px] md:text-xs text-slate-500">JPG, PNG, atau PDF (Max. 2MB)</span>
-                    </div>
-                    {file && (
-                      <p className="text-xs md:text-sm font-bold text-slate-700 mt-2 truncate max-w-[200px] md:max-w-xs mx-auto bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100">{file.name}</p>
-                    )}
-                  </div>
+            </div>
+          )}
+
+          {method === 'tunai' && (
+            <div className="space-y-5 md:space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+              <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 rounded-xl md:rounded-2xl p-4 md:p-5 flex items-start gap-3 md:gap-4">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-white flex items-center justify-center shadow-sm text-amber-500 flex-shrink-0">
+                  <AlertCircle className="w-4 h-4 md:w-5 md:h-5" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs md:text-sm text-amber-900 font-bold mb-1">Himbauan Setor Tunai</p>
+                  <p className="text-[11px] md:text-xs text-amber-800/80 leading-relaxed">
+                    Pastikan setor ke petugas admin/bendahara (Bpk. Agustian atau Bpk. Heri). Jika dititipkan ke petugas masjid lainnya, mohon minta kwitansi fisik atau minimal foto serah terima uang sebagai bukti.
+                  </p>
                 </div>
               </div>
             </div>
           )}
+
+          <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+            <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">
+              {method === 'transfer' ? 'Unggah Bukti Transfer' : 'Unggah Bukti (Kwitansi / Foto)'}
+            </label>
+            <div className={`mt-1 flex justify-center px-4 md:px-6 py-6 md:py-10 border-2 ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-200 hover:border-emerald-400'} border-dashed rounded-2xl md:rounded-3xl bg-slate-50 hover:bg-emerald-50/20 transition-colors group cursor-pointer relative`}>
+              <input 
+                id="file-upload" 
+                name="file-upload" 
+                type="file" 
+                accept="image/jpeg,image/png,application/pdf"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
+              <div className="space-y-2.5 md:space-y-3 text-center pointer-events-none">
+                <div className={`mx-auto w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-colors ${file ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-slate-400 group-hover:text-emerald-500 shadow-sm'}`}>
+                  {file ? <CheckCircle2 className="h-6 w-6 md:h-8 md:w-8" /> : <UploadCloud className="h-6 w-6 md:h-8 md:w-8" />}
+                </div>
+                <div className="flex flex-col text-xs md:text-sm text-slate-600 justify-center gap-0.5 md:gap-1">
+                  <span className="font-bold text-emerald-600 text-sm md:text-base">{file ? 'File Dipilih' : 'Klik/seret file ke sini'}</span>
+                  <span className="text-[10px] md:text-xs text-slate-500">JPG, PNG, atau PDF (Max. 2MB)</span>
+                </div>
+                {file && (
+                  <p className="text-xs md:text-sm font-bold text-slate-700 mt-2 truncate max-w-[200px] md:max-w-xs mx-auto bg-white px-3 py-1 rounded-lg shadow-sm border border-slate-100">{file.name}</p>
+                )}
+              </div>
+            </div>
+          </div>
 
           <div className="pt-4">
             <button
