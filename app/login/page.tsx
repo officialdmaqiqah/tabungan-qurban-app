@@ -94,7 +94,7 @@ export default function LoginPage() {
             <div className="flex justify-between items-center mb-1">
               <label className="block text-sm font-medium text-slate-700">Password</label>
               <a 
-                href="https://wa.me/6285381331611?text=Assalamu'alaikum%20Admin,%20saya%20kesulitan%20login%20ke%20akun%20Tabungan%20Qurban%20saya.%20Mohon%20bantuannya%20untuk%20reset%20password." 
+                href="https://wa.me/6287791134515?text=Assalamu'alaikum%20Admin,%20saya%20kesulitan%20login%20ke%20akun%20Tabungan%20Qurban%20saya.%20Mohon%20bantuannya%20untuk%20reset%20password." 
                 target="_blank" 
                 rel="noreferrer"
                 className="text-xs text-emerald-600 font-medium hover:underline"
