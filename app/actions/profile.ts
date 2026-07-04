@@ -9,7 +9,8 @@ export async function updateProfileAfterRegistration(userId: string, kategoriJam
     .from('profiles')
     .update({
       kategori_jamaah: kategoriJamaah,
-      gender: gender
+      gender: gender,
+      is_anonymous: true
     })
     .eq('id', userId);
 
