@@ -277,12 +277,18 @@ export default async function DashboardPage() {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : targetAmount > 0 ? (
              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 border border-emerald-100 h-full flex flex-col items-center justify-center text-center">
                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm mb-4">🎉</div>
                 <h3 className="font-bold text-emerald-900 text-lg mb-2">Target Tercapai!</h3>
                 <p className="text-sm text-emerald-700">Alhamdulillah, tabungan qurban Anda telah memenuhi target. Semoga niat suci ini dilancarkan.</p>
              </div>
+          ) : (
+            <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 h-full flex flex-col items-center justify-center text-center text-slate-400">
+               <Target className="w-12 h-12 mb-3 text-slate-200" />
+               <h3 className="font-bold text-slate-700 text-base mb-1">Belum Ada Target</h3>
+               <p className="text-xs text-slate-500">Pilih paket qurban terlebih dahulu untuk melihat rekomendasi tabungan.</p>
+            </div>
           )}
         </div>
       </div>
