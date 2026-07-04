@@ -75,11 +75,8 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
     data.publicName.toLowerCase().includes(query)
   ) || [];
 
-  // Sort by progress descending, then total tabungan
-  aggregatedData.sort((a, b) => {
-    if (b.progress !== a.progress) return b.progress - a.progress;
-    return b.totalTabungan - a.totalTabungan;
-  });
+  // Sort alphabetically by original name
+  aggregatedData.sort((a, b) => a.originalName.localeCompare(b.originalName));
 
   // Calculate overall statistics
   const totalVerifiedFunds = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
