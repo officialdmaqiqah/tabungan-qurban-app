@@ -515,9 +515,9 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {packages?.map((pkg) => (
-              <div key={pkg.id} className="w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] max-w-md bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-emerald-500 transition-all duration-300 group flex flex-col">
+              <div key={pkg.id} className="w-full bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-xl hover:border-emerald-500 transition-all duration-300 group flex flex-col">
                 <div className="p-8 pb-6 bg-white border-b border-slate-100 flex-1">
                   <div className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full mb-4">Amanah & Syariah</div>
                   <h3 className="text-2xl font-bold text-slate-900 mb-2 group-hover:text-emerald-600 transition-colors">{pkg.name}</h3>
