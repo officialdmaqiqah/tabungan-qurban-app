@@ -1,6 +1,6 @@
 import { formatCurrency, maskName } from '@/lib/utils';
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Search, Users, PiggyBank, Sparkles } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Search, Users, Wallet, Sparkles } from 'lucide-react';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 export const revalidate = 60; // Revalidate every 60 seconds
@@ -115,7 +115,7 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-3xl border border-slate-200/60 shadow-lg shadow-slate-100/50 flex items-center gap-4">
             <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-100">
-              <PiggyBank className="w-6 h-6" />
+              <Wallet className="w-6 h-6" />
             </div>
             <div>
               <span className="text-xs text-slate-400 font-medium block uppercase tracking-wider">Total Dana Terkumpul</span>

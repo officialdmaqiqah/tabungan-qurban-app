@@ -4,7 +4,6 @@ import {
   ShieldCheck, 
   Wallet, 
   Heart, 
-  PiggyBank, 
   Target, 
   CheckCircle2, 
   ArrowUpRight, 
@@ -367,7 +366,7 @@ export default async function Home() {
             <div className="bg-amber-50 rounded-3xl p-8 md:p-10 border border-amber-100 flex flex-col justify-between group hover:shadow-xl hover:shadow-amber-500/10 transition-all">
               <div>
                 <div className="w-12 h-12 bg-white text-amber-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
-                  <PiggyBank className="w-6 h-6" />
+                  <Wallet className="w-6 h-6" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-amber-700 transition-colors">Setoran Sangat Fleksibel</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">
