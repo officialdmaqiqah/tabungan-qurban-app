@@ -337,8 +337,8 @@ export default async function Home() {
                 ></iframe>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">1. Tutorial Pendaftaran Akun</h3>
-                <p className="text-sm text-slate-400">Panduan cara mendaftar dan membuat akun jamaah baru di aplikasi Tabungan Qurban.</p>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">1. Mukadimah Tabungan Qurban</h3>
+                <p className="text-sm text-slate-400">Mukadimah tentang tabungan qurban.</p>
               </div>
             </div>
 
@@ -355,8 +355,8 @@ export default async function Home() {
                 ></iframe>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">2. Tutorial Lapor Setoran</h3>
-                <p className="text-sm text-slate-400">Langkah-langkah melaporkan bukti transfer setoran qurban Anda ke panitia.</p>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">2. Tutorial Untuk Jamaah</h3>
+                <p className="text-sm text-slate-400">Tutorial buat jamaah mulai dari daftar, setor, kirim laporan, pantau.</p>
               </div>
             </div>
 
@@ -374,7 +374,7 @@ export default async function Home() {
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">3. Tutorial Khusus Admin</h3>
-                <p className="text-sm text-slate-400">Panduan untuk admin dalam memvalidasi setoran dan mengelola data jamaah.</p>
+                <p className="text-sm text-slate-400">Tutorial buat admin mengelola teknis & manajemen tabungan.</p>
               </div>
             </div>
           </div>
