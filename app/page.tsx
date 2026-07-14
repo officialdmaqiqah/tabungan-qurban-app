@@ -311,6 +311,76 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ================= SECTION 2.8: VIDEO TUTORIAL ================= */}
+      <section className="py-24 bg-slate-900 border-t border-slate-800 relative overflow-hidden" id="tutorial">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 mix-blend-overlay"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-16 max-w-2xl mx-auto">
+            <h2 className="text-xs font-extrabold text-emerald-400 uppercase tracking-widest mb-3">Panduan Penggunaan</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Video Tutorial Tabungan Qurban</h2>
+            <p className="text-slate-400 text-sm sm:text-base">
+              Ikuti panduan langkah demi langkah cara mendaftar, memilih paket, dan menggunakan aplikasi.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Video 1 */}
+            <div className="bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-xl group">
+              <div className="aspect-video w-full relative">
+                <iframe 
+                  className="w-full h-full absolute top-0 left-0"
+                  src="https://www.youtube.com/embed/rfI7Df8nV9o" 
+                  title="Tutorial Pendaftaran Akun Tabungan Qurban MAKT" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">1. Tutorial Pendaftaran Akun</h3>
+                <p className="text-sm text-slate-400">Panduan cara mendaftar dan membuat akun jamaah baru di aplikasi Tabungan Qurban.</p>
+              </div>
+            </div>
+
+            {/* Video 2 */}
+            <div className="bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-xl group">
+              <div className="aspect-video w-full relative">
+                <iframe 
+                  className="w-full h-full absolute top-0 left-0"
+                  src="https://www.youtube.com/embed/7BtPwIPnfCg" 
+                  title="Tutorial Lapor Setoran Tabungan Qurban MAKT" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">2. Tutorial Lapor Setoran</h3>
+                <p className="text-sm text-slate-400">Langkah-langkah melaporkan bukti transfer setoran qurban Anda ke panitia.</p>
+              </div>
+            </div>
+
+            {/* Video 3 */}
+            <div className="bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-xl group">
+              <div className="aspect-video w-full relative">
+                <iframe 
+                  className="w-full h-full absolute top-0 left-0"
+                  src="https://www.youtube.com/embed/HIgrop9mAWY" 
+                  title="Tutorial Penggunaan Dashboard Admin" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">3. Tutorial Khusus Admin</h3>
+                <p className="text-sm text-slate-400">Panduan untuk admin dalam memvalidasi setoran dan mengelola data jamaah.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ================= SECTION 3: PRESENTASI SOLUSI & FITUR (BENTO GRID) ================= */}
       <section className="py-24 bg-white border-y border-slate-100">
         <div className="container mx-auto px-4">

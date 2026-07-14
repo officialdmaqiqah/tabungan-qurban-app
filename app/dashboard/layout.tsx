@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Home, Send, Package, HelpCircle } from 'lucide-react';
+import { LogOut, Home, Send, Package, HelpCircle, Video } from 'lucide-react';
 
 export default async function DashboardLayout({
   children,
@@ -42,6 +42,10 @@ export default async function DashboardLayout({
             <Send className="w-5 h-5" />
             <span className="font-medium">Lapor Setoran</span>
           </Link>
+          <Link href="/dashboard/tutorial" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all">
+            <Video className="w-5 h-5" />
+            <span className="font-medium">Video Tutorial</span>
+          </Link>
           <form action="/auth/signout" method="post" className="w-full">
             <button type="submit" className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-md transition-colors text-left whitespace-nowrap">
               <LogOut className="w-5 h-5" />
@@ -70,6 +74,10 @@ export default async function DashboardLayout({
           <Link href="/dashboard/lapor" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
             <Send className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Lapor</span>
+          </Link>
+          <Link href="/dashboard/tutorial" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
+            <Video className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Tutorial</span>
           </Link>
           <form action="/auth/signout" method="post" className="w-full h-full">
             <button type="submit" className="flex flex-col items-center justify-center w-full h-full text-red-500 hover:text-red-600">
