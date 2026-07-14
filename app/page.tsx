@@ -323,7 +323,7 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Video 1 */}
             <div className="bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-xl group">
               <div className="aspect-video w-full relative">
@@ -338,7 +338,7 @@ export default async function Home() {
               </div>
               <div className="p-6">
                 <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">1. Mukadimah Tabungan Qurban</h3>
-                <p className="text-sm text-slate-400">Mukadimah tentang tabungan qurban.</p>
+                <p className="text-sm text-slate-400">Penjelasan awal mengenai keutamaan ibadah qurban dan bagaimana program tabungan ini memfasilitasi niat suci Anda dengan mudah dan transparan.</p>
               </div>
             </div>
 
@@ -355,26 +355,8 @@ export default async function Home() {
                 ></iframe>
               </div>
               <div className="p-6">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">2. Tutorial Untuk Jamaah</h3>
-                <p className="text-sm text-slate-400">Tutorial buat jamaah mulai dari daftar, setor, kirim laporan, pantau.</p>
-              </div>
-            </div>
-
-            {/* Video 3 */}
-            <div className="bg-slate-800 rounded-3xl overflow-hidden border border-slate-700 shadow-xl group">
-              <div className="aspect-video w-full relative">
-                <iframe 
-                  className="w-full h-full absolute top-0 left-0"
-                  src="https://www.youtube.com/embed/HIgrop9mAWY" 
-                  title="Tutorial Penggunaan Dashboard Admin" 
-                  frameBorder="0" 
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                  allowFullScreen
-                ></iframe>
-              </div>
-              <div className="p-6">
-                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">3. Tutorial Khusus Admin</h3>
-                <p className="text-sm text-slate-400">Tutorial buat admin mengelola teknis & manajemen tabungan.</p>
+                <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">2. Panduan Aplikasi Jamaah</h3>
+                <p className="text-sm text-slate-400">Video panduan komprehensif langkah demi langkah; mulai dari proses pendaftaran akun, penyetoran dana, pelaporan, hingga pemantauan saldo.</p>
               </div>
             </div>
           </div>

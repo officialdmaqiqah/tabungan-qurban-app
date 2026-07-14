@@ -30,7 +30,7 @@ export default function JamaahTutorialPage() {
           </div>
           <div className="p-6">
             <h3 className="text-lg font-bold text-slate-900 mb-2">1. Mukadimah Tabungan Qurban</h3>
-            <p className="text-sm text-slate-600">Mukadimah tentang tabungan qurban.</p>
+            <p className="text-sm text-slate-600">Penjelasan awal mengenai keutamaan ibadah qurban dan bagaimana program tabungan ini memfasilitasi niat suci Anda dengan mudah dan transparan.</p>
           </div>
         </div>
 
@@ -47,8 +47,8 @@ export default function JamaahTutorialPage() {
             ></iframe>
           </div>
           <div className="p-6">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">2. Tutorial Untuk Jamaah</h3>
-            <p className="text-sm text-slate-600">Tutorial buat jamaah mulai dari daftar, setor, kirim laporan, pantau.</p>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">2. Panduan Aplikasi Jamaah</h3>
+            <p className="text-sm text-slate-600">Video panduan komprehensif langkah demi langkah; mulai dari proses pendaftaran akun, penyetoran dana, pelaporan, hingga pemantauan saldo.</p>
           </div>
         </div>
       </div>
