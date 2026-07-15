@@ -12,7 +12,7 @@ export default async function AdminDashboardOverview() {
     { count: pendingCount },
     { data: userPackages }
   ] = await Promise.all([
-    supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('role', 'jamaah'),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('transactions').select('amount').eq('status', 'verified'),
     supabase.from('transactions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('user_packages').select('quantity, qurban_packages(price)')

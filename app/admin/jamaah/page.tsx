@@ -24,7 +24,6 @@ export default async function AdminJamaahPage({
   let query = supabase
     .from('profiles')
     .select('*, user_packages(package_id, quantity, qurban_packages(name, price))', { count: 'exact' })
-    .eq('role', 'jamaah')
     .order('created_at', { ascending: false })
     .range(from, to);
 

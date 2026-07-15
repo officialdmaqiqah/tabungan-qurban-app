@@ -26,7 +26,7 @@ export default async function DashboardPage() {
     supabase.from('transactions').select('amount').eq('user_id', user.id).eq('status', 'verified'),
     supabase.from('program_settings').select('*').single(),
     supabase.from('transactions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
-    supabase.from('profiles').select('id, full_name, is_anonymous').eq('role', 'jamaah'),
+    supabase.from('profiles').select('id, full_name, is_anonymous'),
     supabase.from('user_packages').select('user_id, quantity, qurban_packages(price)'),
     supabase.from('transactions').select('user_id, amount').eq('status', 'verified')
   ]);

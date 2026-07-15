@@ -18,7 +18,6 @@ export default async function InputSetoranPage() {
   const { data: jamaahList } = await supabase
     .from('profiles')
     .select('id, full_name, phone')
-    .eq('role', 'jamaah')
     .order('full_name', { ascending: true });
 
   // Server action untuk menambah transaksi

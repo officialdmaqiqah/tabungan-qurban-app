@@ -66,8 +66,7 @@ export default async function Home() {
   // Fetch total jamaah count
   const { count: totalJamaahCount } = await serviceSupabase
     .from('profiles')
-    .select('*', { count: 'exact', head: true })
-    .eq('role', 'jamaah');
+    .select('*', { count: 'exact', head: true });
 
   return (
     <div className="flex-1 flex flex-col bg-slate-50 font-sans text-slate-800">

@@ -18,8 +18,7 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
   // Fetch all jamaah profiles
   const { data: jamaahList } = await supabase
     .from('profiles')
-    .select('id, full_name, is_anonymous')
-    .eq('role', 'jamaah');
+    .select('id, full_name, is_anonymous');
 
   // Fetch all verified transactions
   const { data: transactions } = await supabase
