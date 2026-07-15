@@ -364,7 +364,10 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-bold text-slate-900">{formatCurrency(tx.amount)}</td>
+                        <td className={`px-6 py-4 font-bold ${tx.amount < 0 ? 'text-red-600' : 'text-slate-900'}`}>
+                          {formatCurrency(tx.amount)}
+                          {tx.amount < 0 && <div className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium mt-1 w-fit">Penarikan</div>}
+                        </td>
                         <td className="px-6 py-4">
                           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium
                             ${tx.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 

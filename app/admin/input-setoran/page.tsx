@@ -25,7 +25,9 @@ export default async function InputSetoranPage() {
     'use server';
     
     const userId = formData.get('userId') as string;
-    const amount = Number(formData.get('amount'));
+    const rawAmount = Number(formData.get('amount'));
+    const transactionType = formData.get('transactionType') as string;
+    const amount = transactionType === 'penarikan' ? -rawAmount : rawAmount;
     const method = formData.get('method') as string;
     const proofUrl = formData.get('proofUrl') as string | null;
 
@@ -58,9 +60,9 @@ export default async function InputSetoranPage() {
 
     await adminClient.from('audit_logs').insert({
       admin_id: user.id,
-      action: 'input setoran',
+      action: transactionType === 'penarikan' ? 'input penarikan' : 'input setoran',
       target_id: newTx?.id,
-      details: `Admin menginput setoran manual sebesar Rp ${Number(amount).toLocaleString('id-ID')} untuk jamaah: ${jamaahName}`
+      details: `Admin menginput ${transactionType === 'penarikan' ? 'penarikan' : 'setoran manual'} sebesar Rp ${Math.abs(amount).toLocaleString('id-ID')} untuk jamaah: ${jamaahName}`
     });
 
     revalidatePath(`/admin/jamaah/${userId}`);
@@ -75,8 +77,8 @@ export default async function InputSetoranPage() {
           <Coins className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Input Setoran</h1>
-          <p className="text-sm text-slate-500">Catat transaksi setoran tunai atau transfer jamaah secara manual.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Input Transaksi</h1>
+          <p className="text-sm text-slate-500">Catat transaksi setoran atau penarikan dana jamaah secara manual.</p>
         </div>
       </div>
 

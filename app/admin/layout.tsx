@@ -43,7 +43,7 @@ export default async function AdminLayout({
           </Link>
           <Link href="/admin/input-setoran" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all">
             <PlusCircle className="w-5 h-5" />
-            <span className="font-medium">Input Setoran</span>
+            <span className="font-medium">Input Transaksi</span>
           </Link>
           <Link href="/admin/verifikasi" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all">
             <CheckSquare className="w-5 h-5" />
@@ -105,7 +105,7 @@ export default async function AdminLayout({
           </Link>
           <Link href="/admin/input-setoran" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <PlusCircle className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Setoran</span>
+            <span className="text-[10px] font-medium">Transaksi</span>
           </Link>
           <Link href="/admin/paket" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <Package className="w-5 h-5 mb-1" />

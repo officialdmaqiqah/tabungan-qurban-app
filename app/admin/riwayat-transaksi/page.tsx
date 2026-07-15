@@ -98,7 +98,10 @@ export default async function AdminRiwayatTransaksiPage({ searchParams }: { sear
                     <td className="px-4 py-2.5">
                       <div className="text-sm text-slate-600 capitalize">{tx.method}</div>
                     </td>
-                    <td className="px-4 py-2.5 font-bold text-slate-900">{formatCurrency(tx.amount)}</td>
+                    <td className={`px-4 py-2.5 font-bold ${tx.amount < 0 ? 'text-red-600' : 'text-slate-900'}`}>
+                      {formatCurrency(tx.amount)}
+                      {tx.amount < 0 && <div className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium mt-1 w-fit">Penarikan</div>}
+                    </td>
                     <td className="px-4 py-2.5">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
                         ${tx.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 

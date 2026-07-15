@@ -331,7 +331,10 @@ export default async function DashboardPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 md:px-8 py-3 md:py-4 font-bold text-slate-700 text-xs md:text-sm whitespace-nowrap group-hover:text-emerald-700 transition-colors">{formatCurrency(tx.amount)}</td>
+                        <td className={`px-4 md:px-8 py-3 md:py-4 font-bold text-xs md:text-sm whitespace-nowrap group-hover:${tx.amount < 0 ? 'text-red-700' : 'text-emerald-700'} transition-colors ${tx.amount < 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                          {formatCurrency(tx.amount)}
+                          {tx.amount < 0 && <div className="text-[9px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-medium mt-1 w-fit">Penarikan</div>}
+                        </td>
                         <td className="px-4 md:px-8 py-3 md:py-4 text-right whitespace-nowrap">
                           <span className={`inline-block px-2 md:px-3 py-1 rounded-full text-[9px] md:text-[11px] font-bold tracking-wide uppercase
                             ${tx.status === 'verified' ? 'bg-emerald-100 text-emerald-700' : 

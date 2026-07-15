@@ -20,6 +20,7 @@ export default function InputSetoranForm({
   
   const [search, setSearch] = useState('');
   const [selectedJamaahId, setSelectedJamaahId] = useState('');
+  const [transactionType, setTransactionType] = useState('setoran');
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('tunai');
   const [proofFile, setProofFile] = useState<File | null>(null);
@@ -59,6 +60,7 @@ export default function InputSetoranForm({
       formData.append('userId', selectedJamaahId);
       formData.append('amount', amount);
       formData.append('method', method);
+      formData.append('transactionType', transactionType);
       if (proofUrl) {
         formData.append('proofUrl', proofUrl);
       }
@@ -67,9 +69,10 @@ export default function InputSetoranForm({
       
       if (!res.success) throw new Error(res.error);
       
-      toast.success('Setoran berhasil dicatat!');
+      toast.success(transactionType === 'setoran' ? 'Setoran berhasil dicatat!' : 'Penarikan berhasil dicatat!');
       setAmount('');
       setMethod('tunai');
+      setTransactionType('setoran');
       setProofFile(null);
       setSelectedJamaahId('');
       setSearch('');
@@ -120,7 +123,37 @@ export default function InputSetoranForm({
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Metode Penyetoran</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Jenis Transaksi</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setTransactionType('setoran')}
+                      className={`py-2 px-3 text-sm font-medium border rounded-lg transition-all ${
+                        transactionType === 'setoran' 
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-700' 
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      Setoran (Uang Masuk)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTransactionType('penarikan')}
+                      className={`py-2 px-3 text-sm font-medium border rounded-lg transition-all ${
+                        transactionType === 'penarikan' 
+                        ? 'bg-red-50 border-red-500 text-red-700' 
+                        : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      Penarikan (Uang Keluar)
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                    Metode {transactionType === 'setoran' ? 'Penyetoran' : 'Pemberian Uang'}
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -148,7 +181,7 @@ export default function InputSetoranForm({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Nominal Setoran (Rp)</label>
+                  <label className="block text-xs font-medium text-slate-600 mb-1.5">Nominal (Rp)</label>
                   <input 
                     type="number" 
                     value={amount}
@@ -209,19 +242,21 @@ export default function InputSetoranForm({
           <button 
             type="submit"
             disabled={loading || !selectedJamaahId || !amount || (method === 'transfer' && !proofFile)}
-            className="w-full bg-emerald-600 text-white font-medium py-3 rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className={`w-full font-medium py-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white ${
+              transactionType === 'setoran' ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-red-600 hover:bg-red-700'
+            }`}
           >
             {loading ? (
               <>Menyimpan...</>
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" /> 
-                Simpan Setoran
+                {transactionType === 'setoran' ? 'Simpan Setoran' : 'Simpan Penarikan'}
               </>
             )}
           </button>
           <p className="text-xs text-slate-500 text-center">
-            Setoran yang diinput Admin otomatis berstatus <span className="text-emerald-600 font-semibold">Verified</span>.
+            Transaksi yang diinput Admin otomatis berstatus <span className="text-emerald-600 font-semibold">Verified</span>.
           </p>
         </form>
       </div>
