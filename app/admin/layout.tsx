@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, LayoutDashboard, Settings, Users, CheckSquare, Package, PlusCircle, Activity, FileText, MessageCircle, Video } from 'lucide-react';
+import { LogOut, LayoutDashboard, Settings, Users, CheckSquare, Package, PlusCircle, Activity, FileText, MessageCircle, Video, Home } from 'lucide-react';
 
 export default async function AdminLayout({
   children,
@@ -69,6 +69,12 @@ export default async function AdminLayout({
             <Video className="w-5 h-5" />
             <span className="font-medium">Video Tutorial</span>
           </Link>
+          <div className="pt-4 mt-4 border-t border-slate-800">
+            <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300 rounded-xl transition-all">
+              <Home className="w-5 h-5" />
+              <span className="font-medium">Menu Jamaah</span>
+            </Link>
+          </div>
           <form action="/auth/signout" method="post" className="w-full mt-auto pt-8">
             <button type="submit" className="w-full flex items-center gap-3 px-3 py-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors text-left whitespace-nowrap">
               <LogOut className="w-5 h-5" />
@@ -116,6 +122,10 @@ export default async function AdminLayout({
           <Link href="/admin/tutorial" className="flex flex-col items-center justify-center w-20 h-full text-slate-400 hover:text-white shrink-0">
             <Video className="w-5 h-5 mb-1" />
             <span className="text-[10px] font-medium">Tutorial</span>
+          </Link>
+          <Link href="/dashboard" className="flex flex-col items-center justify-center w-20 h-full text-emerald-500 hover:text-emerald-400 shrink-0">
+            <Home className="w-5 h-5 mb-1" />
+            <span className="text-[10px] font-medium">Jamaah</span>
           </Link>
           <form action="/auth/signout" method="post" className="w-20 h-full shrink-0">
             <button type="submit" className="flex flex-col items-center justify-center w-full h-full text-red-400 hover:text-red-300">

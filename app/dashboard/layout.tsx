@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Home, Send, Package, HelpCircle, Video } from 'lucide-react';
+import { LogOut, Home, Send, Package, HelpCircle, Video, LayoutDashboard } from 'lucide-react';
 
 export default async function DashboardLayout({
   children,
@@ -17,7 +17,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name')
+    .select('full_name, role')
     .eq('id', user.id)
     .single();
 
@@ -52,6 +52,14 @@ export default async function DashboardLayout({
               Keluar
             </button>
           </form>
+          {profile?.role === 'admin' && (
+            <div className="pt-4 mt-4 border-t border-slate-200">
+              <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all">
+                <LayoutDashboard className="w-5 h-5" />
+                <span className="font-medium">Panel Admin</span>
+              </Link>
+            </div>
+          )}
         </nav>
       </aside>
 
@@ -85,6 +93,12 @@ export default async function DashboardLayout({
               <span className="text-[10px] font-medium">Keluar</span>
             </button>
           </form>
+          {profile?.role === 'admin' && (
+            <Link href="/admin" className="flex flex-col items-center justify-center w-full h-full text-emerald-600 hover:text-emerald-700">
+              <LayoutDashboard className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-medium">Admin</span>
+            </Link>
+          )}
         </nav>
       </div>
     </div>
