@@ -242,7 +242,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                 <User className="w-6 h-6" />
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-slate-900 truncate">{jamaah.full_name}</h2>
+                <h2 className="text-lg font-bold text-slate-900 truncate capitalize">{jamaah.full_name}</h2>
                 <p className="text-sm text-slate-500 mb-3">{jamaah.phone}</p>
                 <div className="flex flex-wrap gap-2">
                   {jamaah.phone && (
