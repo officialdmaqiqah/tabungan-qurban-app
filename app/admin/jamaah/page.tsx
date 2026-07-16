@@ -74,7 +74,7 @@ export default async function AdminJamaahPage({
                 jamaahList.map((j) => (
                   <tr key={j.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-4 py-2.5">
-                      <div className="font-medium text-slate-900">{j.full_name}</div>
+                      <div className="font-medium text-slate-900 capitalize">{j.full_name}</div>
                       {j.kategori_jamaah ? (
                         <div className="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100">
                           {j.kategori_jamaah}

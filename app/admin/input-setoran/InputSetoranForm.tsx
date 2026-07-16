@@ -105,7 +105,7 @@ export default function InputSetoranForm({
               >
                 <option value="">-- Pilih Jamaah --</option>
                 {jamaahList.map((j) => (
-                  <option key={j.id} value={j.id}>
+                  <option key={j.id} value={j.id} className="capitalize">
                     {j.full_name} ({j.phone})
                   </option>
                 ))}

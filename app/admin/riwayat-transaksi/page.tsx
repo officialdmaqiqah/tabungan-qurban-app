@@ -91,7 +91,7 @@ export default async function AdminRiwayatTransaksiPage({ searchParams }: { sear
                       })}
                     </td>
                     <td className="px-4 py-2.5">
-                      <Link href={`/admin/jamaah/${tx.user_id}`} className="font-medium text-indigo-600 hover:underline">
+                      <Link href={`/admin/jamaah/${tx.user_id}`} className="font-medium text-indigo-600 hover:underline capitalize">
                         {tx.profiles?.full_name}
                       </Link>
                     </td>

@@ -157,7 +157,7 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
                   <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">{new Date(tx.created_at).toLocaleDateString('id-ID')}</td>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-slate-900">{tx.profiles?.full_name}</div>
+                      <div className="font-medium text-slate-900 capitalize">{tx.profiles?.full_name}</div>
                       <div className="text-xs text-slate-500">{tx.profiles?.phone}</div>
                     </td>
                     <td className="px-6 py-4 font-bold text-emerald-600">{formatCurrency(tx.amount)}</td>
