@@ -184,7 +184,7 @@ export default function PengaturanForm({
               <div key={bank.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Nama Bank</label>
-                  <input type="text" value={bank.bank_name} onChange={(e) => handleBankChange(bank.id, 'bank_name', e.target.value)} required placeholder="BSI, BCA..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.bank_name} onChange={(e) => handleBankChange(bank.id, 'bank_name', e.target.value)} required placeholder="Bank Sumsel Babel Syariah, BCA..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
                 </div>
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Nomor Rekening</label>
