@@ -1,63 +1,73 @@
 'use client';
 
-import { X, AlertCircle } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { X, AlertCircle, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { rejectTransactionAction } from '@/app/actions/transaction';
 
 interface RejectButtonProps {
   txId: string;
   txAmount: string;
   txName: string;
-  action: (formData: FormData) => void;
 }
 
-export default function RejectButton({ txId, txAmount, txName, action }: RejectButtonProps) {
-  const formRef = useRef<HTMLFormElement>(null);
+export default function RejectButton({ txId, txAmount, txName }: RejectButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleOpenClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (loading) return;
     setIsOpen(true);
     setNote('');
   };
 
   const handleCancel = () => {
+    if (loading) return;
     setIsOpen(false);
   };
 
-  const handleConfirm = () => {
-    setIsOpen(false);
-    
-    // Create hidden input for adminNote dynamically or update an existing one
-    let input = formRef.current?.querySelector('input[name="adminNote"]') as HTMLInputElement;
-    if (!input) {
-      input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'adminNote';
-      formRef.current?.appendChild(input);
+  const handleConfirm = async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      const res = await rejectTransactionAction({
+        txId,
+        adminNote: note,
+        txAmount,
+        txName,
+      });
+
+      if (res.success) {
+        toast.success(`Setoran Rp ${txAmount} berhasil ditolak.`);
+        setIsOpen(false);
+      } else {
+        toast.error(res.error || 'Gagal menolak setoran.');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Terjadi kesalahan sistem.');
+    } finally {
+      setLoading(false);
     }
-    input.value = note;
-    
-    formRef.current?.requestSubmit();
   };
 
   return (
     <>
-      <form action={action} ref={formRef}>
-        <input type="hidden" name="txId" value={txId} />
-        <input type="hidden" name="txAmount" value={txAmount} />
-        <input type="hidden" name="txName" value={txName} />
-        <button 
-          type="button" 
-          onClick={handleOpenClick}
-          className="p-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors" 
-          title="Tolak"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      </form>
+      <button 
+        type="button" 
+        onClick={handleOpenClick}
+        disabled={loading}
+        className={`p-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 hover:border-red-300 transition-colors flex items-center justify-center ${
+          loading ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+        }`} 
+        title="Tolak"
+        aria-label="Tolak setoran"
+      >
+        <X className="w-4 h-4" />
+      </button>
 
-      {/* Elegant Modal */}
+      {/* Confirmation & Note Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div 
@@ -85,8 +95,9 @@ export default function RejectButton({ txId, txAmount, txName, action }: RejectB
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="Berikan alasan agar jamaah dapat memperbaikinya..."
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all resize-none bg-slate-50 focus:bg-white"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all resize-none bg-slate-50 focus:bg-white text-sm"
                   rows={3}
+                  disabled={loading}
                   autoFocus
                 ></textarea>
               </div>
@@ -96,16 +107,25 @@ export default function RejectButton({ txId, txAmount, txName, action }: RejectB
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                disabled={loading}
+                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50"
               >
                 Batal
               </button>
               <button
                 type="button"
                 onClick={handleConfirm}
-                className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm shadow-red-600/20"
+                disabled={loading}
+                className="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors shadow-sm shadow-red-600/20 flex items-center gap-2 disabled:opacity-50"
               >
-                Ya, Tolak Setoran
+                {loading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Memproses...</span>
+                  </>
+                ) : (
+                  <span>Ya, Tolak Setoran</span>
+                )}
               </button>
             </div>
           </div>

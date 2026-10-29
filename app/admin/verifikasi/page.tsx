@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { formatCurrency } from '@/lib/utils';
-import { revalidatePath } from 'next/cache';
-import { Check, X, ShieldAlert, Filter } from 'lucide-react';
-import { notifyJamaahOnDepositApproved, notifyJamaahOnDepositRejected } from '@/app/actions/transaction_whatsapp';
+import { ShieldAlert, Filter } from 'lucide-react';
+import ApproveButton from './ApproveButton';
 import RejectButton from './RejectButton';
 
 export default async function AdminVerifikasiPage({ searchParams }: { searchParams: Promise<{ status?: string, method?: string }> }) {
@@ -36,75 +35,12 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
       const path = parts.slice(1).join('/');
       if (bucket && path) {
         // Use service role client if admin needs to bypass RLS to read proofs (or assume admin has RLS permission)
-        // Here we just use the default supabase client which assumes RLS allows admin to read
         const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
         if (data) finalUrl = data.signedUrl;
       }
     }
     return { ...tx, proof_url: finalUrl };
   }));
-
-  // Server Actions for Approve/Reject
-  async function approveTransaction(formData: FormData) {
-    'use server';
-    const txId = formData.get('txId') as string;
-    const txAmount = formData.get('txAmount') as string || txId;
-    const txName = formData.get('txName') as string || '';
-    
-    const supabaseAction = await createClient();
-    const { data: { user } } = await supabaseAction.auth.getUser();
-    
-    await supabaseAction
-      .from('transactions')
-      .update({ 
-        status: 'verified', 
-        verified_at: new Date().toISOString(),
-        verified_by: user?.id
-      })
-      .eq('id', txId);
-      
-    await supabaseAction.from('audit_logs').insert({
-      admin_id: user?.id,
-      action: 'verifikasi setoran',
-      target_id: txId,
-      details: `Memverifikasi setoran Rp ${txAmount} atas nama ${txName}`
-    });
-
-    notifyJamaahOnDepositApproved(txId).catch(e => console.error(e));
-      
-    revalidatePath('/admin/verifikasi');
-  }
-
-  async function rejectTransaction(formData: FormData) {
-    'use server';
-    const txId = formData.get('txId') as string;
-    const txAmount = formData.get('txAmount') as string || txId;
-    const txName = formData.get('txName') as string || '';
-    const adminNote = formData.get('adminNote') as string || '';
-    
-    const supabaseAction = await createClient();
-    const { data: { user } } = await supabaseAction.auth.getUser();
-    
-    await supabaseAction
-      .from('transactions')
-      .update({ 
-        status: 'rejected',
-        verified_at: new Date().toISOString(),
-        verified_by: user?.id
-      })
-      .eq('id', txId);
-      
-    await supabaseAction.from('audit_logs').insert({
-      admin_id: user?.id,
-      action: 'tolak setoran',
-      target_id: txId,
-      details: `Menolak setoran Rp ${txAmount} atas nama ${txName}`
-    });
-
-    notifyJamaahOnDepositRejected(txId, adminNote).catch(e => console.error(e));
-      
-    revalidatePath('/admin/verifikasi');
-  }
 
   return (
     <div className="space-y-6">
@@ -172,19 +108,15 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
                     <td className="px-6 py-4">
                       {tx.status === 'pending' ? (
                         <div className="flex justify-end gap-2">
-                          <form action={approveTransaction}>
-                            <input type="hidden" name="txId" value={tx.id} />
-                            <input type="hidden" name="txAmount" value={tx.amount.toLocaleString('id-ID')} />
-                            <input type="hidden" name="txName" value={tx.profiles?.full_name} />
-                            <button type="submit" className="p-2 bg-emerald-50 text-emerald-600 border border-emerald-200 rounded-lg hover:bg-emerald-100 hover:border-emerald-300 transition-colors" title="Setujui">
-                              <Check className="w-4 h-4" />
-                            </button>
-                          </form>
+                          <ApproveButton
+                            txId={tx.id}
+                            txAmount={tx.amount.toLocaleString('id-ID')}
+                            txName={tx.profiles?.full_name}
+                          />
                           <RejectButton 
                             txId={tx.id} 
                             txAmount={tx.amount.toLocaleString('id-ID')}
                             txName={tx.profiles?.full_name}
-                            action={rejectTransaction} 
                           />
                         </div>
                       ) : (
