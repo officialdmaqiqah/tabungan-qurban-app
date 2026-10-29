@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { UploadCloud, CheckCircle2, UserCircle2, Coins, Search, FileImage } from 'lucide-react';
+import { UploadCloud, CheckCircle2, UserCircle2, Coins, Search, FileImage, Loader2, AlertCircle, Wallet } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '@/lib/utils';
+import Modal from '@/components/ui/Modal';
 
 export default function InputSetoranForm({ 
   jamaahList,
@@ -24,6 +25,7 @@ export default function InputSetoranForm({
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('tunai');
   const [proofFile, setProofFile] = useState<File | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const filteredJamaah = jamaahList.filter(j => 
     j.full_name.toLowerCase().includes(search.toLowerCase()) || 
@@ -31,13 +33,18 @@ export default function InputSetoranForm({
   );
 
   const selectedJamaah = jamaahList.find(j => j.id === selectedJamaahId);
+  const numAmount = Number(amount) || 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleOpenConfirm = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedJamaahId) return toast.error('Pilih jamaah terlebih dahulu');
-    if (!amount || Number(amount) <= 0) return toast.error('Masukkan nominal yang valid');
+    if (!amount || numAmount <= 0) return toast.error('Masukkan nominal yang valid');
     if (method === 'transfer' && !proofFile) return toast.error('Harap unggah bukti transfer');
+    setIsConfirmOpen(true);
+  };
 
+  const handleConfirmSubmit = async () => {
+    if (loading || !selectedJamaahId || numAmount <= 0) return;
     setLoading(true);
     try {
       let proofUrl = '';
@@ -76,7 +83,7 @@ export default function InputSetoranForm({
       setProofFile(null);
       setSelectedJamaahId('');
       setSearch('');
-      
+      setIsConfirmOpen(false);
     } catch (err: any) {
       toast.error('Gagal mencatat setoran: ' + err.message);
     } finally {
@@ -87,7 +94,7 @@ export default function InputSetoranForm({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
       <div className="p-6 md:p-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleOpenConfirm} className="space-y-6">
           
           {/* Pilih Jamaah */}
           <div className="space-y-4 bg-slate-50 p-4 sm:p-5 rounded-xl border border-slate-100">
@@ -260,6 +267,78 @@ export default function InputSetoranForm({
           </p>
         </form>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={isConfirmOpen}
+        onClose={() => { if (!loading) setIsConfirmOpen(false); }}
+        title={transactionType === 'setoran' ? 'Konfirmasi Catat Setoran' : 'Konfirmasi Catat Penarikan'}
+        description="Periksa kembali rincian transaksi sebelum disimpan ke sistem"
+        icon={transactionType === 'setoran' ? <Wallet className="w-5 h-5 text-emerald-600" /> : <AlertCircle className="w-5 h-5 text-red-600" />}
+        iconBgColor={transactionType === 'setoran' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}
+        maxWidth="max-w-md"
+        disableBackdropClick={loading}
+      >
+        <div className="space-y-4">
+          <div className={`border rounded-xl p-4 space-y-3 text-left ${transactionType === 'setoran' ? 'bg-emerald-50/70 border-emerald-200' : 'bg-red-50/70 border-red-200'}`}>
+            <div className={`flex items-center gap-2 font-bold text-xs uppercase tracking-wider ${transactionType === 'setoran' ? 'text-emerald-800' : 'text-red-800'}`}>
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>Rincian Transaksi</span>
+            </div>
+
+            <div className="bg-white/90 rounded-lg p-3 space-y-2 border border-slate-100 text-xs">
+              <div>
+                <span className="text-slate-500 block text-[11px]">Nama Jamaah</span>
+                <span className="font-semibold text-slate-900 text-sm capitalize break-words">
+                  {selectedJamaah?.full_name || '-'}
+                </span>
+              </div>
+              <div className="pt-1.5 border-t border-slate-100">
+                <span className="text-slate-500 block text-[11px]">Nominal</span>
+                <span className={`font-extrabold text-base break-words ${transactionType === 'setoran' ? 'text-emerald-600' : 'text-red-600'}`}>
+                  {formatCurrency(numAmount)}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-1.5 border-t border-slate-100">
+                <div>
+                  <span className="text-slate-500 block text-[11px]">Jenis</span>
+                  <span className="font-bold text-slate-800 capitalize">{transactionType}</span>
+                </div>
+                <div>
+                  <span className="text-slate-500 block text-[11px]">Metode</span>
+                  <span className="font-semibold text-slate-800 capitalize">{method}</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Transaksi ini akan langsung berstatus <strong>Verified</strong> dan tercatat ke buku tabungan jamaah.
+            </p>
+          </div>
+
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setIsConfirmOpen(false)}
+              disabled={loading}
+              className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50 text-center"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleConfirmSubmit}
+              disabled={loading}
+              className={`w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 ${
+                transactionType === 'setoran' ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20' : 'bg-red-600 hover:bg-red-700 shadow-red-600/20'
+              }`}
+            >
+              {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
+              <span>{loading ? 'Menyimpan...' : 'Ya, Simpan Transaksi'}</span>
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

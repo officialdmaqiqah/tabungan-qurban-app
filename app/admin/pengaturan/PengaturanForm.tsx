@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Calendar, Building, Save, Info, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Modal from '@/components/ui/Modal';
 
 export default function PengaturanForm({ 
   initialSettings,
@@ -229,42 +230,62 @@ export default function PengaturanForm({
       </form>
 
       {/* Modal Hapus Rekening */}
-      {bankToDelete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in fade-in zoom-in duration-200 text-left">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
-                <Trash2 className="w-5 h-5" />
+      {(() => {
+        const targetBank = bankAccounts.find(b => b.id === bankToDelete?.id);
+        return (
+          <Modal
+            isOpen={Boolean(bankToDelete)}
+            onClose={() => setBankToDelete(null)}
+            title="Hapus Rekening Bank?"
+            description="Konfirmasi penghapusan nomor rekening tujuan transfer"
+            icon={<Trash2 className="w-5 h-5 text-red-600" />}
+            iconBgColor="bg-red-50 text-red-600"
+            maxWidth="max-w-md"
+          >
+            <div className="space-y-4">
+              {targetBank && (
+                <div className="bg-red-50/70 border border-red-200 rounded-xl p-4 text-xs space-y-2 text-left">
+                  <span className="font-bold text-red-900 block text-sm">Rincian Rekening:</span>
+                  <div className="bg-white/90 rounded-lg p-3 space-y-1.5 border border-red-100">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Bank:</span>
+                      <span className="font-bold text-slate-800">{targetBank.bank_name || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">No. Rekening:</span>
+                      <span className="font-mono font-bold text-slate-900">{targetBank.account_number || '-'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Atas Nama:</span>
+                      <span className="font-semibold text-slate-800">{targetBank.account_name || targetBank.account_holder || '-'}</span>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 leading-relaxed pt-1">
+                    Rekening ini tidak akan lagi ditampilkan pada instruksi transfer jamaah.
+                  </p>
+                </div>
+              )}
+
+              <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+                <button 
+                  type="button" 
+                  onClick={() => setBankToDelete(null)}
+                  className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors text-center"
+                >
+                  Batal
+                </button>
+                <button 
+                  type="button" 
+                  onClick={confirmRemoveBank}
+                  className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-sm shadow-red-600/20"
+                >
+                  Ya, Hapus Rekening
+                </button>
               </div>
-              <button type="button" onClick={() => setBankToDelete(null)} className="text-slate-400 hover:text-slate-600">
-                ×
-              </button>
             </div>
-            
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Hapus Rekening?</h3>
-            <p className="text-slate-500 text-sm mb-6">
-              Yakin ingin menghapus rekening ini? Tindakan ini tidak dapat dibatalkan.
-            </p>
-            
-            <div className="flex justify-end gap-3">
-              <button 
-                type="button" 
-                onClick={() => setBankToDelete(null)}
-                className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-              >
-                Batal
-              </button>
-              <button 
-                type="button" 
-                onClick={confirmRemoveBank}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm shadow-red-200"
-              >
-                Ya, Hapus
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+          </Modal>
+        );
+      })()}
     </div>
   );
 }

@@ -326,6 +326,13 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
               </div>
             </div>
           </div>
+
+          {/* Form Input Tunai */}
+          <InputTunaiForm 
+            jamaahId={jamaahId} 
+            jamaahName={jamaah.full_name || 'Jamaah'} 
+            addTransaction={addTransaction} 
+          />
         </div>
 
         {/* Kolom Kanan: Riwayat Transaksi */}

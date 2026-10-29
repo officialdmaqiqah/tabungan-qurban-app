@@ -1,65 +1,80 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2, AlertTriangle, X } from 'lucide-react';
+import { Trash2, AlertTriangle, Loader2 } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
 
 export default function DeleteConfirmButton({ 
-  title = "Hapus?", 
-  message = "Apakah Anda yakin ingin menghapus ini? Tindakan ini tidak dapat dibatalkan.",
+  title = "Hapus Data?", 
+  message = "Apakah Anda yakin ingin menghapus data ini? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.",
   iconSize = "w-4 h-4"
-}: {
+}: { 
   title?: string;
   message?: string;
   iconSize?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleOpen = () => {
+    setSubmitting(false);
+    setIsOpen(true);
+  };
+
+  const handleClose = () => {
+    if (submitting) return;
+    setIsOpen(false);
+  };
 
   return (
     <>
       <button 
         type="button" 
-        onClick={() => setIsOpen(true)}
-        className="p-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors" 
+        onClick={handleOpen}
+        className="p-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors inline-flex items-center justify-center" 
         title={title}
+        aria-label={title}
       >
         <Trash2 className={iconSize} />
       </button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl animate-in fade-in zoom-in duration-200 text-left">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5" />
-              </div>
-              <button type="button" onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
-            <p className="text-slate-500 text-sm mb-6">
-              {message}
-            </p>
-            
-            <div className="flex justify-end gap-3">
-              <button 
-                type="button" 
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-              >
-                Batal
-              </button>
-              <button 
-                type="submit" 
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-sm shadow-red-200"
-              >
-                Ya, Hapus
-              </button>
-            </div>
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        title={title}
+        description="Konfirmasi penghapusan data dari sistem"
+        icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
+        iconBgColor="bg-red-50 text-red-600"
+        maxWidth="max-w-md"
+        disableBackdropClick={submitting}
+      >
+        <div className="space-y-4">
+          <div className="bg-red-50/70 border border-red-200 rounded-xl p-4 text-xs text-red-800 leading-relaxed">
+            <span className="font-bold block mb-1 text-sm text-red-900">Perhatian:</span>
+            {message}
+          </div>
+
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
+            <button 
+              type="button" 
+              onClick={handleClose}
+              disabled={submitting}
+              className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50 text-center"
+            >
+              Batal
+            </button>
+            <button 
+              type="submit" 
+              disabled={submitting}
+              onClick={() => setSubmitting(true)}
+              className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm shadow-red-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {submitting && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
+              <span>{submitting ? 'Menghapus...' : 'Ya, Hapus'}</span>
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
     </>
   );
 }

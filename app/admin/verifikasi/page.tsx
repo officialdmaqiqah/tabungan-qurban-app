@@ -112,6 +112,8 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
                             txId={tx.id}
                             txAmount={tx.amount.toLocaleString('id-ID')}
                             txName={tx.profiles?.full_name}
+                            method={tx.method}
+                            status={tx.status}
                           />
                           <RejectButton 
                             txId={tx.id} 

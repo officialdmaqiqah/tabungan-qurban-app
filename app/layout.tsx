@@ -55,7 +55,38 @@ export default async function RootLayout({
           {children}
         </main>
         
-        <Toaster position="top-center" />
+        <Toaster 
+          position="top-center" 
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#0f172a',
+              color: '#f8fafc',
+              fontSize: '13px',
+              fontWeight: 500,
+              borderRadius: '14px',
+              padding: '12px 18px',
+              maxWidth: '90vw',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              wordBreak: 'break-word',
+            },
+            success: {
+              duration: 3500,
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#ffffff',
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#ffffff',
+              },
+            },
+          }}
+        />
 
         {/* Footer */}
         <Footer />
