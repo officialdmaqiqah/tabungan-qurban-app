@@ -25,6 +25,17 @@ body {
   @apply antialiased selection:bg-primary/30;
 }
 
+/* Safe area utilities for iPhone home indicator and modern mobile devices */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bottom-safe {
+  bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
 /* 
  * Form controls: enforce light mode and high-contrast dark text (#0f172a)
  * on mobile browsers, WebKit, and PWA standalone mode regardless of OS Dark Mode.

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { LogOut, Home, Send, Package, HelpCircle, Video, LayoutDashboard } from 'lucide-react';
+import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav';
 
 export default async function DashboardLayout({
   children,
@@ -71,38 +72,7 @@ export default async function DashboardLayout({
       </main>
 
       {/* Bottom Navigation (Mobile) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgb(0,0,0,0.05)] z-40">
-        <nav className="flex justify-around items-center h-16">
-          <Link href="/dashboard" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
-            <Home className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Buku Tabungan</span>
-          </Link>
-          <Link href="/dashboard/paket" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
-            <Package className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Paket</span>
-          </Link>
-          <Link href="/dashboard/lapor" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
-            <Send className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Lapor</span>
-          </Link>
-          <Link href="/dashboard/tutorial" className="flex flex-col items-center justify-center w-full h-full text-slate-600 hover:text-emerald-600">
-            <Video className="w-5 h-5 mb-1" />
-            <span className="text-[10px] font-medium">Tutorial</span>
-          </Link>
-          <form action="/auth/signout" method="post" className="w-full h-full">
-            <button type="submit" className="flex flex-col items-center justify-center w-full h-full text-red-500 hover:text-red-600">
-              <LogOut className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-medium">Keluar</span>
-            </button>
-          </form>
-          {isAdminOrSuper && (
-            <Link href="/admin" className="flex flex-col items-center justify-center w-full h-full text-emerald-600 hover:text-emerald-700">
-              <LayoutDashboard className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-medium">Admin</span>
-            </Link>
-          )}
-        </nav>
-      </div>
+      <DashboardMobileNav isAdminOrSuper={Boolean(isAdminOrSuper)} />
     </div>
   );
 }
