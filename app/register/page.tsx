@@ -117,6 +117,7 @@ function RegisterForm() {
             kategori_jamaah: kategoriJamaah,
             gender: gender,
             is_active: true,
+            is_anonymous: false,
             wa_opt_in: waOptIn,
             wa_opt_in_at: waOptIn ? new Date().toISOString() : null,
             wa_opt_in_source: 'register',

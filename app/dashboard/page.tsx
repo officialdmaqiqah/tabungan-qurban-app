@@ -79,7 +79,7 @@ export default async function DashboardPage() {
     } else if (prof.is_anonymous) {
       displayName = 'Hamba Allah';
     } else {
-      displayName = maskName(displayName);
+      displayName = prof.full_name || 'Hamba Allah';
     }
 
     return { id: prof.id, name: displayName, progress: profProgress, isCurrentUser: prof.id === user.id };
@@ -129,7 +129,9 @@ export default async function DashboardPage() {
               {userProfile?.is_anonymous ? <EyeOff className="w-3.5 h-3.5 text-slate-500" /> : <Eye className="w-3.5 h-3.5 text-emerald-600" />}
               Mode Privasi
             </span>
-            <span className="text-[10px] text-slate-500">Sembunyikan nama di publik</span>
+            <span className="text-[10px] text-slate-500">
+              {userProfile?.is_anonymous ? 'Nama disamarkan di halaman transparansi' : 'Nama tampil di halaman transparansi'}
+            </span>
           </div>
           <form action={togglePrivacy}>
             <input type="hidden" name="currentStatus" value={String(userProfile?.is_anonymous)} />

@@ -10,7 +10,7 @@ export async function updateProfileAfterRegistration(userId: string, kategoriJam
     .update({
       kategori_jamaah: kategoriJamaah,
       gender: gender,
-      is_anonymous: true
+      is_anonymous: false
     })
     .eq('id', userId);
 

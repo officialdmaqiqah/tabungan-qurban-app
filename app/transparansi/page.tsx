@@ -9,37 +9,39 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
   const resolvedParams = await searchParams;
   const query = (resolvedParams.q || '').toLowerCase();
   
-  // Use service_role key to bypass RLS for public transparency page
+  // Use service_role key to safely query aggregated transparency data server-side
   const supabase = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Fetch all jamaah profiles
+  // Fetch only safe public fields from jamaah profiles (no phone, no address)
   const { data: jamaahList } = await supabase
     .from('profiles')
     .select('id, full_name, is_anonymous');
 
-  // Fetch all verified transactions
+  // Fetch verified transactions (only user_id & amount, no proofs, no notes)
   const { data: transactions } = await supabase
     .from('transactions')
     .select('user_id, amount')
     .eq('status', 'verified');
 
-  // Fetch all user packages
+  // Fetch user packages
   const { data: userPackages } = await supabase
     .from('user_packages')
     .select('user_id, package_id, quantity, qurban_packages(price)');
 
   // Aggregate data
   const aggregatedData = jamaahList?.map(jamaah => {
+    const isAnonymous = Boolean(jamaah.is_anonymous);
     let publicName = jamaah.full_name || 'Hamba Allah';
     
-    if (jamaah.is_anonymous) {
+    // Mask name ONLY if user explicitly opted in to is_anonymous = true
+    if (isAnonymous) {
       publicName = publicName.split(' ').map((word: string) => maskName(word)).join(' ');
     }
 
-    // Calculate total tabungan
+    // Calculate total verified tabungan
     const totalTabungan = transactions
       ?.filter(t => t.user_id === jamaah.id)
       .reduce((sum, t) => sum + Number(t.amount), 0) || 0;
@@ -63,19 +65,23 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
       id: jamaah.id,
       publicName,
       originalName: jamaah.full_name || '',
+      isAnonymous,
       totalTabungan,
       target,
       progress,
       statusText
     };
-  })?.filter(data => 
-    !query || 
-    data.originalName.toLowerCase().includes(query) || 
-    data.publicName.toLowerCase().includes(query)
-  ) || [];
+  })?.filter(data => {
+    if (!query) return true;
+    if (data.isAnonymous) {
+      // Anonymous users can only be searched by their public masked representation
+      return data.publicName.toLowerCase().includes(query);
+    }
+    return data.publicName.toLowerCase().includes(query);
+  }) || [];
 
-  // Sort alphabetically by original name
-  aggregatedData.sort((a, b) => a.originalName.localeCompare(b.originalName));
+  // Sort alphabetically by public display name
+  aggregatedData.sort((a, b) => a.publicName.localeCompare(b.publicName));
 
   // Calculate overall statistics
   const totalVerifiedFunds = transactions?.reduce((sum, t) => sum + Number(t.amount), 0) || 0;
@@ -91,7 +97,6 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
         <div className="absolute bottom-0 left-0 translate-y-1/3 -translate-x-1/4 w-80 h-80 bg-teal-500 rounded-full blur-[100px] opacity-35"></div>
 
         <div className="container mx-auto max-w-5xl relative z-10">
-
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-800/50 border border-emerald-700/50 text-xs font-semibold text-emerald-200 uppercase tracking-wider">
@@ -100,7 +105,7 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
               </div>
               <h1 className="text-3xl md:text-5xl font-black tracking-tight">Transparansi Tabungan</h1>
               <p className="text-emerald-100/80 text-sm sm:text-base max-w-2xl">
-                Laporan terbuka perkembangan tabungan qurban jamaah. Nama sebagian jamaah disamarkan secara otomatis untuk menjaga privasi & kenyamanan beribadah.
+                Laporan terbuka perkembangan tabungan qurban jamaah. Secara default nama jamaah ditampilkan lengkap untuk transparansi, atau dapat disamarkan melalui opsi privasi di akun masing-masing.
               </p>
             </div>
           </div>
