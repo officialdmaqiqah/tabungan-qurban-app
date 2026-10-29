@@ -15,18 +15,26 @@ export default async function AdminLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('role, full_name')
+    .select('role, full_name, phone')
     .eq('id', user.id)
     .single();
 
-  if (profile?.role !== 'admin') redirect('/dashboard');
+  const isSuperAdminRole = profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
+  const isAdminRole = profile?.role === 'admin' || isSuperAdminRole;
+
+  if (!isAdminRole) redirect('/dashboard');
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       <aside className="hidden md:block w-64 bg-slate-900 text-slate-100 border-r border-slate-800 flex-shrink-0">
         <div className="p-6">
           <h2 className="text-xl font-bold text-white">Admin Panel</h2>
-          <p className="text-sm text-slate-400 mt-1">Halo, {profile?.full_name?.split(' ')[0]}</p>
+          <div className="mt-1 flex items-center gap-1.5">
+            <p className="text-sm text-slate-300 font-medium">Halo, {profile?.full_name?.split(' ')[0]}</p>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${isSuperAdminRole ? 'bg-purple-900/80 text-purple-200 border border-purple-700' : 'bg-emerald-900/80 text-emerald-200 border border-emerald-700'}`}>
+              {isSuperAdminRole ? 'Super Admin' : 'Admin'}
+            </span>
+          </div>
         </div>
         <nav className="p-4 space-y-2">
           <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all">

@@ -40,9 +40,10 @@ export async function middleware(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
-    // Check if admin
+    // Check if admin or super_admin
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    if (profile?.role !== 'admin') {
+    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
+    if (!isAdmin) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }
   }

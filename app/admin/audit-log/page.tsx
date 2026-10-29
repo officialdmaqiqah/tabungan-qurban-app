@@ -9,7 +9,7 @@ export default async function AuditLogPage() {
   if (!user) redirect('/login');
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profile?.role !== 'admin') redirect('/dashboard');
+  if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') redirect('/dashboard');
 
   const { data: logs } = await supabase
     .from('audit_logs')

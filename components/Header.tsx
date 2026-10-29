@@ -24,7 +24,7 @@ export default function Header({ user, role }: { user: any, role: string }) {
         <nav className="flex items-center gap-4 text-sm font-medium">
           {user ? (
             <Link 
-              href={role === 'admin' ? "/admin" : "/dashboard"} 
+              href={role === 'admin' || role === 'super_admin' ? "/admin" : "/dashboard"} 
               className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full hover:bg-emerald-200 transition-all font-semibold"
             >
               Dashboard

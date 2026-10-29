@@ -12,7 +12,7 @@ export default async function InputSetoranPage() {
   if (!user) redirect('/login');
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profile?.role !== 'admin') redirect('/dashboard');
+  if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') redirect('/dashboard');
 
   // Ambil semua daftar jamaah untuk dropdown
   const { data: jamaahList } = await supabase
@@ -38,7 +38,7 @@ export default async function InputSetoranPage() {
     if (!user) return { success: false, error: 'Unauthorized' };
     
     const { data: profileAction } = await supabaseAction.from('profiles').select('role').eq('id', user.id).single();
-    if (profileAction?.role !== 'admin') return { success: false, error: 'Forbidden' };
+    if (profileAction?.role !== 'admin' && profileAction?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') return { success: false, error: 'Forbidden' };
 
     const adminClient = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

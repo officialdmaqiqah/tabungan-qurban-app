@@ -53,7 +53,9 @@ export default function LoginPage() {
         .eq('id', data.user.id)
         .single();
 
-      if (profileData?.role === 'admin') {
+      const isAdminUser = profileData?.role === 'admin' || profileData?.role === 'super_admin' || data.user.user_metadata?.role === 'super_admin';
+
+      if (isAdminUser) {
         router.push('/admin');
       } else {
         router.push('/dashboard');

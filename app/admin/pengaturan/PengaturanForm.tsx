@@ -184,15 +184,15 @@ export default function PengaturanForm({
               <div key={bank.id} className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Nama Bank</label>
-                  <input type="text" value={bank.bank_name} onChange={(e) => handleBankChange(bank.id, 'bank_name', e.target.value)} required placeholder="Bank Sumsel Babel Syariah, BCA..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.bank_name} onChange={(e) => handleBankChange(bank.id, 'bank_name', e.target.value)} required placeholder="Bank Sumsel Babel Syariah" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
                 </div>
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Nomor Rekening</label>
-                  <input type="text" value={bank.account_number} onChange={(e) => handleBankChange(bank.id, 'account_number', e.target.value)} required placeholder="1234567890" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.account_number} onChange={(e) => handleBankChange(bank.id, 'account_number', e.target.value)} required placeholder="8080-90-16823" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
                 </div>
                 <div className="md:col-span-4">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Atas Nama</label>
-                  <input type="text" value={bank.account_name} onChange={(e) => handleBankChange(bank.id, 'account_name', e.target.value)} required placeholder="Masjid Agung..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.account_name} onChange={(e) => handleBankChange(bank.id, 'account_name', e.target.value)} required placeholder="Qurban MAKT PKP" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
                 </div>
                 <div className="md:col-span-2 flex items-end gap-2 mt-4 md:mt-0 justify-end md:justify-start">
                   <label className="flex items-center gap-1 text-xs cursor-pointer bg-white px-2 py-2 border border-slate-200 rounded-lg flex-1 justify-center">

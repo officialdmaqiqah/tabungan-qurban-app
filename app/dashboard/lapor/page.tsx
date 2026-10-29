@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { UploadCloud, CheckCircle2, CreditCard, AlertCircle } from 'lucide-react';
+import { UploadCloud, CheckCircle2, CreditCard, AlertCircle, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { notifyAdminOnDepositReported } from '@/app/actions/transaction_whatsapp';
 
@@ -19,18 +19,34 @@ export default function LaporSetoranPage() {
   const [amount, setAmount] = useState('');
   const [method, setMethod] = useState('transfer');
   const [file, setFile] = useState<File | null>(null);
-  const [bankAccounts, setBankAccounts] = useState<any[]>([]);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [bankAccounts, setBankAccounts] = useState<any[]>([
+    {
+      id: 'default',
+      bank_name: 'Bank Sumsel Babel Syariah',
+      account_number: '8080-90-16823',
+      account_name: 'Qurban MAKT PKP',
+      is_active: true
+    }
+  ]);
 
   // Fetch bank accounts
   useEffect(() => {
     async function fetchBankAccounts() {
       const { data } = await supabase.from('bank_accounts').select('*').eq('is_active', true);
-      if (data) {
+      if (data && data.length > 0) {
         setBankAccounts(data);
       }
     }
     fetchBankAccounts();
   }, [supabase]);
+
+  const handleCopyAccount = (accountNumber: string, id: string) => {
+    navigator.clipboard.writeText(accountNumber);
+    setCopiedId(id);
+    toast.success('Nomor rekening berhasil disalin');
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,22 +213,63 @@ export default function LaporSetoranPage() {
           {method === 'transfer' && (
             <div className="space-y-5 md:space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
               {bankAccounts.length > 0 && (
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl md:rounded-2xl p-4 md:p-5 flex items-start gap-3 md:gap-4">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-white flex items-center justify-center shadow-sm text-blue-500 flex-shrink-0">
-                    <CreditCard className="w-4 h-4 md:w-5 md:h-5" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs md:text-sm text-blue-900 font-bold mb-2 md:mb-3">Transfer ke Rekening Resmi:</p>
-                    <div className="space-y-2 md:space-y-3">
-                      {bankAccounts.map((bank, i) => (
-                        <div key={i} className="bg-white px-3 md:px-4 py-2.5 md:py-3 rounded-lg md:rounded-xl border border-blue-100/50 shadow-sm">
-                          <p className="font-bold text-sm md:text-base text-slate-900 tracking-tight">{bank.bank_name} - {bank.account_number}</p>
-                          <p className="text-xs md:text-sm text-slate-500 font-medium">a.n. {bank.account_name}</p>
-                        </div>
-                      ))}
+                <div className="bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-blue-50/40 border border-emerald-200/90 rounded-2xl p-4 md:p-5 shadow-xs">
+                  <div className="flex items-start gap-3 md:gap-3.5 mb-4">
+                    <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs flex-shrink-0">
+                      <CreditCard className="w-5 h-5" />
                     </div>
-                    <p className="text-[10px] md:text-xs font-medium text-blue-700 mt-2.5 bg-blue-100/50 inline-block px-2.5 py-1 rounded-lg">Pastikan nominal transfer sesuai di atas.</p>
+                    <div>
+                      <h3 className="text-sm md:text-base font-bold text-slate-900 tracking-tight">
+                        Transfer ke Rekening Resmi Tabungan Qurban MAKT
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Silakan transfer ke nomor rekening resmi masjid berikut ini:
+                      </p>
+                    </div>
                   </div>
+
+                  <div className="space-y-3">
+                    {bankAccounts.map((bank, i) => (
+                      <div 
+                        key={bank.id || i} 
+                        className="bg-white p-4 md:p-5 rounded-xl border border-emerald-200/70 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                      >
+                        <div className="space-y-1.5">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-100/70 text-emerald-800">
+                            <span>{bank.bank_name}</span>
+                          </div>
+                          <div className="text-xl sm:text-2xl font-mono font-black text-slate-900 tracking-wider">
+                            {bank.account_number}
+                          </div>
+                          <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                            a.n. <span className="font-bold text-slate-800">{bank.account_name}</span>
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopyAccount(bank.account_number, bank.id || String(i))}
+                          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm w-full sm:w-auto self-stretch sm:self-center cursor-pointer"
+                        >
+                          {copiedId === (bank.id || String(i)) ? (
+                            <>
+                              <Check className="w-4 h-4" />
+                              <span>Tersalin</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-4 h-4" />
+                              <span>Salin Nomor Rekening</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[11px] md:text-xs font-medium text-emerald-800 mt-3.5 bg-emerald-100/60 inline-block px-3 py-1.5 rounded-lg border border-emerald-200/50">
+                    Pastikan nama penerima <strong>Qurban MAKT PKP</strong> dan simpan bukti transfer untuk diunggah di bawah ini.
+                  </p>
                 </div>
               )}
             </div>

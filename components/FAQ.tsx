@@ -1,10 +1,30 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Building2 } from 'lucide-react';
+import { ChevronDown, Building2, Copy, Check } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function FAQ({ bankAccounts = [] }: { bankAccounts?: any[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const effectiveBankAccounts = (bankAccounts && bankAccounts.length > 0)
+    ? bankAccounts
+    : [
+        {
+          id: 'default-sumsel',
+          bank_name: 'Bank Sumsel Babel Syariah',
+          account_number: '8080-90-16823',
+          account_name: 'Qurban MAKT PKP'
+        }
+      ];
+
+  const handleCopy = (accountNumber: string, id: string) => {
+    navigator.clipboard.writeText(accountNumber);
+    setCopiedId(id);
+    toast.success('Nomor rekening berhasil disalin');
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const faqs = [
     {
@@ -25,27 +45,49 @@ export default function FAQ({ bankAccounts = [] }: { bankAccounts?: any[] }) {
     },
     {
       question: "Ke mana saya harus transfer uang tabungannya?",
-      answer: bankAccounts.length > 0 
-        ? (
-          <div className="space-y-4 mt-2">
-            <p className="text-slate-600">Silakan transfer setoran tabungan Anda ke salah satu rekening resmi Masjid Agung Kubah Timah berikut ini:</p>
-            <div className="grid gap-3">
-              {bankAccounts.map(bank => (
-                <div key={bank.id} className="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100 flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white text-emerald-600 rounded-full flex items-center justify-center shrink-0 shadow-sm border border-emerald-50">
-                    <Building2 className="w-6 h-6" />
+      answer: (
+        <div className="space-y-4 mt-2">
+          <p className="text-slate-600">Silakan transfer setoran tabungan Anda ke rekening resmi Tabungan Qurban MAKT berikut ini:</p>
+          <div className="grid gap-3">
+            {effectiveBankAccounts.map((bank: any) => (
+              <div key={bank.id} className="bg-emerald-50/70 p-4 rounded-xl border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 bg-white text-emerald-600 rounded-xl flex items-center justify-center shrink-0 shadow-xs border border-emerald-100">
+                    <Building2 className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-slate-900 text-lg">{bank.bank_name} - {bank.account_number}</div>
-                    <div className="text-sm text-slate-600 font-medium">a.n. {bank.account_name}</div>
+                    <span className="inline-block text-[11px] font-bold text-emerald-800 bg-white px-2 py-0.5 rounded border border-emerald-100 mb-1">
+                      {bank.bank_name}
+                    </span>
+                    <div className="font-mono font-black text-slate-900 text-lg tracking-wide">{bank.account_number}</div>
+                    <div className="text-xs text-slate-600 font-medium">a.n. <span className="font-semibold text-slate-800">{bank.account_name}</span></div>
                   </div>
                 </div>
-              ))}
-            </div>
-            <p className="text-sm text-emerald-700 bg-emerald-50 p-3 rounded-lg border border-emerald-200/50">Pastikan Anda hanya mentransfer ke rekening yang tertera di atas. Bukti transfer nantinya diunggah di menu 'Lapor Setoran'.</p>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(bank.account_number, bank.id)}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200 transition-colors self-start sm:self-center"
+                >
+                  {copiedId === bank.id ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Tersalin</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Salin Nomor Rekening</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            ))}
           </div>
-        )
-        : "Informasi rekening tujuan transfer yang resmi akan muncul saat Anda mengisi form 'Lapor Setoran' di dalam aplikasi. Pastikan Anda hanya mentransfer ke rekening yang tertera di sana."
+          <p className="text-xs sm:text-sm text-emerald-800 bg-emerald-50 p-3 rounded-lg border border-emerald-200/60">
+            Pastikan Anda hanya mentransfer ke rekening yang tertera di atas. Bukti transfer nantinya diunggah di menu <strong>'Lapor Setoran'</strong>.
+          </p>
+        </div>
+      )
     }
   ];
 
@@ -70,12 +112,12 @@ export default function FAQ({ bankAccounts = [] }: { bankAccounts?: any[] }) {
           
           <div 
             className={`px-6 overflow-hidden transition-all duration-300 ease-in-out ${
-              openIndex === index ? 'max-h-40 pb-4 opacity-100' : 'max-h-0 opacity-0'
+              openIndex === index ? 'max-h-[600px] pb-5 opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
-            <p className="text-slate-600 text-sm leading-relaxed">
+            <div className="text-slate-600 text-sm leading-relaxed">
               {faq.answer}
-            </p>
+            </div>
           </div>
         </div>
       ))}

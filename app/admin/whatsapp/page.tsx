@@ -10,7 +10,7 @@ export default async function AdminWhatsAppLogsPage() {
   if (!user) redirect('/login');
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profile?.role !== 'admin') redirect('/dashboard');
+  if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') redirect('/dashboard');
 
   // Fetch Settings
   const { data: settings } = await supabase

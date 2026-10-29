@@ -18,7 +18,7 @@ export async function updateWhatsAppSettings(data: any) {
       .eq('id', user.id)
       .single();
 
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') {
       throw new Error('Unauthorized');
     }
 

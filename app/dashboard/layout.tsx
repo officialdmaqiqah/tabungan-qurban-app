@@ -21,6 +21,8 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single();
 
+  const isAdminOrSuper = profile?.role === 'admin' || profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
+
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Sidebar (Desktop) */}
@@ -52,7 +54,7 @@ export default async function DashboardLayout({
               Keluar
             </button>
           </form>
-          {profile?.role === 'admin' && (
+          {isAdminOrSuper && (
             <div className="pt-4 mt-4 border-t border-slate-200">
               <Link href="/admin" className="flex items-center gap-3 px-4 py-3 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-800 rounded-xl transition-all">
                 <LayoutDashboard className="w-5 h-5" />
@@ -93,7 +95,7 @@ export default async function DashboardLayout({
               <span className="text-[10px] font-medium">Keluar</span>
             </button>
           </form>
-          {profile?.role === 'admin' && (
+          {isAdminOrSuper && (
             <Link href="/admin" className="flex flex-col items-center justify-center w-full h-full text-emerald-600 hover:text-emerald-700">
               <LayoutDashboard className="w-5 h-5 mb-1" />
               <span className="text-[10px] font-medium">Admin</span>
