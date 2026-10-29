@@ -1,13 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { Leaf } from "lucide-react"; // Using Lucide icon for logo
+import { Leaf } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 import { createClient } from '@/lib/supabase/server';
 
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import RegisterServiceWorker from "@/components/pwa/RegisterServiceWorker";
+import InstallAppBanner from "@/components/pwa/InstallAppBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,9 +21,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#065f46",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export const metadata: Metadata = {
   title: "Tabungan Qurban MAKT",
   description: "Aplikasi Tabungan Qurban Masjid Agung Kubah Timah Pangkalpinang",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Qurban MAKT",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default async function RootLayout({
@@ -47,6 +71,9 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+        {/* PWA Service Worker Registration */}
+        <RegisterServiceWorker />
+
         {/* Navbar */}
         <Header user={user} role={role} />
 
@@ -55,6 +82,9 @@ export default async function RootLayout({
           {children}
         </main>
         
+        {/* Smart PWA Install Banner (Client-side, mobile only, excluded on admin) */}
+        <InstallAppBanner />
+
         <Toaster 
           position="top-center" 
           toastOptions={{

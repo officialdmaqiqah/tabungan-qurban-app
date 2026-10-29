@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { formatWhatsAppNumber } from '@/lib/utils';
@@ -13,9 +13,25 @@ export default function LoginPage() {
   const supabase = createClient();
   
   const [loading, setLoading] = useState(false);
-  
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+
+  // Fallback client-side check if user already has an active session
+  useEffect(() => {
+    async function checkExistingSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || session.user.user_metadata?.role === 'super_admin';
+        router.replace(isAdmin ? '/admin' : '/dashboard');
+      }
+    }
+    checkExistingSession();
+  }, [router, supabase]);
 
 
 
