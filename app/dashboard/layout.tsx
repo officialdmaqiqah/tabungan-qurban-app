@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { LogOut, Home, Send, Package, HelpCircle, Video, LayoutDashboard } from 'lucide-react';
 import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav';
+import { isAdminOrSuperAdmin } from '@/lib/roles';
 
 export default async function DashboardLayout({
   children,
@@ -18,11 +19,11 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, role')
+    .select('full_name, role, phone')
     .eq('id', user.id)
     .single();
 
-  const isAdminOrSuper = profile?.role === 'admin' || profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
+  const isAdminOrSuper = isAdminOrSuperAdmin(profile?.role, user.user_metadata?.role, profile?.phone);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
@@ -35,7 +36,7 @@ export default async function DashboardLayout({
         <nav className="p-4 space-y-2">
           <Link href="/dashboard" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all">
             <Home className="w-5 h-5" />
-            <span className="font-medium">Buku Tabungan</span>
+            <span className="font-medium">Tabungan</span>
           </Link>
           <Link href="/dashboard/paket" className="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-all">
             <Package className="w-5 h-5" />
