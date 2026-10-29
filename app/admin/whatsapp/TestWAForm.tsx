@@ -44,13 +44,16 @@ export default function TestWAForm() {
           Nomor WhatsApp Tujuan
         </label>
         <input 
-          type="text" 
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          name="phone"
           required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Contoh: 08123456789"
           disabled={loading}
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm bg-white"
+          className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 bg-white"
         />
       </div>
       <div>
@@ -64,7 +67,7 @@ export default function TestWAForm() {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Tulis pesan pengujian di sini..."
           disabled={loading}
-          className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm resize-none bg-white"
+          className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 resize-none bg-white"
         />
       </div>
       <button 

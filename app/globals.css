@@ -5,6 +5,7 @@
   --foreground: #0f172a;
   --primary: #10b981;
   --primary-foreground: #ffffff;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -16,18 +17,32 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #020617;
-    --foreground: #f8fafc;
-    --primary: #34d399;
-    --primary-foreground: #022c22;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  color-scheme: light;
   @apply antialiased selection:bg-primary/30;
+}
+
+/* 
+ * CRITICAL FIX: Ensure all form inputs always render with dark, high-contrast text 
+ * on mobile browsers, WebKit, and PWA standalone mode regardless of OS Dark Mode.
+ */
+input, select, textarea {
+  color-scheme: light !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* WebKit / Chromium autofill fix to keep text dark and background clean */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #0f172a !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  caret-color: #047857 !important;
+  transition: background-color 5000s ease-in-out 0s;
 }

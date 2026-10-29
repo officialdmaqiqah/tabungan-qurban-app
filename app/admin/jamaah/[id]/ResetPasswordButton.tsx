@@ -148,7 +148,7 @@ export default function ResetPasswordButton({
                 placeholder="Masukkan password baru (min. 6 karakter)"
                 disabled={loading}
                 autoFocus
-                className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm transition-all bg-white"
+                className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-amber-600 transition-all bg-white"
               />
             </div>
 

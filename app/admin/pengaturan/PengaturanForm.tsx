@@ -126,7 +126,7 @@ export default function PengaturanForm({
                 value={programName}
                 onChange={(e) => setProgramName(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none bg-white text-slate-900 text-base placeholder:text-slate-400 caret-emerald-700"
                 placeholder="Contoh: Tabungan Qurban"
               />
             </div>
@@ -137,7 +137,7 @@ export default function PengaturanForm({
                 value={programYear}
                 onChange={(e) => setProgramYear(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none bg-white text-slate-900 text-base placeholder:text-slate-400 caret-emerald-700"
                 placeholder="Contoh: 1446 H / 2026 M"
               />
             </div>
@@ -151,7 +151,7 @@ export default function PengaturanForm({
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 outline-none"
+                className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none bg-white text-slate-900 text-base caret-emerald-700"
               />
             </div>
             <div className="flex items-center mt-6">
@@ -189,11 +189,11 @@ export default function PengaturanForm({
                 </div>
                 <div className="md:col-span-3">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Nomor Rekening</label>
-                  <input type="text" value={bank.account_number} onChange={(e) => handleBankChange(bank.id, 'account_number', e.target.value)} required placeholder="8080-90-16823" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.account_number} onChange={(e) => handleBankChange(bank.id, 'account_number', e.target.value)} required placeholder="8080-90-16823" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-base text-slate-900 bg-white placeholder:text-slate-400 caret-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600" />
                 </div>
                 <div className="md:col-span-4">
                   <label className="block text-xs font-medium text-slate-500 mb-1">Atas Nama</label>
-                  <input type="text" value={bank.account_name} onChange={(e) => handleBankChange(bank.id, 'account_name', e.target.value)} required placeholder="Qurban MAKT PKP" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:ring-1 focus:ring-emerald-500" />
+                  <input type="text" value={bank.account_name} onChange={(e) => handleBankChange(bank.id, 'account_name', e.target.value)} required placeholder="Qurban MAKT PKP" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-base text-slate-900 bg-white placeholder:text-slate-400 caret-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600" />
                 </div>
                 <div className="md:col-span-2 flex items-end gap-2 mt-4 md:mt-0 justify-end md:justify-start">
                   <label className="flex items-center gap-1 text-xs cursor-pointer bg-white px-2 py-2 border border-slate-200 rounded-lg flex-1 justify-center">

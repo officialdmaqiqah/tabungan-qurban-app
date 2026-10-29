@@ -5,18 +5,23 @@ import { useEffect } from 'react';
 export default function RegisterServiceWorker() {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // Register after page load for better performance
-      const handleLoad = () => {
+      let swRegistration: ServiceWorkerRegistration | null = null;
+
+      const registerSW = () => {
         navigator.serviceWorker
           .register('/sw.js')
           .then((registration) => {
-            // Check for updates
+            swRegistration = registration;
+
+            // Immediately check for updates
+            registration.update().catch(() => {});
+
             registration.onupdatefound = () => {
               const installingWorker = registration.installing;
               if (installingWorker) {
                 installingWorker.onstatechange = () => {
                   if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content available, but let sw skipWaiting handle it gracefully
+                    console.log('[PWA] New version installed and ready.');
                   }
                 };
               }
@@ -28,11 +33,24 @@ export default function RegisterServiceWorker() {
       };
 
       if (document.readyState === 'complete') {
-        handleLoad();
+        registerSW();
       } else {
-        window.addEventListener('load', handleLoad);
-        return () => window.removeEventListener('load', handleLoad);
+        window.addEventListener('load', registerSW);
       }
+
+      // Check for updates when user returns to app / tab
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && swRegistration) {
+          swRegistration.update().catch(() => {});
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        window.removeEventListener('load', registerSW);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
     }
   }, []);
 

@@ -196,7 +196,7 @@ export default function InputSetoranForm({
                     required
                     min="1000"
                     placeholder="Contoh: 500000"
-                    className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-slate-800"
+                    className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-slate-900 text-base placeholder:text-slate-400 caret-emerald-700 font-semibold"
                   />
                   {amount && <p className="text-xs text-emerald-600 mt-1.5 font-medium">{formatCurrency(Number(amount))}</p>}
                 </div>

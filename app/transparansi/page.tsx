@@ -150,7 +150,7 @@ export default async function TransparansiPage({ searchParams }: { searchParams:
                 name="q"
                 defaultValue={query}
                 placeholder="Cari nama jamaah..." 
-                className="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none text-sm bg-white transition-all shadow-sm"
+                className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 bg-white transition-all shadow-sm"
               />
               <button type="submit" className="hidden">Search</button>
             </form>

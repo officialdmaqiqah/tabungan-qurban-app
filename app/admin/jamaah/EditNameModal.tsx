@@ -202,7 +202,7 @@ export default function EditNameModal({ user, isCurrentSuperAdmin }: EditNameMod
                   required
                   disabled={loading}
                   autoFocus
-                  className="w-full max-w-full px-3.5 py-2.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm transition-all bg-white box-border whitespace-normal"
+                  className="w-full max-w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-blue-600 transition-all bg-white box-border whitespace-normal"
                 />
                 <p className="text-xs text-slate-500 mt-1 break-words whitespace-normal leading-relaxed">
                   Format otomatis dinormalisasi menjadi Title Case (huruf besar di awal kata).

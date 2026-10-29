@@ -193,7 +193,7 @@ function RegisterForm() {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   placeholder="Sesuai KTP"
                 />
               </div>
@@ -205,7 +205,7 @@ function RegisterForm() {
                     required
                     value={kategoriJamaah}
                     onChange={(e) => setKategoriJamaah(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white text-slate-900 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   >
                     <option value="">Pilih</option>
                     <option value="Pengurus Masjid">Pengurus Masjid</option>
@@ -220,7 +220,7 @@ function RegisterForm() {
                     required
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                    className="w-full px-4 py-3 bg-white text-slate-900 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   >
                     <option value="">Pilih</option>
                     <option value="Laki-laki">Laki-laki</option>
@@ -232,11 +232,14 @@ function RegisterForm() {
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">No. WhatsApp *</label>
                 <input 
-                  type="text" 
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  name="phone"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   placeholder="0812..."
                 />
                 <p className="text-xs text-slate-500 mt-1">Digunakan untuk masuk ke akun dan pengingat.</p>
@@ -247,11 +250,12 @@ function RegisterForm() {
                 <input 
                   name="password"
                   type="password"
+                  autoComplete="new-password"
                   required
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   placeholder="Minimal 6 karakter"
                 />
               </div>
@@ -285,7 +289,7 @@ function RegisterForm() {
                   required
                   value={selectedRegency}
                   onChange={(e) => setSelectedRegency(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-white"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all bg-white text-slate-900 text-base"
                 >
                   <option value="">Pilih Kabupaten/Kota (Babel)</option>
                   {regencies.map(r => (
@@ -301,7 +305,7 @@ function RegisterForm() {
                   disabled={!selectedRegency}
                   value={selectedDistrict}
                   onChange={(e) => setSelectedDistrict(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-white disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all bg-white text-slate-900 text-base disabled:opacity-50"
                 >
                   <option value="">Pilih Kecamatan</option>
                   {districts.map(d => (
@@ -317,7 +321,7 @@ function RegisterForm() {
                   disabled={!selectedDistrict}
                   value={selectedVillage}
                   onChange={(e) => setSelectedVillage(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all bg-white disabled:opacity-50"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all bg-white text-slate-900 text-base disabled:opacity-50"
                 >
                   <option value="">Pilih Kelurahan/Desa</option>
                   {villages.map(v => (
@@ -332,7 +336,7 @@ function RegisterForm() {
                   rows={3}
                   value={detailAddress}
                   onChange={(e) => setDetailAddress(e.target.value)}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none bg-white"
+                  className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all resize-none bg-white text-slate-900 text-base placeholder:text-slate-400 caret-emerald-700"
                   placeholder="Nama jalan, gang, RT/RW, nomor rumah..."
                 ></textarea>
               </div>

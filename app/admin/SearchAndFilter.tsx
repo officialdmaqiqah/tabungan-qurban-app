@@ -30,7 +30,7 @@ export default function SearchAndFilter() {
       </div>
       <input
         type="text"
-        className="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-xl leading-5 bg-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-all"
+        className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl leading-5 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-base transition-all"
         placeholder="Cari nama atau nomor WA jamaah..."
         defaultValue={searchParams.get('q') || ''}
         onChange={(e) => handleSearch(e.target.value)}

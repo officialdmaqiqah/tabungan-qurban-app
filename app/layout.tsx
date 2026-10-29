@@ -69,8 +69,9 @@ export default async function RootLayout({
     <html
       lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ colorScheme: 'light' }}
     >
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900" style={{ colorScheme: 'light' }}>
         {/* PWA Service Worker Registration */}
         <RegisterServiceWorker />
 

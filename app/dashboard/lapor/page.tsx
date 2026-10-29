@@ -174,11 +174,12 @@ export default function LaporSetoranPage() {
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-base">Rp</span>
               <input 
                 type="number"
+                inputMode="numeric"
                 required
                 min="1000"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all text-lg font-bold text-slate-800"
+                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all text-lg font-bold text-slate-900 placeholder:text-slate-400 caret-emerald-700"
                 placeholder="500000"
               />
             </div>

@@ -1,9 +1,7 @@
-const CACHE_NAME = 'makt-pwa-v1';
+const CACHE_NAME = 'makt-pwa-v2';
 
-// Static public assets to precache for instant shell load
+// Static public assets to precache (strictly static icons/manifest/logos only)
 const PRECACHE_ASSETS = [
-  '/',
-  '/login',
   '/manifest.webmanifest',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
@@ -13,7 +11,7 @@ const PRECACHE_ASSETS = [
   '/logo-white.png',
 ];
 
-// Install Event: cache static shell assets
+// Install Event: cache static assets and skip waiting immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
@@ -26,7 +24,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event: clean up outdated caches & claim clients
+// Activate Event: clean up outdated caches (including makt-pwa-v1) & claim clients
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
@@ -35,6 +33,7 @@ self.addEventListener('activate', (event) => {
         Promise.all(
           cacheNames.map((name) => {
             if (name !== CACHE_NAME) {
+              console.log('[SW] Purging old cache:', name);
               return caches.delete(name);
             }
           })
@@ -44,7 +43,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event: strictly enforce network-only for all private/financial/dynamic data
+// Fetch Event: strictly enforce network-only for all private/financial/dynamic data & pages
 self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') {
@@ -65,7 +64,21 @@ self.addEventListener('fetch', (event) => {
     url.pathname.includes('storage/v1/object');
 
   if (isPrivateOrDynamic) {
-    // Pure network only
+    // Pure network only — never touch cache storage
+    return;
+  }
+
+  // HTML page navigations (e.g. /login, /, /transparansi):
+  // ALWAYS Network First to guarantee latest HTML and UI state
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch((err) => {
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          return Promise.reject(err);
+        });
+      })
+    );
     return;
   }
 
@@ -94,9 +107,7 @@ self.addEventListener('fetch', (event) => {
                 });
               }
             })
-            .catch(() => {
-              // Ignore background fetch error when offline
-            });
+            .catch(() => {});
           return cachedResponse;
         }
 
@@ -115,17 +126,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For public page navigations, try network first, then cache fallback
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      return caches.match(event.request).then((cached) => {
-        if (cached) return cached;
-        // Navigation fallback for offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('/login');
-        }
-        return Promise.reject(new Error('Network offline'));
-      });
-    })
-  );
+  // Default fallback to network
+  event.respondWith(fetch(event.request));
 });

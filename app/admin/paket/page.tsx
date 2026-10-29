@@ -67,7 +67,7 @@ export default async function AdminPaketPage() {
                   name="name" 
                   required 
                   placeholder="Misal: Sapi Tipe A"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 bg-white"
                 />
               </div>
               <div>
@@ -77,7 +77,7 @@ export default async function AdminPaketPage() {
                   name="price" 
                   required 
                   placeholder="3000000"
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 bg-white"
                 />
               </div>
               <div>
@@ -86,7 +86,7 @@ export default async function AdminPaketPage() {
                   name="description"
                   rows={3} 
                   placeholder="Estimasi berat..."
-                  className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none text-sm"
+                  className="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none resize-none text-base text-slate-900 placeholder:text-slate-400 caret-emerald-700 bg-white"
                 ></textarea>
               </div>
               <button 
