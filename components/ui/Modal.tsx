@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 export interface ModalProps {
@@ -28,6 +29,12 @@ export default function Modal({
   showCloseButton = true,
   disableBackdropClick = false,
 }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Lock body scroll and listen for Escape key
   useEffect(() => {
     if (!isOpen) return;
@@ -48,11 +55,11 @@ export default function Modal({
     };
   }, [isOpen, onClose, disableBackdropClick]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  const modalNode = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto overflow-x-hidden bg-slate-900/60 backdrop-blur-xs whitespace-normal text-left box-border"
       role="dialog"
       aria-modal="true"
     >
@@ -66,12 +73,12 @@ export default function Modal({
 
       {/* Modal Dialog Card */}
       <div
-        className={`relative z-10 w-full ${maxWidth} bg-white rounded-2xl shadow-2xl border border-slate-200/80 flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150`}
+        className={`relative z-10 w-full ${maxWidth} min-w-0 max-w-full bg-white rounded-2xl shadow-2xl border border-slate-200/80 flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-150 box-border text-slate-900`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-5 sm:p-6 pb-4 border-b border-slate-100 gap-3 shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-start justify-between p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 gap-3 shrink-0 w-full min-w-0 max-w-full box-border">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             {icon && (
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconBgColor}`}
@@ -79,7 +86,7 @@ export default function Modal({
                 {icon}
               </div>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug break-words">
                 {title}
               </h3>
@@ -103,11 +110,13 @@ export default function Modal({
           )}
         </div>
 
-        {/* Scrollable Content */}
-        <div className="p-5 sm:p-6 overflow-y-auto overscroll-contain space-y-4">
+        {/* Scrollable Content Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto overflow-x-hidden overscroll-contain space-y-4 w-full min-w-0 max-w-full box-border">
           {children}
         </div>
       </div>
     </div>
   );
+
+  return createPortal(modalNode, document.body);
 }

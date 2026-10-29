@@ -108,20 +108,28 @@ export default function ChangeRoleModal({
         disableBackdropClick={loading}
       >
         {/* Info Pengguna */}
-        <div className="bg-slate-50 rounded-xl p-3.5 border border-slate-200/80 text-xs sm:text-sm space-y-2">
-          <div className="flex justify-between items-start gap-2">
-            <span className="text-slate-500 font-medium shrink-0">Nama Jamaah:</span>
-            <span className="font-semibold text-slate-900 text-right break-words">{user.full_name || 'Hamba Allah'}</span>
-          </div>
-          <div className="flex justify-between items-center gap-2 pt-1.5 border-t border-slate-200/50">
-            <span className="text-slate-500 font-medium shrink-0">No. WhatsApp:</span>
-            <span className="font-mono text-xs text-slate-700">{user.phone || '-'}</span>
-          </div>
-          <div className="flex justify-between items-center gap-2 pt-1.5 border-t border-slate-200/50">
-            <span className="text-slate-500 font-medium shrink-0">Role Saat Ini:</span>
-            <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">
-              {ROLE_LABELS[user.role]}
-            </span>
+        <div className="w-full min-w-0 max-w-full bg-slate-50 rounded-xl p-3.5 sm:p-4 border border-slate-200/80 box-border text-xs sm:text-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full min-w-0 max-w-full">
+            <div className="min-w-0">
+              <span className="text-slate-500 text-xs block mb-0.5 font-medium">Nama Jamaah</span>
+              <span className="font-bold text-slate-900 text-sm break-words whitespace-normal leading-snug block">
+                {user.full_name || 'Hamba Allah'}
+              </span>
+            </div>
+            <div className="min-w-0 sm:border-l sm:border-slate-200/70 sm:pl-4 space-y-2">
+              <div>
+                <span className="text-slate-500 text-xs block mb-0.5 font-medium">No. WhatsApp</span>
+                <span className="font-mono text-slate-800 text-xs break-words whitespace-normal leading-snug block">
+                  {user.phone || '-'}
+                </span>
+              </div>
+              <div>
+                <span className="text-slate-500 text-xs block mb-0.5 font-medium">Role Saat Ini</span>
+                <span className="inline-flex px-2 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">
+                  {ROLE_LABELS[user.role]}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
