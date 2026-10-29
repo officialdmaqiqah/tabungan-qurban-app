@@ -26,13 +26,44 @@ body {
 }
 
 /* 
- * CRITICAL FIX: Ensure all form inputs always render with dark, high-contrast text 
+ * Form controls: enforce light mode and high-contrast dark text (#0f172a)
  * on mobile browsers, WebKit, and PWA standalone mode regardless of OS Dark Mode.
  */
 input, select, textarea {
   color-scheme: light !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
+  caret-color: #047857 !important;
+}
+
+/*
+ * CRITICAL FIX: Explicit placeholder styling so WebKit doesn't inherit 
+ * the dark -webkit-text-fill-color, keeping placeholders soft slate (#94a3b8).
+ */
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #94a3b8 !important;
+  opacity: 1 !important;
 }
 
 /* WebKit / Chromium autofill fix to keep text dark and background clean */
