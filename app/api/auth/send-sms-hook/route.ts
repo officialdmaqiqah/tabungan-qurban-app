@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
   let webhookId: string | null = null;
   try {
     const rawBody = await req.text();
-    const hookSecret = process.env.SUPABASE_AUTH_HOOK_SECRET;
+    const rawHookSecret = (process.env.SUPABASE_AUTH_HOOK_SECRET || '').trim();
+    // Normalize secret: Supabase dashboard often prefixes Standard Webhooks secrets with 'v1,'
+    const hookSecret = rawHookSecret.startsWith('v1,') ? rawHookSecret.slice(3) : rawHookSecret;
 
     const msgId = req.headers.get('webhook-id');
     const timestamp = req.headers.get('webhook-timestamp');
@@ -42,16 +44,24 @@ export async function POST(req: NextRequest) {
           });
           isVerified = true;
         } catch (verifyErr: any) {
+          console.error('[SendSMSHook Signature Error]:', verifyErr.name, '-', verifyErr.message);
           return NextResponse.json(
             { error: `Unauthorized: Webhook verification failed (${verifyErr.message})` },
             { status: 401 }
           );
         }
+      } else {
+        console.warn('[SendSMSHook Headers Missing]:', {
+          hasMsgId: Boolean(msgId),
+          hasTimestamp: Boolean(timestamp),
+          hasSignature: Boolean(signatureHeader),
+          hasAuthHeader: Boolean(authHeader),
+        });
       }
 
       // Method B: Bearer Token Fallback
       if (!isVerified && authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.slice(7);
+        const token = authHeader.slice(7).trim();
         if (
           token.length === hookSecret.length &&
           crypto.timingSafeEqual(Buffer.from(token, 'utf8'), Buffer.from(hookSecret, 'utf8'))
@@ -61,6 +71,7 @@ export async function POST(req: NextRequest) {
       }
 
       if (!isVerified) {
+        console.warn('[SendSMSHook Authentication Failed]: isVerified is false');
         return NextResponse.json(
           { error: 'Unauthorized: Missing or invalid signature headers' },
           { status: 401 }
