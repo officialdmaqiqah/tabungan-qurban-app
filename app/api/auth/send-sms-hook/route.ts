@@ -7,11 +7,15 @@ interface SupabaseSmsHookPayload {
   user?: {
     id?: string;
     phone?: string;
+    phone_change?: string;
     email?: string;
+    [key: string]: any;
   };
   sms?: {
     otp?: string;
+    [key: string]: any;
   };
+  [key: string]: any;
 }
 
 export async function POST(req: NextRequest) {
@@ -92,17 +96,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Malformed JSON payload' }, { status: 400 });
     }
 
-    const rawPhone = payload.user?.phone;
+    // Diagnostic logging: Record field names ONLY for structure verification, zero values/secrets/OTPs
+    console.log('[SendSMSHook Payload Structure]:', {
+      userFields: payload.user ? Object.keys(payload.user) : [],
+      smsFields: payload.sms ? Object.keys(payload.sms) : [],
+      hasOtp: Boolean(payload.sms?.otp),
+      topLevelKeys: Object.keys(payload),
+    });
+
+    // Support both phone_change (updating/adding phone) and existing phone
+    const rawPhone = payload.user?.phone_change || payload.user?.phone;
     const otpCode = payload.sms?.otp;
 
     if (!rawPhone || !otpCode) {
+      console.warn('[SendSMSHook Payload Missing]:', {
+        hasPhoneChange: Boolean(payload.user?.phone_change),
+        hasPhone: Boolean(payload.user?.phone),
+        hasOtp: Boolean(otpCode),
+      });
       return NextResponse.json(
         { error: 'Missing phone number or OTP code in payload' },
         { status: 400 }
       );
     }
 
-    // 3. Persistent Replay & Concurrency Protection via Database Claim (FAIL-CLOSED)
+    // 3. Canonicalize & Strictly Validate Indonesian Mobile Phone
+    let cleanPhone = rawPhone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '62' + cleanPhone.slice(1);
+    } else if (cleanPhone.startsWith('8')) {
+      cleanPhone = '62' + cleanPhone;
+    }
+
+    // Strict validation: must start with 628 followed by 8 to 12 digits (total 11-15 digits)
+    if (!/^628\d{8,12}$/.test(cleanPhone)) {
+      console.warn('[SendSMSHook Invalid Phone Format]');
+      return NextResponse.json(
+        { error: 'Invalid Indonesian mobile phone number format' },
+        { status: 400 }
+      );
+    }
+    const xsenderPhone = cleanPhone;
+
+    // 4. Persistent Replay & Concurrency Protection via Database Claim (FAIL-CLOSED)
     if (webhookId) {
       const claimResult = await claimWebhook(webhookId, 600);
       if (claimResult.error) {
@@ -121,14 +157,6 @@ export async function POST(req: NextRequest) {
           { status: 409 }
         );
       }
-    }
-
-    // 4. Canonicalize Phone for XSender
-    let xsenderPhone = rawPhone.replace(/\D/g, '');
-    if (xsenderPhone.startsWith('0')) {
-      xsenderPhone = '62' + xsenderPhone.substring(1);
-    } else if (xsenderPhone.startsWith('8')) {
-      xsenderPhone = '62' + xsenderPhone;
     }
 
     // 5. Check Dry-Run flag
