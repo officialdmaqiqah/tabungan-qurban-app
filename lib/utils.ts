@@ -72,6 +72,18 @@ export function formatWhatsAppNumber(phone: string): { formatted: string | null;
   return { formatted: normalized, error: null };
 }
 
+export function formatE164(phone: string): { e164: string | null; formatted: string | null; error: string | null } {
+  const result = formatWhatsAppNumber(phone);
+  if (!result.formatted || result.error) {
+    return { e164: null, formatted: null, error: result.error };
+  }
+  return {
+    e164: `+${result.formatted}`,
+    formatted: result.formatted,
+    error: null,
+  };
+}
+
 export function maskName(name: string) {
   if (!name) return '';
   const trimmed = name.trim();

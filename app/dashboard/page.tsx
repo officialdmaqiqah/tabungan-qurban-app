@@ -3,6 +3,7 @@ import { formatCurrency, calculateDaysLeft, maskName } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 import { Target, TrendingUp, Calendar, AlertCircle, EyeOff, Eye, Trophy, Sparkles } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
+import VerifyPhoneModal from '@/components/dashboard/VerifyPhoneModal';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -21,7 +22,7 @@ export default async function DashboardPage() {
     { data: allPackages },
     { data: allTransactions }
   ] = await Promise.all([
-    supabase.from('profiles').select('full_name, kategori_jamaah, is_anonymous').eq('id', user.id).single(),
+    supabase.from('profiles').select('full_name, kategori_jamaah, is_anonymous, phone, phone_normalized').eq('id', user.id).single(),
     supabase.from('user_packages').select('package_id, quantity, qurban_packages(name, price)').eq('user_id', user.id),
     supabase.from('transactions').select('amount').eq('user_id', user.id).eq('status', 'verified'),
     supabase.from('program_settings').select('*').single(),
@@ -103,6 +104,9 @@ export default async function DashboardPage() {
   const expectedProgress = (elapsedDays / totalDuration) * 100;
   const isBehindTarget = progressPercent < (expectedProgress - 10) && sisaTarget > 0;
 
+  const isPhoneVerified = Boolean(user.phone && user.phone_confirmed_at);
+  const activePhone = user.phone || userProfile?.phone || userProfile?.phone_normalized || '';
+
   async function togglePrivacy(formData: FormData) {
     'use server';
     const supabaseAction = await createClient();
@@ -144,6 +148,12 @@ export default async function DashboardPage() {
           </form>
         </div>
       </div>
+
+      {/* WhatsApp Phone Verification Banner / Modal */}
+      <VerifyPhoneModal
+        initialPhone={activePhone}
+        isInitiallyVerified={isPhoneVerified}
+      />
 
       {targetAmount === 0 && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-lg flex gap-3">

@@ -69,7 +69,8 @@ export async function sendWhatsAppMessage(params: WhatsAppParams) {
           api_key: xsenderKey,
           sender: xsenderSender,
           number: phone,
-          message: params.message
+          message: params.message,
+          footer: 'Tabungan Qurban MAKT',
         };
 
         const response = await fetch(xsenderUrl, {
