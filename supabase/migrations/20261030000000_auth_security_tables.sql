@@ -28,6 +28,10 @@ DROP POLICY IF EXISTS "Deny public access to auth_webhook_claims" ON public.auth
 CREATE POLICY "Deny public access to auth_webhook_claims" 
 ON public.auth_webhook_claims FOR ALL TO public USING (false);
 
+-- Explicitly revoke table privileges from anon and authenticated (Defense in Depth)
+REVOKE ALL ON TABLE public.auth_webhook_claims FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.auth_webhook_claims TO service_role;
+
 
 -- 2. Table: auth_rate_limits (Distributed Concurrency & Rate Limiting)
 CREATE TABLE IF NOT EXISTS public.auth_rate_limits (
@@ -50,6 +54,10 @@ ALTER TABLE public.auth_rate_limits ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Deny public access to auth_rate_limits" ON public.auth_rate_limits;
 CREATE POLICY "Deny public access to auth_rate_limits" 
 ON public.auth_rate_limits FOR ALL TO public USING (false);
+
+-- Explicitly revoke table privileges from anon and authenticated (Defense in Depth)
+REVOKE ALL ON TABLE public.auth_rate_limits FROM PUBLIC, anon, authenticated;
+GRANT ALL ON TABLE public.auth_rate_limits TO service_role;
 
 
 -- 3. Stored Procedure: Atomic Webhook Claim & Stuck Recovery
@@ -110,7 +118,7 @@ BEGIN
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.claim_auth_webhook(text, integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.claim_auth_webhook(text, integer) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.claim_auth_webhook(text, integer) TO service_role;
 
 
@@ -162,5 +170,5 @@ BEGIN
 END;
 $$;
 
-REVOKE EXECUTE ON FUNCTION public.check_and_increment_rate_limit(text, integer, integer) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.check_and_increment_rate_limit(text, integer, integer) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.check_and_increment_rate_limit(text, integer, integer) TO service_role;
