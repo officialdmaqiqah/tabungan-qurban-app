@@ -20,19 +20,13 @@ CREATE TABLE IF NOT EXISTS public.auth_webhook_claims (
 CREATE INDEX IF NOT EXISTS idx_auth_webhook_claims_expires 
 ON public.auth_webhook_claims (expires_at);
 
--- RLS: Only Service Role can access this table
+-- RLS: Only Service Role can access this table (Strict Fail-Closed)
 ALTER TABLE public.auth_webhook_claims ENABLE ROW LEVEL SECURITY;
 
-DO $$ 
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'auth_webhook_claims' AND policyname = 'Deny public access to auth_webhook_claims'
-  ) THEN
-    CREATE POLICY "Deny public access to auth_webhook_claims" 
-    ON public.auth_webhook_claims FOR ALL TO public USING (false);
-  END IF;
-END $$;
+-- Idempotent policy creation (PostgreSQL compatible across all versions)
+DROP POLICY IF EXISTS "Deny public access to auth_webhook_claims" ON public.auth_webhook_claims;
+CREATE POLICY "Deny public access to auth_webhook_claims" 
+ON public.auth_webhook_claims FOR ALL TO public USING (false);
 
 
 -- 2. Table: auth_rate_limits (Distributed Concurrency & Rate Limiting)
@@ -49,19 +43,13 @@ CREATE TABLE IF NOT EXISTS public.auth_rate_limits (
 CREATE INDEX IF NOT EXISTS idx_auth_rate_limits_expires 
 ON public.auth_rate_limits (expires_at);
 
--- RLS: Only Service Role can access this table
+-- RLS: Only Service Role can access this table (Strict Fail-Closed)
 ALTER TABLE public.auth_rate_limits ENABLE ROW LEVEL SECURITY;
 
-DO $$ 
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'auth_rate_limits' AND policyname = 'Deny public access to auth_rate_limits'
-  ) THEN
-    CREATE POLICY "Deny public access to auth_rate_limits" 
-    ON public.auth_rate_limits FOR ALL TO public USING (false);
-  END IF;
-END $$;
+-- Idempotent policy creation (PostgreSQL compatible across all versions)
+DROP POLICY IF EXISTS "Deny public access to auth_rate_limits" ON public.auth_rate_limits;
+CREATE POLICY "Deny public access to auth_rate_limits" 
+ON public.auth_rate_limits FOR ALL TO public USING (false);
 
 
 -- 3. Stored Procedure: Atomic Webhook Claim & Stuck Recovery

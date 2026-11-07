@@ -231,8 +231,8 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
     }
   });
 
-  // Test 12: Feature Flag & Canary Gate Enforcement
-  it('12. should enforce server-side feature flags and canary allowlist', async () => {
+  // Test 12: Feature Flag Kill Switch & Strict Canary Gate Enforcement
+  it('12. should strictly enforce kill switch and fail-closed canary allowlist rules', async () => {
     const originalEnabled = process.env.OTP_LOGIN_ENABLED;
     const originalCanary = process.env.OTP_CANARY_USER_IDS;
 
@@ -240,46 +240,74 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
     const NON_CANARY_UUID = '11111111-2222-3333-4444-555555555555';
 
     try {
-      // 12a. Global OFF, Canary contains tester
+      // 12a. Flag OFF + UUID allowlisted => DENY (Master Kill Switch overrides allowlist)
       process.env.OTP_LOGIN_ENABLED = 'false';
       process.env.OTP_CANARY_USER_IDS = CANARY_UUID;
+      const killSwitchCanary = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(killSwitchCanary.allowed, false);
+      assert.equal(killSwitchCanary.reason, 'flag_disabled');
 
-      const canaryRes = await isOtpLoginPermitted(CANARY_UUID);
-      assert.equal(canaryRes.allowed, true);
-      assert.equal(canaryRes.reason, 'allowed');
+      // 12b. Flag OFF + non-canary => DENY
+      const killSwitchNonCanary = await isOtpLoginPermitted(NON_CANARY_UUID);
+      assert.equal(killSwitchNonCanary.allowed, false);
+      assert.equal(killSwitchNonCanary.reason, 'flag_disabled');
+
+      // 12c. Flag ON + allowlisted => ALLOW
+      process.env.OTP_LOGIN_ENABLED = 'true';
+      process.env.OTP_CANARY_USER_IDS = CANARY_UUID;
+      const canaryAllowed = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(canaryAllowed.allowed, true);
+      assert.equal(canaryAllowed.reason, 'allowed');
 
       // Case-insensitivity check
-      const upperRes = await isOtpLoginPermitted(CANARY_UUID.toUpperCase());
-      assert.equal(upperRes.allowed, true);
+      const upperCanaryAllowed = await isOtpLoginPermitted(CANARY_UUID.toUpperCase());
+      assert.equal(upperCanaryAllowed.allowed, true);
+      assert.equal(upperCanaryAllowed.reason, 'allowed');
 
-      // Non-canary user should be blocked
-      const blockedRes = await isOtpLoginPermitted(NON_CANARY_UUID);
-      assert.equal(blockedRes.allowed, false);
-      assert.equal(blockedRes.reason, 'not_in_canary');
+      // 12d. Flag ON + non-canary => DENY
+      const canaryBlockedNonCanary = await isOtpLoginPermitted(NON_CANARY_UUID);
+      assert.equal(canaryBlockedNonCanary.allowed, false);
+      assert.equal(canaryBlockedNonCanary.reason, 'not_in_canary');
 
-      // Undefined user should be blocked
-      const anonRes = await isOtpLoginPermitted(undefined);
-      assert.equal(anonRes.allowed, false);
+      // Undefined user ID => DENY
+      const canaryBlockedAnon = await isOtpLoginPermitted(undefined);
+      assert.equal(canaryBlockedAnon.allowed, false);
+      assert.equal(canaryBlockedAnon.reason, 'not_in_canary');
 
-      // 12b. Global OFF, No Canary (Full Kill Switch)
-      process.env.OTP_LOGIN_ENABLED = 'false';
-      process.env.OTP_CANARY_USER_IDS = '';
-
-      const allBlockedRes = await isOtpLoginPermitted(CANARY_UUID);
-      assert.equal(allBlockedRes.allowed, false);
-      assert.equal(allBlockedRes.reason, 'flag_disabled');
-
-      // 12c. Global ON, No Canary (Full Production Rollout)
+      // 12e. Flag ON + allowlist kosong => DENY (Fail-Closed, never auto-enable for all)
       process.env.OTP_LOGIN_ENABLED = 'true';
       process.env.OTP_CANARY_USER_IDS = '';
+      const emptyAllowlistBlocked = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(emptyAllowlistBlocked.allowed, false);
+      assert.equal(emptyAllowlistBlocked.reason, 'allowlist_empty');
 
-      const allAllowedRes = await isOtpLoginPermitted(NON_CANARY_UUID);
-      assert.equal(allAllowedRes.allowed, true);
-      assert.equal(allAllowedRes.reason, 'allowed');
+      // 12f. Flag ON + wildcard "*" => DENY (Wildcards forbidden in canary phase)
+      process.env.OTP_LOGIN_ENABLED = 'true';
+      process.env.OTP_CANARY_USER_IDS = '*';
+      const wildcardBlocked = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(wildcardBlocked.allowed, false);
+      assert.equal(wildcardBlocked.reason, 'allowlist_empty');
     } finally {
       process.env.OTP_LOGIN_ENABLED = originalEnabled;
       process.env.OTP_CANARY_USER_IDS = originalCanary;
     }
+  });
+
+  // Test 12g: Admin & Super Admin accounts are ALWAYS blocked from OTP login
+  it('12g. should reject OTP login eligibility for admin and super_admin accounts', async () => {
+    const admin = createClient(STAGING_URL, SERVICE_KEY);
+    const { data: adminProfiles } = await admin
+      .from('profiles')
+      .select('phone, phone_normalized, role')
+      .neq('role', 'jamaah')
+      .not('phone', 'is', null)
+      .limit(1);
+
+    assert.ok(adminProfiles && adminProfiles.length > 0, 'Admin account must exist in database');
+    const adminPhone = (adminProfiles[0].phone_normalized || adminProfiles[0].phone).replace(/\D/g, '');
+    const adminRes = await checkLoginEligibility(adminPhone);
+    assert.equal(adminRes.eligible, false);
+    assert.equal(adminRes.reason, 'role_not_jamaah');
   });
 
   // Test 13: Legacy password authentication works regardless of feature flag state

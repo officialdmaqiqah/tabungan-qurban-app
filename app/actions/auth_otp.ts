@@ -113,35 +113,44 @@ export async function checkLoginEligibility(formattedPhone: string): Promise<{
 
 /**
  * Server-side Feature Flag & Canary Gate for Login OTP:
- * - OTP_LOGIN_ENABLED='false' as default
- * - OTP_CANARY_USER_IDS: Comma-separated list of approved tester UUIDs
+ * 1. Master Kill Switch:
+ *    OTP_LOGIN_ENABLED='false' or unset MUST DENY ALL OTP logins (including canary users).
+ * 2. Canary Allowlist:
+ *    OTP_LOGIN_ENABLED='true' with OTP_CANARY_USER_IDS ONLY permits the specified UUIDs.
+ * 3. Fail-Closed on Empty Allowlist:
+ *    If OTP_CANARY_USER_IDS is empty/unset, FAIL-CLOSED (DENY ALL), never auto-enable for all.
+ * 4. No Wildcard:
+ *    Wildcard '*' is strictly forbidden during canary phase.
  */
 export async function isOtpLoginPermitted(userId?: string): Promise<{
   allowed: boolean;
-  reason: 'allowed' | 'flag_disabled' | 'not_in_canary';
+  reason: 'allowed' | 'flag_disabled' | 'not_in_canary' | 'allowlist_empty';
 }> {
+  // 1. Master Kill Switch: If not explicitly 'true', DENY ALL (including canary accounts)
   const isGlobalEnabled = process.env.OTP_LOGIN_ENABLED === 'true';
+  if (!isGlobalEnabled) {
+    return { allowed: false, reason: 'flag_disabled' };
+  }
+
+  // 2. Parse Canary Allowlist (Filter out wildcards like '*' or invalid strings)
   const canaryListRaw = process.env.OTP_CANARY_USER_IDS || '';
   const canaryIds = canaryListRaw
     .split(',')
     .map((id) => id.trim().toLowerCase())
-    .filter(Boolean);
+    .filter((id) => Boolean(id) && id !== '*');
 
-  // If user UUID is explicitly in the canary allowlist, allow them
+  // 3. Fail-Closed: If allowlist is empty, DENY ALL (Never auto-enable for public during canary phase)
+  if (canaryIds.length === 0) {
+    return { allowed: false, reason: 'allowlist_empty' };
+  }
+
+  // 4. Strict Allowlist Matching: Must have valid userId present in canaryIds
   if (userId && canaryIds.includes(userId.toLowerCase())) {
     return { allowed: true, reason: 'allowed' };
   }
 
-  // If global flag is ON and no canary restriction is defined (or wildcard '*'), allow all
-  if (isGlobalEnabled && (canaryIds.length === 0 || canaryIds.includes('*'))) {
-    return { allowed: true, reason: 'allowed' };
-  }
-
-  // Otherwise blocked (canary not matched or feature disabled)
-  return {
-    allowed: false,
-    reason: canaryIds.length > 0 ? 'not_in_canary' : 'flag_disabled',
-  };
+  // 5. User not in canary allowlist -> DENY
+  return { allowed: false, reason: 'not_in_canary' };
 }
 
 /**
