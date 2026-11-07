@@ -215,6 +215,150 @@ export async function checkAndEnforceRateLimits({
 }
 
 /**
+ * Login OTP Distributed Multi-Layer Rate Limiting Enforcement (FAIL-CLOSED)
+ * 1. Per-Phone 60-Second Cooldown (resend:login:phone:<phone>)
+ * 2. Per-Destination Phone Throttling (rate:login:phone:<phone>) - Max 3 per 15 min
+ * 3. Per-Client IP Throttling (rate:login:ip:<clientIp>) - Max 5 per 15 min
+ * 4. System-Wide Global Quota Protection (rate:global:<minuteSlice>) - Max 30 per min
+ */
+export async function checkLoginOtpRateLimits({
+  phone,
+  clientIp,
+}: {
+  phone: string;
+  clientIp: string;
+}): Promise<RateLimitCheckResult> {
+  try {
+    const admin = createAdminClient();
+    const nowMs = Date.now();
+
+    // Layer 1: Per-Phone 60-Second Cooldown
+    const phoneCooldownKey = `resend:login:phone:${phone}`;
+    const { data: cooldownData, error: cooldownErr } = await admin
+      .from('auth_rate_limits')
+      .select('locked_until')
+      .eq('key', phoneCooldownKey)
+      .maybeSingle();
+
+    if (cooldownErr) {
+      return {
+        allowed: false,
+        error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+      };
+    }
+
+    if (cooldownData?.locked_until) {
+      const lockTime = new Date(cooldownData.locked_until).getTime();
+      if (lockTime > nowMs) {
+        const remainingSeconds = Math.ceil((lockTime - nowMs) / 1000);
+        return {
+          allowed: false,
+          error: `Mohon tunggu ${remainingSeconds} detik sebelum meminta kode OTP kembali.`,
+          cooldownSeconds: remainingSeconds,
+        };
+      }
+    }
+
+    // Layer 2: Per-Destination Phone Throttling (Max 3 OTP per 15 min per phone number)
+    const phoneRateKey = `rate:login:phone:${phone}`;
+    const { data: phoneRpc, error: phoneErr } = await admin.rpc('check_and_increment_rate_limit', {
+      p_key: phoneRateKey,
+      p_max_attempts: 3,
+      p_window_seconds: 900,
+    });
+
+    if (phoneErr) {
+      return {
+        allowed: false,
+        error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+      };
+    }
+
+    if (phoneRpc && phoneRpc.length > 0 && !phoneRpc[0].allowed) {
+      const waitMin = Math.ceil((phoneRpc[0].remaining_seconds || 900) / 60);
+      return {
+        allowed: false,
+        error: `Batas pengiriman OTP ke nomor ini telah tercapai. Silakan coba lagi dalam ${waitMin} menit.`,
+      };
+    }
+
+    // Layer 3: Per-IP Throttling (Max 5 OTP requests per 15 min per IP)
+    const sanitizedIp = clientIp.replace(/[^a-zA-Z0-9.:_-]/g, '').slice(0, 45) || 'unknown';
+    const ipRateKey = `rate:login:ip:${sanitizedIp}`;
+    const { data: ipRpc, error: ipErr } = await admin.rpc('check_and_increment_rate_limit', {
+      p_key: ipRateKey,
+      p_max_attempts: 5,
+      p_window_seconds: 900,
+    });
+
+    if (ipErr) {
+      return {
+        allowed: false,
+        error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+      };
+    }
+
+    if (ipRpc && ipRpc.length > 0 && !ipRpc[0].allowed) {
+      const waitMin = Math.ceil((ipRpc[0].remaining_seconds || 900) / 60);
+      return {
+        allowed: false,
+        error: `Terlalu banyak permintaan dari alamat IP Anda. Silakan coba lagi dalam ${waitMin} menit.`,
+      };
+    }
+
+    // Layer 4: System-Wide Global Quota Guard (Max 30 requests per minute across system)
+    const minuteSlice = Math.floor(nowMs / 60000);
+    const globalRateKey = `rate:global:${minuteSlice}`;
+    const { data: globalRpc, error: globalErr } = await admin.rpc('check_and_increment_rate_limit', {
+      p_key: globalRateKey,
+      p_max_attempts: 30,
+      p_window_seconds: 60,
+    });
+
+    if (globalErr) {
+      return {
+        allowed: false,
+        error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+      };
+    }
+
+    if (globalRpc && globalRpc.length > 0 && !globalRpc[0].allowed) {
+      return {
+        allowed: false,
+        error: 'Sistem sedang mengalami lonjakan trafik pengiriman verifikasi. Mohon tunggu 1 menit.',
+      };
+    }
+
+    // All rate limit layers passed! Now arm the phone's 60-second cooldown
+    const phoneLockedUntil = new Date(nowMs + 60 * 1000).toISOString();
+    const phoneExpiresAt = new Date(nowMs + 3600 * 1000).toISOString();
+
+    const { error: armErr } = await admin.from('auth_rate_limits').upsert({
+      key: phoneCooldownKey,
+      attempts: 1,
+      locked_until: phoneLockedUntil,
+      updated_at: new Date(nowMs).toISOString(),
+      expires_at: phoneExpiresAt,
+    });
+
+    if (armErr) {
+      return {
+        allowed: false,
+        error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+      };
+    }
+
+    return { allowed: true };
+  } catch {
+    // FAIL-CLOSED: Absolute refusal to send OTP without active database rate check
+    return {
+      allowed: false,
+      error: 'Layanan login sedang dalam pemeliharaan sistem. Silakan coba beberapa saat lagi.',
+    };
+  }
+}
+
+/**
  * Atomic Webhook Claiming (FAIL-CLOSED)
  * Prevents Dual Execution, Replay Attacks, and recycles stuck processing claims (>45s).
  */
