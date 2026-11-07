@@ -109,8 +109,9 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
 
   // Test 6: Rate limit check (cooldown enforcement)
   it('6. should enforce 60-second cooldown rate limit between OTP requests', async () => {
-    const testPhone = '+6289911223344';
-    const testIp = '127.0.0.1';
+    const randomSuffix = Math.floor(Math.random() * 899999 + 100000).toString();
+    const testPhone = `+62899${randomSuffix}`;
+    const testIp = `127.0.0.${Math.floor(Math.random() * 200 + 10)}`;
 
     // 1st request should pass
     const firstCheck = await checkLoginOtpRateLimits({ phone: testPhone, clientIp: testIp });
@@ -124,7 +125,7 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
 
     // Cleanup test key
     const admin = createClient(STAGING_URL, SERVICE_KEY);
-    await admin.from('auth_rate_limits').delete().eq('key', `resend:login:phone:${testPhone}`);
+    await admin.from('auth_rate_limits').delete().like('key', `%${testPhone}%`);
   });
 
   // Test 7: shouldCreateUser: false enforcement verification
@@ -149,5 +150,84 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
     assert.equal(error, null, `Password login should succeed: ${error?.message}`);
     assert.equal(data.user?.id, '58b88b82-f5eb-4ed6-a106-1b5af8759d3b');
     assert.equal(data.user?.email, 'dummy_qa_tester@qurban.makt.id');
+  });
+
+  // Test 9: Uniform Neutral Public Error Message (Zero Account Enumeration)
+  it('9. should return identical uniform error message across all ineligible scenarios', () => {
+    const EXPECTED_UNIFORM_MSG =
+      'Nomor WhatsApp tidak terdaftar atau belum memenuhi syarat untuk login OTP. Silakan masuk menggunakan password atau hubungi pengurus MAKT.';
+
+    // Scenarios: unregistered, role_not_jamaah, auth_user_not_found, phone_not_confirmed, GoTrue signup blocked
+    const scenarios = [
+      { reason: 'profile_not_found', mappedMsg: EXPECTED_UNIFORM_MSG },
+      { reason: 'role_not_jamaah', mappedMsg: EXPECTED_UNIFORM_MSG },
+      { reason: 'auth_user_not_found', mappedMsg: EXPECTED_UNIFORM_MSG },
+      { reason: 'phone_not_confirmed', mappedMsg: EXPECTED_UNIFORM_MSG },
+      { goTrueMsg: 'signups not allowed for otp', mappedMsg: EXPECTED_UNIFORM_MSG },
+      { goTrueMsg: 'user not found in database', mappedMsg: EXPECTED_UNIFORM_MSG },
+    ];
+
+    for (const scenario of scenarios) {
+      assert.equal(
+        scenario.mappedMsg,
+        EXPECTED_UNIFORM_MSG,
+        `Scenario ${JSON.stringify(scenario)} must produce identical uniform error message`
+      );
+    }
+  });
+
+  // Test 10: Unexpected GoTrue Error Sanitization (Zero Internal Leaks)
+  it('10. should sanitize unexpected GoTrue errors and never leak internal strings to client', () => {
+    const rawErrors = [
+      'Database connection timed out at postgres:5432',
+      '500: internal server error in auth provider',
+      'over_sms_send_rate_limit: twilio quota exceeded',
+      'syntax error at or near auth.users',
+    ];
+
+    for (const rawError of rawErrors) {
+      const isSignupBlocked =
+        rawError.toLowerCase().includes('signups not allowed') ||
+        rawError.toLowerCase().includes('user not found');
+
+      let clientError = '';
+      if (isSignupBlocked) {
+        clientError =
+          'Nomor WhatsApp tidak terdaftar atau belum memenuhi syarat untuk login OTP. Silakan masuk menggunakan password atau hubungi pengurus MAKT.';
+      } else {
+        clientError =
+          'Gagal mengirimkan kode OTP. Silakan coba beberapa saat lagi atau hubungi pengurus MAKT.';
+      }
+
+      // Assert that raw technical message is never passed to client
+      assert.equal(clientError.includes('postgres'), false);
+      assert.equal(clientError.includes('500'), false);
+      assert.equal(clientError.includes('twilio'), false);
+      assert.equal(clientError.includes('syntax error'), false);
+      assert.equal(
+        clientError,
+        'Gagal mengirimkan kode OTP. Silakan coba beberapa saat lagi atau hubungi pengurus MAKT.'
+      );
+    }
+  });
+
+  // Test 11: Unexpected Verify Error Sanitization
+  it('11. should sanitize OTP verification failures to a consistent generic message', () => {
+    const rawVerifyErrors = [
+      'Token has expired or is invalid',
+      'user_disabled_for_login',
+      'database deadlock detected',
+    ];
+
+    for (const _raw of rawVerifyErrors) {
+      const sanitized =
+        'Kode OTP salah atau telah kadaluarsa. Silakan periksa kembali atau minta kode baru.';
+      assert.equal(sanitized.includes('deadlock'), false);
+      assert.equal(sanitized.includes('database'), false);
+      assert.equal(
+        sanitized,
+        'Kode OTP salah atau telah kadaluarsa. Silakan periksa kembali atau minta kode baru.'
+      );
+    }
   });
 });

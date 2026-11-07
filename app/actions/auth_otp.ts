@@ -171,7 +171,10 @@ export async function requestLoginOtp(phoneInput: string): Promise<LoginOtpRespo
     });
 
     if (otpErr) {
-      // Map potential GoTrue errors to neutral messages
+      // Diagnostic server logging (sanitized, zero sensitive values)
+      console.error('[AuthOTP Request Error]:', otpErr.name || 'GoTrueError');
+
+      // Map potential GoTrue signup errors to the exact same neutral ineligible message
       const isSignupBlocked =
         otpErr.message?.toLowerCase().includes('signups not allowed') ||
         otpErr.message?.toLowerCase().includes('user not found');
@@ -184,9 +187,10 @@ export async function requestLoginOtp(phoneInput: string): Promise<LoginOtpRespo
         };
       }
 
+      // Never expose raw GoTrue error messages to browser
       return {
         success: false,
-        error: otpErr.message || 'Gagal mengirimkan kode OTP. Silakan coba beberapa saat lagi.',
+        error: 'Gagal mengirimkan kode OTP. Silakan coba beberapa saat lagi atau hubungi pengurus MAKT.',
       };
     }
 
@@ -196,6 +200,7 @@ export async function requestLoginOtp(phoneInput: string): Promise<LoginOtpRespo
       cooldownSeconds: 60,
     };
   } catch {
+    console.error('[AuthOTP Request Exception]');
     return {
       success: false,
       error: 'Terjadi kendala jaringan saat meminta kode OTP. Silakan coba lagi.',
@@ -209,6 +214,7 @@ export async function requestLoginOtp(phoneInput: string): Promise<LoginOtpRespo
  * - Supabase verifyOtp({ phone, token, type: 'sms' })
  * - Session cookies are automatically handled by @supabase/ssr
  * - Verify user role and block admin/super_admin from OTP session
+ * - Never expose raw GoTrue internals or database errors to client
  */
 export async function verifyLoginOtp(
   phoneInput: string,
@@ -244,9 +250,13 @@ export async function verifyLoginOtp(
     });
 
     if (verifyErr || !verifyData?.user) {
+      // Diagnostic server logging (sanitized, zero sensitive values)
+      console.error('[AuthOTP Verify Error]:', verifyErr?.name || 'VerifyFailed');
+
+      // Never leak raw GoTrue error strings to client
       return {
         success: false,
-        error: verifyErr?.message || 'Kode OTP salah atau telah kadaluarsa. Silakan periksa kembali.',
+        error: 'Kode OTP salah atau telah kadaluarsa. Silakan periksa kembali atau minta kode baru.',
       };
     }
 
@@ -276,6 +286,7 @@ export async function verifyLoginOtp(
       redirectUrl: '/dashboard',
     };
   } catch {
+    console.error('[AuthOTP Verify Exception]');
     return {
       success: false,
       error: 'Terjadi kendala jaringan saat memverifikasi kode OTP. Silakan coba lagi.',
