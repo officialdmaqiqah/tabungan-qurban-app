@@ -212,6 +212,23 @@ export default function VerifyPhoneModal({
                       'Kirim Kode OTP WhatsApp'
                     )}
                   </button>
+
+                  <div className="text-center pt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!phone) {
+                          setError('Harap masukkan nomor WhatsApp terlebih dahulu.');
+                          return;
+                        }
+                        setError(null);
+                        setStep('otp');
+                      }}
+                      className="text-xs text-emerald-600 hover:text-emerald-700 font-medium underline cursor-pointer"
+                    >
+                      Sudah menerima kode OTP? Masukkan kode di sini
+                    </button>
+                  </div>
                 </form>
               )}
 

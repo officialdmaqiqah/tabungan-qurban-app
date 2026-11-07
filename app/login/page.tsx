@@ -39,23 +39,29 @@ export default function LoginPage() {
     setLoading(true);
     
     if (!phone || !password) {
-      toast.error('Harap isi No. WhatsApp dan password.');
+      toast.error('Harap isi No. WhatsApp / Email dan password.');
       setLoading(false);
       return;
     }
 
-    const { formatted: validPhone, error: phoneError } = formatWhatsAppNumber(phone);
-    if (phoneError || !validPhone) {
-      toast.error(phoneError || 'Format nomor tidak valid.');
-      setLoading(false);
-      return;
+    const trimmedInput = phone.trim();
+    let loginEmail = '';
+
+    if (trimmedInput.includes('@')) {
+      loginEmail = trimmedInput.toLowerCase();
+    } else {
+      const { formatted: validPhone, error: phoneError } = formatWhatsAppNumber(trimmedInput);
+      if (phoneError || !validPhone) {
+        toast.error(phoneError || 'Format nomor tidak valid.');
+        setLoading(false);
+        return;
+      }
+      loginEmail = `${validPhone}@qurban.makt.id`;
     }
 
     try {
-      const dummyEmail = `${validPhone}@qurban.makt.id`;
-      
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: dummyEmail,
+        email: loginEmail,
         password: password,
       });
 
@@ -77,7 +83,7 @@ export default function LoginPage() {
       }
       
     } catch (err: any) {
-      toast.error(err.message || 'Nomor WhatsApp atau password salah');
+      toast.error(err.message || 'Nomor WhatsApp / Email atau password salah');
     } finally {
       setLoading(false);
     }
@@ -99,21 +105,20 @@ export default function LoginPage() {
 
         {/* Login Form */}
         <form onSubmit={handleLogin} className="space-y-4 sm:space-y-4.5">
-          {/* No. WhatsApp Field */}
+          {/* No. WhatsApp / Email Field */}
           <div>
             <label className="block text-xs sm:text-sm font-semibold text-slate-700 mb-2">
-              No. WhatsApp
+              No. WhatsApp / Email
             </label>
             <input 
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
+              type="text"
+              autoComplete="username"
               name="phone"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="w-full h-[52px] min-w-0 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-base opacity-100 rounded-xl px-4 outline-none transition-all box-border"
-              placeholder="Contoh: 08123456789"
+              placeholder="Contoh: 08123456789 atau nama@email.com"
             />
           </div>
 
