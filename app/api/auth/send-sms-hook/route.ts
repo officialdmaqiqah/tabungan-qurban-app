@@ -104,12 +104,18 @@ export async function POST(req: NextRequest) {
       topLevelKeys: Object.keys(payload),
     });
 
-    // Support both phone_change (updating/adding phone) and existing phone
-    const rawPhone = payload.user?.phone_change || payload.user?.phone;
+    // Support new_phone (Supabase GoTrue user update), sms.phone, phone_change, and existing phone
+    const rawPhone =
+      payload.user?.new_phone ||
+      payload.sms?.phone ||
+      payload.user?.phone_change ||
+      payload.user?.phone;
     const otpCode = payload.sms?.otp;
 
     if (!rawPhone || !otpCode) {
       console.warn('[SendSMSHook Payload Missing]:', {
+        hasNewPhone: Boolean(payload.user?.new_phone),
+        hasSmsPhone: Boolean(payload.sms?.phone),
         hasPhoneChange: Boolean(payload.user?.phone_change),
         hasPhone: Boolean(payload.user?.phone),
         hasOtp: Boolean(otpCode),

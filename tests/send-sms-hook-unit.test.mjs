@@ -81,6 +81,18 @@ describe('Send SMS Hook - Unit Tests', () => {
     assert.equal(body.success, true);
   });
 
+  it('2b. should succeed when user.new_phone and sms.phone are provided (GoTrue payload format)', async () => {
+    const req = createSignedRequest({
+      user: { id: 'u2b', phone: null, new_phone: '+6287791134515' },
+      sms: { otp: '112233', phone: '+6287791134515' },
+    });
+
+    const res = await POST(req);
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.success, true);
+  });
+
   it('3. should return 400 when phone number is invalid format', async () => {
     const req = createSignedRequest({
       user: { id: 'u3', phone_change: '12345' }, // Too short / not Indonesian mobile
