@@ -59,10 +59,18 @@ export default function HeroCalculator({ packages, qurbanDate }: { packages: Pac
         <div className="space-y-5">
           {/* Package Selection */}
           <div className="space-y-1.5">
-            <label className="text-xs text-emerald-100/70 font-medium ml-1">Pilih Target Qurban:</label>
+            <label className="text-xs text-amber-300 font-bold ml-1 uppercase tracking-wider flex items-center gap-1.5">
+              <span>Pilih Target Qurban:</span>
+            </label>
             <div className="relative">
               <select
-                className="w-full appearance-none bg-black/20 border border-emerald-500/30 rounded-xl py-3 px-4 text-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
+                data-theme="dark"
+                className="w-full appearance-none bg-emerald-950/90 border-2 border-emerald-400/60 rounded-xl py-3 px-4 text-sm font-bold text-white shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-all cursor-pointer hover:border-emerald-300"
+                style={{
+                  color: '#ffffff',
+                  WebkitTextFillColor: '#ffffff',
+                  backgroundColor: 'rgba(2, 44, 34, 0.95)',
+                }}
                 value={selectedPkg.id}
                 onChange={(e) => {
                   const pkg = availablePackages.find(p => p.id === e.target.value);
@@ -70,13 +78,23 @@ export default function HeroCalculator({ packages, qurbanDate }: { packages: Pac
                 }}
               >
                 {availablePackages.map(pkg => (
-                  <option key={pkg.id} value={pkg.id} className="text-slate-900">
-                    {pkg.name} - {formatIDR(pkg.price)}
+                  <option 
+                    key={pkg.id} 
+                    value={pkg.id} 
+                    className="bg-slate-900 text-white font-medium py-2"
+                    style={{
+                      color: '#ffffff',
+                      backgroundColor: '#0f172a',
+                    }}
+                  >
+                    {pkg.name} — {formatIDR(pkg.price)}
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-emerald-300">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-amber-400">
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                </svg>
               </div>
             </div>
           </div>

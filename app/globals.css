@@ -39,12 +39,21 @@ body {
 /* 
  * Form controls: enforce light mode and high-contrast dark text (#0f172a)
  * on mobile browsers, WebKit, and PWA standalone mode regardless of OS Dark Mode.
+ * Exclude explicitly dark-themed form elements.
  */
-input, select, textarea {
+input:not([data-theme="dark"]):not(.text-white), 
+select:not([data-theme="dark"]):not(.text-white), 
+textarea:not([data-theme="dark"]):not(.text-white) {
   color-scheme: light !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
   caret-color: #047857 !important;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
 
 /*
