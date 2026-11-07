@@ -112,6 +112,39 @@ export async function checkLoginEligibility(formattedPhone: string): Promise<{
 }
 
 /**
+ * Server-side Feature Flag & Canary Gate for Login OTP:
+ * - OTP_LOGIN_ENABLED='false' as default
+ * - OTP_CANARY_USER_IDS: Comma-separated list of approved tester UUIDs
+ */
+export async function isOtpLoginPermitted(userId?: string): Promise<{
+  allowed: boolean;
+  reason: 'allowed' | 'flag_disabled' | 'not_in_canary';
+}> {
+  const isGlobalEnabled = process.env.OTP_LOGIN_ENABLED === 'true';
+  const canaryListRaw = process.env.OTP_CANARY_USER_IDS || '';
+  const canaryIds = canaryListRaw
+    .split(',')
+    .map((id) => id.trim().toLowerCase())
+    .filter(Boolean);
+
+  // If user UUID is explicitly in the canary allowlist, allow them
+  if (userId && canaryIds.includes(userId.toLowerCase())) {
+    return { allowed: true, reason: 'allowed' };
+  }
+
+  // If global flag is ON and no canary restriction is defined (or wildcard '*'), allow all
+  if (isGlobalEnabled && (canaryIds.length === 0 || canaryIds.includes('*'))) {
+    return { allowed: true, reason: 'allowed' };
+  }
+
+  // Otherwise blocked (canary not matched or feature disabled)
+  return {
+    allowed: false,
+    reason: canaryIds.length > 0 ? 'not_in_canary' : 'flag_disabled',
+  };
+}
+
+/**
  * Step 1: Request WhatsApp OTP for Login
  * - Strict input validation
  * - Distributed multi-layer rate limiting
@@ -154,6 +187,17 @@ export async function requestLoginOtp(phoneInput: string): Promise<LoginOtpRespo
     const eligibility = await checkLoginEligibility(formatted);
     if (!eligibility.eligible) {
       // Uniform neutral error message to prevent account enumeration
+      return {
+        success: false,
+        error:
+          'Nomor WhatsApp tidak terdaftar atau belum memenuhi syarat untuk login OTP. Silakan masuk menggunakan password atau hubungi pengurus MAKT.',
+      };
+    }
+
+    // 4b. Feature Flag & Canary Allowlist Enforcement
+    const canaryCheck = await isOtpLoginPermitted(eligibility.userId);
+    if (!canaryCheck.allowed) {
+      console.warn('[AuthOTP Request Blocked]: Feature flag disabled or not in canary allowlist');
       return {
         success: false,
         error:
@@ -262,7 +306,17 @@ export async function verifyLoginOtp(
 
     const authUser = verifyData.user;
 
-    // 4. Role Gate Check (Defense-in-depth: Ensure admins cannot use OTP session)
+    // 4. Feature Flag & Canary Gate Check (Defense-in-depth)
+    const canaryCheck = await isOtpLoginPermitted(authUser.id);
+    if (!canaryCheck.allowed) {
+      await supabase.auth.signOut();
+      return {
+        success: false,
+        error: 'Layanan login OTP saat ini belum dibuka untuk akun Anda. Silakan masuk menggunakan password.',
+      };
+    }
+
+    // 5. Role Gate Check (Defense-in-depth: Ensure admins cannot use OTP session)
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')

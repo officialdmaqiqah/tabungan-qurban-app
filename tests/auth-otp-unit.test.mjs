@@ -13,7 +13,7 @@ if (fs.existsSync('.env.local')) {
   });
 }
 
-import { validateLoginPhone, checkLoginEligibility } from '../app/actions/auth_otp.ts';
+import { validateLoginPhone, checkLoginEligibility, isOtpLoginPermitted } from '../app/actions/auth_otp.ts';
 import { checkLoginOtpRateLimits } from '../lib/auth-rate-limit.ts';
 import { createClient } from '@supabase/supabase-js';
 
@@ -228,6 +228,86 @@ describe('Sprint B - Login OTP WhatsApp Unit & Integration Tests', () => {
         sanitized,
         'Kode OTP salah atau telah kadaluarsa. Silakan periksa kembali atau minta kode baru.'
       );
+    }
+  });
+
+  // Test 12: Feature Flag & Canary Gate Enforcement
+  it('12. should enforce server-side feature flags and canary allowlist', async () => {
+    const originalEnabled = process.env.OTP_LOGIN_ENABLED;
+    const originalCanary = process.env.OTP_CANARY_USER_IDS;
+
+    const CANARY_UUID = '58b88b82-f5eb-4ed6-a106-1b5af8759d3b';
+    const NON_CANARY_UUID = '11111111-2222-3333-4444-555555555555';
+
+    try {
+      // 12a. Global OFF, Canary contains tester
+      process.env.OTP_LOGIN_ENABLED = 'false';
+      process.env.OTP_CANARY_USER_IDS = CANARY_UUID;
+
+      const canaryRes = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(canaryRes.allowed, true);
+      assert.equal(canaryRes.reason, 'allowed');
+
+      // Case-insensitivity check
+      const upperRes = await isOtpLoginPermitted(CANARY_UUID.toUpperCase());
+      assert.equal(upperRes.allowed, true);
+
+      // Non-canary user should be blocked
+      const blockedRes = await isOtpLoginPermitted(NON_CANARY_UUID);
+      assert.equal(blockedRes.allowed, false);
+      assert.equal(blockedRes.reason, 'not_in_canary');
+
+      // Undefined user should be blocked
+      const anonRes = await isOtpLoginPermitted(undefined);
+      assert.equal(anonRes.allowed, false);
+
+      // 12b. Global OFF, No Canary (Full Kill Switch)
+      process.env.OTP_LOGIN_ENABLED = 'false';
+      process.env.OTP_CANARY_USER_IDS = '';
+
+      const allBlockedRes = await isOtpLoginPermitted(CANARY_UUID);
+      assert.equal(allBlockedRes.allowed, false);
+      assert.equal(allBlockedRes.reason, 'flag_disabled');
+
+      // 12c. Global ON, No Canary (Full Production Rollout)
+      process.env.OTP_LOGIN_ENABLED = 'true';
+      process.env.OTP_CANARY_USER_IDS = '';
+
+      const allAllowedRes = await isOtpLoginPermitted(NON_CANARY_UUID);
+      assert.equal(allAllowedRes.allowed, true);
+      assert.equal(allAllowedRes.reason, 'allowed');
+    } finally {
+      process.env.OTP_LOGIN_ENABLED = originalEnabled;
+      process.env.OTP_CANARY_USER_IDS = originalCanary;
+    }
+  });
+
+  // Test 13: Legacy password authentication works regardless of feature flag state
+  it('13. should ensure password login continues to work even if OTP is disabled', async () => {
+    const credContent = fs.readFileSync('scratch/qa_credentials.local.txt', 'utf8');
+    const mPass = credContent.match(/PASSWORD:\s*([^\r\n]+)/);
+    assert.ok(mPass, 'Password in scratch credentials file must exist');
+    const password = mPass[1].trim();
+
+    const originalEnabled = process.env.OTP_LOGIN_ENABLED;
+    const originalCanary = process.env.OTP_CANARY_USER_IDS;
+
+    try {
+      // Simulate OTP completely disabled
+      process.env.OTP_LOGIN_ENABLED = 'false';
+      process.env.OTP_CANARY_USER_IDS = '';
+
+      const anonClient = createClient(STAGING_URL, ANON_KEY);
+      const { data, error } = await anonClient.auth.signInWithPassword({
+        email: 'dummy_qa_tester@qurban.makt.id',
+        password,
+      });
+
+      assert.equal(error, null, 'Password login must succeed even with OTP flag OFF');
+      assert.equal(data.user?.id, '58b88b82-f5eb-4ed6-a106-1b5af8759d3b');
+    } finally {
+      process.env.OTP_LOGIN_ENABLED = originalEnabled;
+      process.env.OTP_CANARY_USER_IDS = originalCanary;
     }
   });
 });
