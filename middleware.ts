@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
   // auto-route directly to their respective area without flash or requiring re-login
   if (pathname === '/login' && user) {
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin'
+    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin'
     return NextResponse.redirect(new URL(isAdmin ? '/admin' : '/dashboard', request.url))
   }
 
@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
     }
     // Check if admin or super_admin
     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin'
+    const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin'
     if (!isAdmin) {
       return NextResponse.redirect(new URL('/dashboard', request.url))
     }

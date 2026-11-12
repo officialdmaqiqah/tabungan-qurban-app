@@ -21,7 +21,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
 
   // Validate admin or super_admin
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-  if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') redirect('/dashboard');
+  if (profile?.role !== 'admin' && profile?.role !== 'super_admin') redirect('/dashboard');
 
   // Fetch jamaah profile
   const { data: jamaah } = await supabase
@@ -114,7 +114,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     if (!user) return { success: false, error: 'Unauthorized' };
     
     const { data: profile } = await supabaseAction.from('profiles').select('role').eq('id', user.id).single();
-    if (profile?.role !== 'admin' && profile?.role !== 'super_admin' && user.user_metadata?.role !== 'super_admin') return { success: false, error: 'Forbidden' };
+    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') return { success: false, error: 'Forbidden' };
 
     const adminClient = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

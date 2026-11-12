@@ -57,13 +57,8 @@ export async function updateUserRole(formData: FormData): Promise<{ success: boo
       return { success: false, error: 'Data pengguna target tidak ditemukan.' };
     }
 
-    // Check target auth metadata for effective role
-    const { data: targetAuthUser } = await adminClient.auth.admin.getUserById(targetUserId);
-    const oldEffectiveRole = getEffectiveRole(
-      targetProfile.role,
-      targetAuthUser?.user?.user_metadata?.role,
-      targetProfile.phone
-    );
+    // Role efektif hanya berasal dari profiles.role (lihat lib/roles.ts)
+    const oldEffectiveRole = getEffectiveRole(targetProfile.role);
 
     if (oldEffectiveRole === newRole) {
       return { success: false, error: `Pengguna sudah memiliki role ${ROLE_LABELS[newRole]}.` };
@@ -77,38 +72,37 @@ export async function updateUserRole(formData: FormData): Promise<{ success: boo
       };
     }
 
-    // 3. Update auth metadata server-side
-    const currentMeta = targetAuthUser?.user?.user_metadata || {};
-    await adminClient.auth.admin.updateUserById(targetUserId, {
-      user_metadata: {
-        ...currentMeta,
-        role: newRole,
-      },
-    });
-
-    // 4. Update profiles table
-    let dbRoleToSave: string = newRole;
+    // 3. Update profiles table (sumber kebenaran role)
     const { error: profileError } = await adminClient
       .from('profiles')
-      .update({ role: dbRoleToSave })
+      .update({ role: newRole })
       .eq('id', targetUserId);
 
     if (profileError) {
-      // If DB constraint profiles_role_check rejects 'super_admin' before migration SQL is run,
-      // fallback to 'admin' in profiles table so RLS policies and table constraints pass,
-      // while user_metadata stores 'super_admin'
-      if (newRole === 'super_admin' && (profileError.message?.includes('profiles_role_check') || profileError.code === '23514')) {
-        console.warn('Postgres constraint profiles_role_check blocked super_admin, falling back to admin in profiles table.');
-        const { error: fallbackErr } = await adminClient
-          .from('profiles')
-          .update({ role: 'admin' })
-          .eq('id', targetUserId);
-        if (fallbackErr) {
-          throw fallbackErr;
-        }
-      } else {
-        throw profileError;
+      if (profileError.message?.includes('profiles_role_check') || profileError.code === '23514') {
+        return {
+          success: false,
+          error:
+            "Database belum mendukung role ini (constraint profiles_role_check). Jalankan migrasi " +
+            "supabase/migrations/20261029000000_update_role_management.sql di Supabase SQL Editor, lalu coba lagi.",
+        };
       }
+      throw profileError;
+    }
+
+    // 4. Simpan salinan role di app_metadata (hanya bisa diubah oleh service role,
+    //    tidak seperti user_metadata yang bisa diubah sendiri oleh pengguna).
+    //    Salinan ini bersifat informatif; aplikasi tetap membaca profiles.role.
+    const { data: targetAuthUser } = await adminClient.auth.admin.getUserById(targetUserId);
+    const currentAppMeta = targetAuthUser?.user?.app_metadata || {};
+    const { error: metaError } = await adminClient.auth.admin.updateUserById(targetUserId, {
+      app_metadata: {
+        ...currentAppMeta,
+        role: newRole,
+      },
+    });
+    if (metaError) {
+      console.error('Gagal menyimpan salinan role ke app_metadata:', metaError);
     }
 
     // 5. Insert audit log

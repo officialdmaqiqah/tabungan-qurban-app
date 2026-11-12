@@ -19,7 +19,7 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single();
 
-  const isSuperAdminRole = profile?.role === 'super_admin' || user.user_metadata?.role === 'super_admin';
+  const isSuperAdminRole = profile?.role === 'super_admin';
   const isAdminRole = profile?.role === 'admin' || isSuperAdminRole;
 
   if (!isAdminRole) redirect('/dashboard');
