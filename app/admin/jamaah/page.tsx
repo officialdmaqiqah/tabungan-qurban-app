@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
 import SearchAndFilter from '../SearchAndFilter';
 import Pagination from '../Pagination';
 import { Users, Eye, ShieldAlert, UserCheck, User } from 'lucide-react';
@@ -48,20 +47,6 @@ export default async function AdminJamaahPage({
   }
 
   const { data: jamaahList, count: totalJamaah } = await query;
-
-  // Build metadata map for effective roles from auth users if adminClient is available
-  const authRoleMap = new Map<string, string>();
-  try {
-    const adminClient = createAdminClient();
-    const { data: authUsersRes } = await adminClient.auth.admin.listUsers({ perPage: 1000 });
-    authUsersRes?.users?.forEach(u => {
-      if (u.user_metadata?.role) {
-        authRoleMap.set(u.id, u.user_metadata.role);
-      }
-    });
-  } catch (err) {
-    console.error('Error fetching auth users for role check:', err);
-  }
 
   // Fetch transactions for the current page to calculate progress
   const jamaahIds = jamaahList?.map(j => j.id) || [];
@@ -112,11 +97,7 @@ export default async function AdminJamaahPage({
             <tbody className="divide-y divide-slate-100">
               {jamaahList && jamaahList.length > 0 ? (
                 jamaahList.map((j) => {
-                  const effectiveRole: UserRole = getEffectiveRole(
-                    j.role,
-                    authRoleMap.get(j.id),
-                    j.phone
-                  );
+                  const effectiveRole: UserRole = getEffectiveRole(j.role);
 
                   return (
                     <tr key={j.id} className="hover:bg-slate-50/50 transition-colors">

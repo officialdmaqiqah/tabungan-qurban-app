@@ -27,7 +27,7 @@ export default function LoginPage() {
           .select('role')
           .eq('id', session.user.id)
           .single();
-        const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin' || session.user.user_metadata?.role === 'super_admin';
+        const isAdmin = profile?.role === 'admin' || profile?.role === 'super_admin';
         router.replace(isAdmin ? '/admin' : '/dashboard');
       }
     }
@@ -68,7 +68,7 @@ export default function LoginPage() {
         .eq('id', data.user.id)
         .single();
 
-      const isAdminUser = profileData?.role === 'admin' || profileData?.role === 'super_admin' || data.user.user_metadata?.role === 'super_admin';
+      const isAdminUser = profileData?.role === 'admin' || profileData?.role === 'super_admin';
 
       if (isAdminUser) {
         router.push('/admin');

@@ -59,9 +59,9 @@ export default async function RootLayout({
   let role = 'jamaah';
   if (user) {
     const { data } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-    if (data?.role === 'super_admin' || user.user_metadata?.role === 'super_admin') {
+    if (data?.role === 'super_admin') {
       role = 'super_admin';
-    } else if (data?.role === 'admin' || user.user_metadata?.role === 'admin') {
+    } else if (data?.role === 'admin') {
       role = 'admin';
     }
   }
