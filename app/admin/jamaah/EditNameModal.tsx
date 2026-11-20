@@ -99,11 +99,11 @@ export default function EditNameModal({ user, isCurrentSuperAdmin }: EditNameMod
       <button
         onClick={handleOpen}
         type="button"
-        title="Edit Nama Jamaah"
-        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-white text-slate-700 hover:bg-slate-50 border border-slate-300 rounded-lg font-medium transition-all shadow-xs"
+        title="Edit Nama"
+        aria-label="Edit Nama"
+        className="inline-flex items-center justify-center w-8 h-8 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-all shadow-xs"
       >
-        <Pencil className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-        <span>Edit Nama</span>
+        <Pencil className="w-4 h-4 text-blue-600 shrink-0" />
       </button>
 
       <Modal

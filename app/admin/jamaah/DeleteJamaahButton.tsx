@@ -64,14 +64,15 @@ export default function DeleteJamaahButton({
         type="button"
         onClick={open}
         title="Hapus Jamaah"
+        aria-label="Hapus Jamaah"
         className={
           compact
-            ? 'inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 rounded-lg font-medium transition-all shadow-xs'
+            ? 'inline-flex items-center justify-center w-8 h-8 bg-white text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 rounded-lg transition-all shadow-xs'
             : 'inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 rounded-lg font-medium transition-colors text-xs'
         }
       >
-        <Trash2 className="w-3.5 h-3.5" />
-        <span>Hapus</span>
+        <Trash2 className={compact ? 'w-4 h-4' : 'w-3.5 h-3.5'} />
+        {!compact && <span>Hapus</span>}
       </button>
 
       <Modal
