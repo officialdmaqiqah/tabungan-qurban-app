@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { UploadCloud, CheckCircle2, CreditCard, AlertCircle, Copy, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { notifyAdminOnDepositReported } from '@/app/actions/transaction_whatsapp';
+import QrisCard from '@/components/QrisCard';
 
 export default function LaporSetoranPage() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function LaporSetoranPage() {
   const [file, setFile] = useState<File | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
+  const [qrisVersion, setQrisVersion] = useState<string | null>(null);
   const [bankAccounts, setBankAccounts] = useState<any[]>([
     {
       id: 'default',
@@ -52,6 +54,17 @@ export default function LaporSetoranPage() {
       setApprovalStatus(isAdmin ? 'approved' : (data?.approval_status ?? 'approved'));
     }
     fetchApproval();
+  }, [supabase]);
+
+  // QRIS resmi (jika sudah diunggah admin)
+  useEffect(() => {
+    async function fetchQris() {
+      const { data } = await supabase.from('program_settings').select('qris_image_path, qris_updated_at').limit(1).maybeSingle();
+      if (data?.qris_image_path) {
+        setQrisVersion(data.qris_updated_at ? String(new Date(data.qris_updated_at).getTime()) : '1');
+      }
+    }
+    fetchQris();
   }, [supabase]);
 
   const handleCopyAccount = (accountNumber: string, id: string) => {
@@ -212,7 +225,7 @@ export default function LaporSetoranPage() {
                 }`}
               >
                 <CreditCard className={`w-5 h-5 md:w-6 md:h-6 ${method === 'transfer' ? 'text-emerald-500' : 'text-slate-400'}`} />
-                Transfer Bank
+                Transfer / QRIS
               </button>
               <button
                 type="button"
@@ -229,6 +242,7 @@ export default function LaporSetoranPage() {
 
           {method === 'transfer' && (
             <div className="space-y-5 md:space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+              <QrisCard version={qrisVersion} compact showLaporLink={false} />
               {bankAccounts.length > 0 && (
                 <div className="bg-gradient-to-br from-emerald-50/80 via-teal-50/40 to-blue-50/40 border border-emerald-200/90 rounded-2xl p-4 md:p-5 shadow-xs">
                   <div className="flex items-start gap-3 md:gap-3.5 mb-4">
@@ -310,7 +324,7 @@ export default function LaporSetoranPage() {
 
           <div className="animate-in fade-in slide-in-from-top-4 duration-300">
             <label className="block text-xs md:text-sm font-bold text-slate-700 mb-2.5">
-              {method === 'transfer' ? 'Unggah Bukti Transfer' : 'Unggah Bukti (Kwitansi / Foto)'}
+              {method === 'transfer' ? 'Unggah Bukti Transfer / QRIS' : 'Unggah Bukti (Kwitansi / Foto)'}
             </label>
             <div className={`mt-1 flex justify-center px-4 md:px-6 py-6 md:py-10 border-2 ${file ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-200 hover:border-emerald-400'} border-dashed rounded-2xl md:rounded-3xl bg-slate-50 hover:bg-emerald-50/20 transition-colors group cursor-pointer relative`}>
               <input 

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import PengaturanForm from './PengaturanForm';
+import QrisUploadCard from './QrisUploadCard';
 
 export default async function PengaturanPage() {
   const supabase = await createClient();
@@ -10,10 +11,14 @@ export default async function PengaturanPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Pengaturan Program</h1>
-        <p className="text-slate-500">Atur profil program, tanggal pelaksanaan, dan manajemen rekening resmi.</p>
+        <p className="text-slate-500">Atur profil program, tanggal pelaksanaan, rekening resmi, dan QRIS setoran.</p>
       </div>
 
       <PengaturanForm initialSettings={settings} initialBankAccounts={bankAccounts || []} />
+
+      <QrisUploadCard
+        version={settings?.qris_image_path ? String(settings.qris_updated_at ? new Date(settings.qris_updated_at).getTime() : 1) : null}
+      />
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mt-8">
         <h2 className="text-lg font-bold text-slate-900 mb-2">Pusat Keamanan Data</h2>

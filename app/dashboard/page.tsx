@@ -3,6 +3,8 @@ import { formatCurrency, calculateDaysLeft, maskName } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 import { Target, TrendingUp, Calendar, AlertCircle, EyeOff, Eye, Trophy, Sparkles } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
+import QrisCard from '@/components/QrisCard';
+import { getQrisSetting } from '@/lib/qris';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -30,6 +32,8 @@ export default async function DashboardPage() {
     supabase.from('user_packages').select('user_id, quantity, qurban_packages(price)'),
     supabase.from('transactions').select('user_id, amount').eq('status', 'verified')
   ]);
+
+  const qris = await getQrisSetting();
 
   let targetAmount = 0;
   if (userPackages) {
@@ -294,6 +298,9 @@ export default async function DashboardPage() {
           )}
         </div>
       </div>
+
+      {/* QRIS untuk setoran (bisa diunduh kapan saja) */}
+      <QrisCard version={qris?.version} />
 
       {/* BOTTOM SECTION GRID: History & Leaderboard */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">

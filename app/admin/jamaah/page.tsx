@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import SearchAndFilter from '../SearchAndFilter';
 import Pagination from '../Pagination';
-import { Users, Eye, ShieldAlert, UserCheck, User } from 'lucide-react';
+import { Users, Eye, ShieldAlert, UserCheck, User, Download } from 'lucide-react';
 import Link from 'next/link';
 import ChangeRoleModal from './ChangeRoleModal';
 import EditNameModal from './EditNameModal';
@@ -80,12 +80,22 @@ export default async function AdminJamaahPage({
           </div>
         </div>
 
-        {userIsSuperAdmin && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-xl text-xs font-semibold self-start md:self-auto">
-            <ShieldAlert className="w-4 h-4 text-purple-600" />
-            <span>Mode Super Admin Aktif (Dapat Mengubah Role)</span>
-          </div>
-        )}
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
+          <a
+            href="/admin/jamaah/export"
+            download
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-sm shadow-emerald-600/20 transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            Download Data Jamaah (Excel)
+          </a>
+          {userIsSuperAdmin && (
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-purple-50 border border-purple-200 text-purple-700 rounded-xl text-xs font-semibold">
+              <ShieldAlert className="w-4 h-4 text-purple-600" />
+              <span>Mode Super Admin Aktif (Dapat Mengubah Role)</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {pendingList && pendingList.length > 0 && (
