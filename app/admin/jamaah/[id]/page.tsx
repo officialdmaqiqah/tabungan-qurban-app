@@ -9,6 +9,7 @@ import InputTunaiForm from './InputTunaiForm';
 import DeleteConfirmButton from '@/components/DeleteConfirmButton';
 import ResetPasswordButton from './ResetPasswordButton';
 import ApprovalActions from '../ApprovalActions';
+import DeleteJamaahButton from '../DeleteJamaahButton';
 import { resetJamaahPin } from '@/app/actions/admin_jamaah';
 import { getAdminUser } from '@/lib/auth-guards';
 import KategoriSelect from './KategoriSelect';
@@ -240,6 +241,14 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                     />
                   )}
                   <ResetPasswordButton userId={jamaahId} resetAction={resetJamaahPin} />
+                  {profile?.role === 'super_admin' && jamaah.role !== 'admin' && jamaah.role !== 'super_admin' && jamaah.id !== user.id && (
+                    <DeleteJamaahButton
+                      userId={jamaah.id}
+                      fullName={jamaah.full_name || 'Jamaah'}
+                      phone={jamaah.phone_normalized || jamaah.phone}
+                      redirectTo="/admin/jamaah"
+                    />
+                  )}
                 </div>
               </div>
             </div>

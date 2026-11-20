@@ -6,6 +6,7 @@ import Link from 'next/link';
 import ChangeRoleModal from './ChangeRoleModal';
 import EditNameModal from './EditNameModal';
 import ApprovalActions, { ApprovalBadge } from './ApprovalActions';
+import DeleteJamaahButton from './DeleteJamaahButton';
 import { getEffectiveRole, isSuperAdmin, UserRole, ROLE_LABELS } from '@/lib/roles';
 
 export default async function AdminJamaahPage({
@@ -219,6 +220,14 @@ export default async function AdminJamaahPage({
                                 isCurrentSuperAdmin={true}
                                 currentUserId={user?.id}
                               />
+                              {effectiveRole === 'jamaah' && j.id !== user?.id && (
+                                <DeleteJamaahButton
+                                  userId={j.id}
+                                  fullName={j.full_name || 'Jamaah'}
+                                  phone={j.phone_normalized || j.phone}
+                                  compact
+                                />
+                              )}
                             </>
                           )}
                         </div>
