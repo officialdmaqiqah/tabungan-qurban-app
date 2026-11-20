@@ -28,6 +28,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { formatCurrency } from "@/lib/utils";
 import PhoneMockup from "@/components/PhoneMockup";
+import QrisCard from "@/components/QrisCard";
+import { getQrisSetting } from "@/lib/qris";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -62,6 +64,9 @@ export default async function Home() {
     .select('amount')
     .eq('status', 'verified');
   const totalFundsCollected = totalVerifiedTx?.reduce((sum, tx) => sum + Number(tx.amount), 0) || 0;
+
+  // QRIS resmi untuk setoran (null bila admin belum mengunggah)
+  const qris = await getQrisSetting();
 
   // Fetch total jamaah count
   const { count: totalJamaahCount } = await serviceSupabase
@@ -309,6 +314,30 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* ================= SECTION 2.76: SETOR DENGAN QRIS ================= */}
+      {qris && (
+        <section className="py-20 md:py-24 bg-white border-t border-slate-100" id="qris">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-10 md:mb-12 max-w-2xl mx-auto">
+              <h2 className="text-xs font-extrabold text-emerald-600 uppercase tracking-widest mb-3">Setoran Tanpa Repot</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Satu QRIS untuk Semua Bank &amp; E-Wallet</h2>
+              <p className="text-slate-600 text-sm sm:text-base">
+                Tidak punya rekening Bank Sumsel Babel Syariah? Tidak masalah. Cukup scan QRIS resmi Tabungan Qurban MAKT dari
+                aplikasi bank atau dompet digital Anda, setoran langsung masuk tanpa biaya transfer antarbank.
+              </p>
+            </div>
+            <div className="max-w-4xl mx-auto">
+              <QrisCard version={qris.version} showLaporLink={false} />
+              <p className="text-center text-sm text-slate-500 mt-6">
+                Belum terdaftar?{' '}
+                <Link href="/register" className="font-semibold text-emerald-700 hover:underline">Daftar dulu</Link>
+                {' '}agar setoran Anda tercatat di buku tabungan.
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ================= SECTION 2.8: VIDEO TUTORIAL ================= */}
       <section className="py-24 bg-slate-900 border-t border-slate-800 relative overflow-hidden" id="tutorial">
