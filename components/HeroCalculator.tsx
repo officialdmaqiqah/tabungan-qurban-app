@@ -62,7 +62,7 @@ export default function HeroCalculator({ packages, qurbanDate }: { packages: Pac
             <label className="text-xs text-emerald-100/70 font-medium ml-1">Pilih Target Qurban:</label>
             <div className="relative">
               <select
-                className="w-full appearance-none bg-black/20 border border-emerald-500/30 rounded-xl py-3 px-4 text-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
+                className="field-on-dark w-full appearance-none bg-black/20 border border-emerald-500/30 rounded-xl py-3 px-4 text-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
                 value={selectedPkg.id}
                 onChange={(e) => {
                   const pkg = availablePackages.find(p => p.id === e.target.value);

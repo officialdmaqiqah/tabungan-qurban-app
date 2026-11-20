@@ -48,6 +48,25 @@ input, select, textarea {
 }
 
 /*
+ * Pengecualian untuk kolom di atas latar gelap (mis. kalkulator di halaman depan):
+ * teks putih pada kolomnya, tetapi daftar pilihan (dropdown) tetap teks gelap
+ * di latar putih agar terbaca.
+ */
+input.field-on-dark,
+select.field-on-dark,
+textarea.field-on-dark {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #fbbf24 !important;
+}
+
+select.field-on-dark option {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+/*
  * CRITICAL FIX: Explicit placeholder styling so WebKit doesn't inherit 
  * the dark -webkit-text-fill-color, keeping placeholders soft slate (#94a3b8).
  */
