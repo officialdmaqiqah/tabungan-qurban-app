@@ -37,15 +37,16 @@ export default function ApprovalActions({
   const router = useRouter();
   const [loading, setLoading] = useState<'approve' | 'reject' | null>(null);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
   const [note, setNote] = useState('');
 
   const handleApprove = async () => {
-    if (!confirm(`Setujui pendaftaran ${fullName}? Jamaah akan bisa mulai melaporkan setoran.`)) return;
     setLoading('approve');
     try {
       const res = await approveRegistration(userId);
       if (res.success) {
         toast.success(res.message || 'Pendaftaran disetujui.');
+        setApproveOpen(false);
         router.refresh();
       } else {
         toast.error(res.error);
@@ -78,11 +79,11 @@ export default function ApprovalActions({
       <ApprovalBadge status={status} />
       <button
         type="button"
-        onClick={handleApprove}
+        onClick={() => setApproveOpen(true)}
         disabled={loading !== null}
         className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-emerald-600 text-white hover:bg-emerald-700 rounded-lg font-semibold transition-all disabled:opacity-60"
       >
-        {loading === 'approve' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+        <CheckCircle2 className="w-3.5 h-3.5" />
         Setujui
       </button>
       {status !== 'rejected' && (
@@ -96,6 +97,48 @@ export default function ApprovalActions({
           Tolak
         </button>
       )}
+
+      <Modal
+        isOpen={approveOpen}
+        onClose={() => loading === null && setApproveOpen(false)}
+        title="Setujui Pendaftaran"
+        description="Pastikan data pendaftar sudah sesuai"
+        icon={<CheckCircle2 className="w-5 h-5 text-emerald-600" />}
+        iconBgColor="bg-emerald-50 text-emerald-600"
+        maxWidth="max-w-md"
+        disableBackdropClick={loading !== null}
+      >
+        <div className="space-y-4">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
+            <div className="font-semibold text-slate-900 capitalize">{fullName}</div>
+          </div>
+          <ul className="text-sm text-slate-600 space-y-1.5 list-disc pl-5">
+            <li>Jamaah akan bisa mulai <span className="font-semibold text-slate-800">melaporkan setoran</span>.</li>
+            <li>Jamaah menerima pemberitahuan lewat WhatsApp (bila bersedia menerima WA).</li>
+            <li>Persetujuan tercatat di Audit Log.</li>
+          </ul>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 pt-3 border-t border-slate-100">
+            <button
+              type="button"
+              onClick={() => setApproveOpen(false)}
+              disabled={loading !== null}
+              className="w-full sm:w-auto px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 disabled:opacity-50"
+            >
+              Batal
+            </button>
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={loading !== null}
+              autoFocus
+              className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-sm shadow-emerald-600/20 flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {loading === 'approve' && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading === 'approve' ? 'Menyetujui...' : 'Ya, Setujui'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={rejectOpen}
