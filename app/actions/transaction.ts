@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
 import { isAdminOrSuperAdmin } from '@/lib/roles';
-import { notifyJamaahOnDepositApproved, notifyJamaahOnDepositRejected } from '@/app/actions/transaction_whatsapp';
+import { notifyJamaahOnDepositApproved, notifyJamaahOnDepositRejected } from '@/lib/wa/notifications';
 
 interface TransactionActionResult {
   success: boolean;
