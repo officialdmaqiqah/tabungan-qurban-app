@@ -90,11 +90,11 @@ export default function ChangeRoleModal({
       <button
         onClick={handleOpen}
         type="button"
-        title="Ubah Role Pengguna"
-        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-white text-slate-700 hover:bg-slate-50 border border-slate-300 rounded-lg font-medium transition-all shadow-xs"
+        title="Ubah Role"
+        aria-label="Ubah Role"
+        className="inline-flex items-center justify-center w-8 h-8 bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-all shadow-xs"
       >
-        <Shield className="w-3.5 h-3.5 text-emerald-600" />
-        <span>Ubah Role</span>
+        <Shield className="w-4 h-4 text-emerald-600" />
       </button>
 
       <Modal

@@ -118,7 +118,7 @@ export default async function AdminJamaahPage({
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-slate-500 uppercase text-xs border-b border-slate-200">
+            <thead className="bg-slate-50 text-slate-500 uppercase text-xs border-b border-slate-200 whitespace-nowrap">
               <tr>
                 <th className="px-4 py-3 font-semibold">Nama Jamaah & Kategori</th>
                 <th className="px-4 py-3 font-semibold">No WhatsApp</th>
@@ -192,12 +192,14 @@ export default async function AdminJamaahPage({
                         )}
                       </td>
                       <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center gap-2">
+                        <div className="inline-flex items-center gap-1.5">
                           <Link 
                             href={`/admin/jamaah/${j.id}`}
-                            className="inline-flex items-center gap-1 text-xs px-2.5 py-1.5 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg font-medium transition-all shadow-xs"
+                            title="Detail"
+                            aria-label="Detail"
+                            className="inline-flex items-center justify-center w-8 h-8 bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 hover:border-blue-300 rounded-lg transition-all shadow-xs"
                           >
-                            <Eye className="w-3.5 h-3.5" /> Detail
+                            <Eye className="w-4 h-4" />
                           </Link>
 
                           {userIsSuperAdmin && (
