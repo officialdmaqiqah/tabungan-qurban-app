@@ -13,7 +13,7 @@ export default function ResetPasswordButton({
   resetAction: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
+  const [newPin, setNewPin] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -21,7 +21,7 @@ export default function ResetPasswordButton({
   const handleOpen = () => {
     setIsOpen(true);
     setSuccess(false);
-    setNewPassword('');
+    setNewPin('');
     setCopied(false);
   };
 
@@ -31,17 +31,17 @@ export default function ResetPasswordButton({
   };
 
   const handleCopy = () => {
-    if (!newPassword) return;
-    navigator.clipboard.writeText(newPassword);
+    if (!newPin) return;
+    navigator.clipboard.writeText(newPin);
     setCopied(true);
-    toast.success('Password berhasil disalin!');
+    toast.success('PIN berhasil disalin!');
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword.length < 6) {
-      toast.error('Password minimal 6 karakter.');
+    if (!/^\d{6}$/.test(newPin)) {
+      toast.error('PIN harus 6 digit angka.');
       return;
     }
 
@@ -49,15 +49,15 @@ export default function ResetPasswordButton({
     try {
       const formData = new FormData();
       formData.append('userId', userId);
-      formData.append('newPassword', newPassword);
+      formData.append('newPin', newPin);
 
       const result = await resetAction(formData);
 
       if (result.success) {
-        toast.success('Password berhasil direset!');
+        toast.success('PIN berhasil diatur ulang!');
         setSuccess(true);
       } else {
-        toast.error(result.error || 'Gagal mereset password.');
+        toast.error(result.error || 'Gagal mengatur ulang PIN.');
       }
     } catch (err: any) {
       toast.error(err?.message || 'Terjadi kesalahan sistem.');
@@ -71,18 +71,18 @@ export default function ResetPasswordButton({
       <button
         onClick={handleOpen}
         type="button"
-        title="Reset Password Jamaah"
+        title="Reset PIN Jamaah"
         className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg font-medium transition-colors text-xs"
       >
         <KeyRound className="w-3.5 h-3.5" />
-        <span>Reset Password</span>
+        <span>Reset PIN</span>
       </button>
 
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
-        title="Reset Password Jamaah"
-        description="Atur ulang password login akun jamaah secara manual"
+        title="Reset PIN Jamaah"
+        description="Atur PIN login baru untuk jamaah secara manual"
         icon={<KeyRound className="w-5 h-5 text-amber-600" />}
         iconBgColor="bg-amber-50 text-amber-600"
         maxWidth="max-w-md"
@@ -95,15 +95,15 @@ export default function ResetPasswordButton({
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-base font-bold text-slate-900">Password Berhasil Diubah!</h4>
+              <h4 className="text-base font-bold text-slate-900">PIN Berhasil Diubah!</h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Salin password di bawah ini dan teruskan kepada jamaah melalui WhatsApp agar jamaah dapat login kembali.
+                Sampaikan PIN di bawah ini langsung kepada jamaah (sebaiknya secara pribadi), lalu sarankan jamaah menggantinya lewat menu “Lupa PIN”.
               </p>
             </div>
 
             {/* Password Display Box with Copy Button */}
             <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl p-3 px-4 font-mono text-base font-bold text-slate-800 tracking-wider">
-              <span>{newPassword}</span>
+              <span>{newPin}</span>
               <button
                 type="button"
                 onClick={handleCopy}
@@ -131,28 +131,30 @@ export default function ResetPasswordButton({
               <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="leading-relaxed">
                 <span className="font-bold block mb-0.5">Perhatian:</span>
-                Password lama jamaah akan langsung digantikan dengan password baru ini. Jamaah harus menggunakan password baru untuk login berikutnya.
+                PIN atau password lama jamaah langsung tidak berlaku. Gunakan ini hanya jika jamaah tidak bisa menerima kode WhatsApp; jamaah juga bisa membuat PIN sendiri lewat menu “Lupa PIN”.
               </div>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
-                Password Baru <span className="text-red-500">*</span>
+                PIN Baru (6 angka) <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
+                inputMode="numeric"
+                pattern="\d{6}"
+                maxLength={6}
                 required
-                minLength={6}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Masukkan password baru (min. 6 karakter)"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="Contoh: 482913"
                 disabled={loading}
                 autoFocus
                 className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 outline-none text-base text-slate-900 placeholder:text-slate-400 caret-amber-600 transition-all bg-white"
               />
             </div>
 
-            {/* Buttons: [Batal] [Simpan Password] */}
+            {/* Buttons: [Batal] [Simpan PIN] */}
             <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3 pt-3 border-t border-slate-100">
               <button
                 type="button"
@@ -164,11 +166,11 @@ export default function ResetPasswordButton({
               </button>
               <button
                 type="submit"
-                disabled={loading || newPassword.length < 6}
+                disabled={loading || newPin.length !== 6}
                 className="w-full sm:w-auto px-5 py-2.5 text-sm font-bold text-white bg-amber-600 hover:bg-amber-700 rounded-xl shadow-sm shadow-amber-600/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 {loading && <Loader2 className="w-4 h-4 animate-spin shrink-0" />}
-                <span>{loading ? 'Menyimpan...' : 'Simpan Password'}</span>
+                <span>{loading ? 'Menyimpan...' : 'Simpan PIN'}</span>
               </button>
             </div>
           </form>

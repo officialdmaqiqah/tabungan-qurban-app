@@ -4,7 +4,6 @@
 import 'server-only';
 import type { User } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
 import { isAdminOrSuperAdmin } from '@/lib/roles';
 
 export async function getCurrentUser(): Promise<User | null> {
@@ -26,21 +25,4 @@ export async function getAdminUser(): Promise<User | null> {
     .single();
 
   return isAdminOrSuperAdmin(profile?.role) ? user : null;
-}
-
-/** Batas waktu sejak akun dibuat agar aksi "setelah pendaftaran" masih diterima. */
-export const REGISTRATION_WINDOW_MS = 15 * 60 * 1000;
-
-/**
- * Mengambil auth user yang baru saja mendaftar (dibuat dalam REGISTRATION_WINDOW_MS).
- * Dipakai oleh aksi pasca-pendaftaran yang dipanggil sebelum pengguna login.
- */
-export async function getRecentlyRegisteredUser(userId: string): Promise<User | null> {
-  if (!userId || typeof userId !== 'string') return null;
-  const adminClient = createAdminClient();
-  const { data, error } = await adminClient.auth.admin.getUserById(userId);
-  if (error || !data?.user?.created_at) return null;
-
-  const age = Date.now() - new Date(data.user.created_at).getTime();
-  return age >= 0 && age <= REGISTRATION_WINDOW_MS ? data.user : null;
 }

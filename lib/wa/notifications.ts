@@ -182,7 +182,7 @@ https://tabunganqurban.kubahtimah.com/dashboard`;
 }
 
 // Helper to log skipped messages without sending to provider
-async function logSkipped(txId: string, userId: string, phone: string | null | undefined, reason: string, eventType: string) {
+async function logSkipped(txId: string | null, userId: string, phone: string | null | undefined, reason: string, eventType: string) {
   try {
     const supabaseAuth = await createClient();
     const supabase = createAdminClient();
@@ -218,7 +218,7 @@ export async function sendManualReminderWA(userId: string) {
 
     // Check opt-in & phone
     if (!profile.wa_opt_in || !profile.phone_normalized) {
-      await logSkipped(null as any, profile.id, profile.phone_normalized, 'wa_opt_in_false or empty phone', 'manual_reminder');
+      await logSkipped(null, profile.id, profile.phone_normalized, 'wa_opt_in_false or empty phone', 'manual_reminder');
       throw new Error('Jamaah belum opt-in WA atau nomor telepon kosong.');
     }
 
@@ -308,22 +308,21 @@ export async function sendRegistrationWelcomeWA(userId: string) {
 
     const phone = profile.phone_normalized;
     if (!profile.wa_opt_in || !phone) {
-      await logSkipped(null as any, userId, phone, 'wa_opt_in_false or empty phone', 'registration_welcome_jamaah');
+      await logSkipped(null, userId, phone, 'wa_opt_in_false or empty phone', 'registration_welcome_jamaah');
       return { success: false, error: 'wa_opt_in_false' };
     }
 
     const message = `Assalamu'alaikum Bpk/Ibu ${profile.full_name}.
 
-Alhamdulillah, akun Tabungan Qurban MAKT Anda berhasil dibuat.
+Alhamdulillah, pendaftaran Tabungan Qurban MAKT Anda berhasil.
 
-Silakan login melalui link berikut:
-https://tabunganqurban.kubahtimah.com/login
+Akun Anda sedang *menunggu persetujuan admin*. Kami akan mengabari Anda melalui WhatsApp setelah akun disetujui, lalu Anda bisa mulai melaporkan setoran.
 
-Data login:
-Username: ${phone}
-Password: ***
+Login: https://tabunganqurban.kubahtimah.com/login
+No. WhatsApp: ${phone}
+PIN: (PIN 6 digit yang Anda buat saat mendaftar)
 
-Segera login dan pilih paket qurban yang Anda inginkan di dashboard.`;
+Jangan berikan PIN Anda kepada siapa pun, termasuk panitia.`;
 
     await sendWhatsAppMessage({
       to: phone,
@@ -336,5 +335,92 @@ Segera login dan pilih paket qurban yang Anda inginkan di dashboard.`;
   } catch (error: any) {
     console.error('Error sendRegistrationWelcomeWA:', error);
     return { success: false, error: error.message };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Pendaftaran: notifikasi admin & hasil persetujuan
+// ---------------------------------------------------------------------------
+
+/** Memberi tahu nomor admin bahwa ada pendaftar baru yang perlu disetujui. */
+export async function notifyAdminOnNewRegistration(userId: string) {
+  try {
+    const supabase = createAdminClient();
+    const { data: settings } = await supabase
+      .from('whatsapp_settings')
+      .select('admin_notification_phone')
+      .single();
+    if (!settings?.admin_notification_phone) return;
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name, phone_normalized, kategori_jamaah, address')
+      .eq('id', userId)
+      .single();
+    if (!profile) return;
+
+    const message = `Assalamu'alaikum Admin MAKT.
+
+Ada pendaftar baru yang menunggu persetujuan:
+
+Nama: ${profile.full_name || '-'}
+No. WA: ${profile.phone_normalized || '-'}
+Kategori: ${profile.kategori_jamaah || '-'}
+Alamat: ${profile.address || '-'}
+
+Mohon dicek dan disetujui di dashboard admin:
+https://tabunganqurban.kubahtimah.com/admin/jamaah`;
+
+    await sendWhatsAppMessage({
+      to: settings.admin_notification_phone,
+      message,
+      eventType: 'registration_pending_admin',
+      recipientUserId: userId,
+    });
+  } catch (error) {
+    console.error('Error notifyAdminOnNewRegistration:', error);
+  }
+}
+
+/** Memberi tahu jamaah hasil persetujuan pendaftaran (jika bersedia menerima WA). */
+export async function notifyJamaahOnApprovalResult(userId: string, approved: boolean, note?: string | null) {
+  const eventType = approved ? 'registration_approved_jamaah' : 'registration_rejected_jamaah';
+  try {
+    const supabase = createAdminClient();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, full_name, phone_normalized, wa_opt_in')
+      .eq('id', userId)
+      .single();
+    if (!profile) return;
+
+    if (!profile.wa_opt_in || !profile.phone_normalized) {
+      await logSkipped(null, profile.id, profile.phone_normalized, 'wa_opt_in_false or empty phone', eventType);
+      return;
+    }
+
+    const message = approved
+      ? `Assalamu'alaikum Bpk/Ibu ${profile.full_name}.
+
+Alhamdulillah, akun Tabungan Qurban MAKT Anda telah *disetujui* oleh admin.
+
+Silakan login, pilih paket qurban, dan mulai laporkan setoran Anda:
+https://tabunganqurban.kubahtimah.com/login
+
+Semoga Allah mudahkan niat qurban Anda.`
+      : `Assalamu'alaikum Bpk/Ibu ${profile.full_name}.
+
+Mohon maaf, pendaftaran Tabungan Qurban MAKT Anda belum dapat kami setujui.
+${note ? `\nCatatan admin: ${note}\n` : ''}
+Silakan hubungi admin MAKT untuk informasi lebih lanjut.`;
+
+    await sendWhatsAppMessage({
+      to: profile.phone_normalized,
+      message,
+      eventType,
+      recipientUserId: profile.id,
+    });
+  } catch (error) {
+    console.error('Error notifyJamaahOnApprovalResult:', error);
   }
 }

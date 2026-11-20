@@ -20,6 +20,7 @@ export default function LaporSetoranPage() {
   const [method, setMethod] = useState('transfer');
   const [file, setFile] = useState<File | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [approvalStatus, setApprovalStatus] = useState<string | null>(null);
   const [bankAccounts, setBankAccounts] = useState<any[]>([
     {
       id: 'default',
@@ -41,6 +42,18 @@ export default function LaporSetoranPage() {
     fetchBankAccounts();
   }, [supabase]);
 
+  // Status persetujuan akun (laporan setoran hanya untuk akun yang sudah disetujui)
+  useEffect(() => {
+    async function fetchApproval() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('profiles').select('approval_status, role').eq('id', user.id).single();
+      const isAdmin = data?.role === 'admin' || data?.role === 'super_admin';
+      setApprovalStatus(isAdmin ? 'approved' : (data?.approval_status ?? 'approved'));
+    }
+    fetchApproval();
+  }, [supabase]);
+
   const handleCopyAccount = (accountNumber: string, id: string) => {
     navigator.clipboard.writeText(accountNumber);
     setCopiedId(id);
@@ -57,6 +70,9 @@ export default function LaporSetoranPage() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Anda harus login.");
+      if (approvalStatus && approvalStatus !== 'approved') {
+        throw new Error("Akun Anda belum disetujui admin, sehingga belum bisa melaporkan setoran.");
+      }
 
       const numericAmount = Number(amount);
       if (isNaN(numericAmount) || numericAmount <= 0) {
@@ -323,10 +339,10 @@ export default function LaporSetoranPage() {
           <div className="pt-4">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || (approvalStatus !== null && approvalStatus !== 'approved')}
               className="w-full bg-emerald-600 text-white font-bold py-4 rounded-2xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed text-sm md:text-base flex items-center justify-center gap-2"
             >
-              {loading ? 'Sedang Memproses...' : 'Kirim Laporan Setoran'}
+              {loading ? 'Sedang Memproses...' : (approvalStatus && approvalStatus !== 'approved' ? 'Menunggu Persetujuan Admin' : 'Kirim Laporan Setoran')}
             </button>
           </div>
         </form>

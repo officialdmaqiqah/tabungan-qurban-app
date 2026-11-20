@@ -8,6 +8,9 @@ import { formatCurrency, calculateDaysLeft } from '@/lib/utils';
 import InputTunaiForm from './InputTunaiForm';
 import DeleteConfirmButton from '@/components/DeleteConfirmButton';
 import ResetPasswordButton from './ResetPasswordButton';
+import ApprovalActions from '../ApprovalActions';
+import { resetJamaahPin } from '@/app/actions/admin_jamaah';
+import { getAdminUser } from '@/lib/auth-guards';
 import KategoriSelect from './KategoriSelect';
 import ManualReminderButton from './ManualReminderButton';
 
@@ -83,6 +86,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     const packageName = formData.get('packageName') as string || packageId;
     
     if (!userId || !packageId) return;
+    if (!(await getAdminUser())) return;
     
     const supabaseAction = await createClient();
     const { data: { user } } = await supabaseAction.auth.getUser();
@@ -140,6 +144,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     const txId = formData.get('txId') as string;
     const txAmount = formData.get('txAmount') as string || txId;
     if (!txId) return;
+    if (!(await getAdminUser())) return;
     
     const supabaseAction = await createClient();
     const { data: { user } } = await supabaseAction.auth.getUser();
@@ -163,48 +168,10 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     revalidatePath(`/admin/jamaah/${jamaahId}`);
   }
 
-  async function forceResetPassword(formData: FormData) {
-    'use server';
-    const userId = formData.get('userId') as string;
-    const newPassword = formData.get('newPassword') as string;
-    if (!userId || !newPassword || newPassword.length < 6) return { success: false, error: 'Data tidak valid' };
-    
-    const supabaseAction = await createClient();
-    const { data: { user } } = await supabaseAction.auth.getUser();
-
-    const adminClient = createAdminClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-    
-    // Check if acting user is admin
-    const { data: profile } = await supabaseAction.from('profiles').select('role').eq('id', user?.id).single();
-    if (profile?.role !== 'admin' && profile?.role !== 'super_admin') {
-      return { success: false, error: 'Akses ditolak' };
-    }
-
-    const { error } = await adminClient.auth.admin.updateUserById(userId, { password: newPassword });
-    
-    if (error) {
-      return { success: false, error: error.message };
-    }
-    
-    if (user) {
-      await adminClient.from('audit_logs').insert({
-        admin_id: user.id,
-        action: 'reset password',
-        target_id: userId,
-        details: `Admin mereset password jamaah: ${jamaah.full_name}`
-      });
-    }
-
-    return { success: true };
-  }
-
   async function updateKategori(formData: FormData) {
     'use server';
     const kategori = formData.get('kategori') as string;
-    console.log('updateKategori called with:', kategori, 'for jamaahId:', jamaahId);
+    if (!(await getAdminUser())) return;
     
     const adminClient = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -244,6 +211,15 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
               <div className="flex-1 min-w-0">
                 <h2 className="text-lg font-bold text-slate-900 truncate capitalize">{jamaah.full_name}</h2>
                 <p className="text-sm text-slate-500 mb-3">{jamaah.phone}</p>
+                {jamaah.role !== 'admin' && jamaah.role !== 'super_admin' && jamaah.approval_status && jamaah.approval_status !== 'approved' && (
+                  <div className="mb-3">
+                    <ApprovalActions
+                      userId={jamaah.id}
+                      fullName={jamaah.full_name || 'Jamaah'}
+                      status={jamaah.approval_status}
+                    />
+                  </div>
+                )}
                 <div className="flex flex-wrap gap-2">
                   {jamaah.phone && (
                     <a 
@@ -263,7 +239,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                       phone={jamaah.phone_normalized || ''} 
                     />
                   )}
-                  <ResetPasswordButton userId={jamaahId} resetAction={forceResetPassword} />
+                  <ResetPasswordButton userId={jamaahId} resetAction={resetJamaahPin} />
                 </div>
               </div>
             </div>

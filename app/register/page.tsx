@@ -2,25 +2,26 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
 import { toTitleCase, formatWhatsAppNumber } from '@/lib/utils';
-import { sendRegistrationWelcomeWA } from '@/app/actions/transaction_whatsapp';
-import { updateProfileAfterRegistration } from '@/app/actions/profile';
+import { requestRegistrationOtp, completeRegistration } from '@/app/actions/auth';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { ShieldCheck, UserPlus, MapPin, Package as PackageIcon } from 'lucide-react';
+import { ShieldCheck, MapPin, Package as PackageIcon, MessageCircle, ArrowLeft, Loader2 } from 'lucide-react';
 
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const packageId = searchParams.get('packageId');
-  const supabase = createClient();
-  
   const [loading, setLoading] = useState(false);
   
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
+  const [pin, setPin] = useState('');
+  const [pinConfirm, setPinConfirm] = useState('');
+  const [step, setStep] = useState<'form' | 'otp'>('form');
+  const [otp, setOtp] = useState('');
+  const [normalizedPhone, setNormalizedPhone] = useState('');
+  const [resendIn, setResendIn] = useState(0);
   const [kategoriJamaah, setKategoriJamaah] = useState('');
   const [gender, setGender] = useState('');
   const [waOptIn, setWaOptIn] = useState(false);
@@ -69,94 +70,180 @@ function RegisterForm() {
       .catch(console.error);
   }, [selectedDistrict]);
 
+  // Hitung mundur tombol "Kirim ulang kode"
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn(resendIn - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
+
+  const buildAddress = () => {
+    const regencyName = regencies.find(r => r.id === selectedRegency)?.name || '';
+    const districtName = districts.find(d => d.id === selectedDistrict)?.name || '';
+    const villageName = villages.find(v => v.id === selectedVillage)?.name || '';
+    if (selectedRegency && selectedDistrict && selectedVillage) {
+      return `${detailAddress ? detailAddress + ', ' : ''}Kel. ${villageName}, Kec. ${districtName}, ${regencyName}, Kepulauan Bangka Belitung`;
+    }
+    return detailAddress;
+  };
+
+  const sendOtp = async (phoneToUse: string) => {
+    const res = await requestRegistrationOtp(phoneToUse);
+    if (!res.success) {
+      toast.error(res.error);
+      return false;
+    }
+    toast.success(res.message || 'Kode verifikasi sudah dikirim ke WhatsApp Anda.');
+    setResendIn(60);
+    return true;
+  };
+
+  // Langkah 1: validasi formulir lalu kirim kode OTP ke WhatsApp
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    
-    // Validasi sederhana
-    if (!phone || !password || !fullName || !gender || !kategoriJamaah) {
+
+    if (!phone || !pin || !pinConfirm || !fullName || !gender || !kategoriJamaah) {
       toast.error('Harap isi semua field yang wajib.');
-      setLoading(false);
       return;
     }
-
     if (!selectedRegency || !selectedDistrict || !selectedVillage) {
       toast.error('Harap isi lengkap alamat (Kabupaten, Kecamatan, Kelurahan).');
-      setLoading(false);
       return;
     }
-
     const { formatted: validPhone, error: phoneError } = formatWhatsAppNumber(phone);
     if (phoneError || !validPhone) {
       toast.error(phoneError || 'Format nomor tidak valid.');
-      setLoading(false);
+      return;
+    }
+    if (!/^\d{6}$/.test(pin)) {
+      toast.error('PIN harus 6 digit angka.');
+      return;
+    }
+    if (pin !== pinConfirm) {
+      toast.error('Konfirmasi PIN tidak sama.');
       return;
     }
 
+    setLoading(true);
     try {
-      const dummyEmail = `${validPhone}@qurban.makt.id`;
-      
-      const regencyName = regencies.find(r => r.id === selectedRegency)?.name || '';
-      const districtName = districts.find(d => d.id === selectedDistrict)?.name || '';
-      const villageName = villages.find(v => v.id === selectedVillage)?.name || '';
-      
-      let fullAddress = detailAddress;
-      if (selectedRegency && selectedDistrict && selectedVillage) {
-        fullAddress = `${detailAddress ? detailAddress + ', ' : ''}Kel. ${villageName}, Kec. ${districtName}, ${regencyName}, Kepulauan Bangka Belitung`;
+      if (await sendOtp(validPhone)) {
+        setNormalizedPhone(validPhone);
+        setOtp('');
+        setStep('otp');
       }
-      
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: dummyEmail,
-        password: password,
-        options: {
-          data: {
-            full_name: fullName,
-            phone: validPhone,
-            address: fullAddress,
-            role: 'jamaah',
-            kategori_jamaah: kategoriJamaah,
-            gender: gender,
-            is_active: true,
-            is_anonymous: false,
-            wa_opt_in: waOptIn,
-            wa_opt_in_at: waOptIn ? new Date().toISOString() : null,
-            wa_opt_in_source: 'register',
-            phone_normalized: validPhone
-          }
-        }
-      });
-
-      if (signUpError) throw signUpError;
-
-      if (data?.user) {
-        // Update the profile manually to ensure kategori and gender are recorded properly
-        // since the database handle_new_user trigger might not catch them
-        await updateProfileAfterRegistration(data.user.id, kategoriJamaah, gender);
-
-        // Await the WhatsApp notification so the serverless function doesn't terminate early
-        await sendRegistrationWelcomeWA(data.user.id, validPhone, waOptIn).catch(e => console.error(e));
-      }
-
-      // Assign package if packageId exists
-      if (packageId && data?.user) {
-        // We wait a short time to ensure profile is created via trigger before inserting package
-        await new Promise(resolve => setTimeout(resolve, 500));
-        await supabase.from('user_packages').insert({
-          user_id: data.user.id,
-          package_id: packageId,
-          quantity: 1
-        });
-      }
-
-      toast.success('Pendaftaran berhasil! Silakan masuk ke akun Anda.');
-      router.push('/login');
-      
-    } catch (err: any) {
-      toast.error(err.message || 'Terjadi kesalahan saat mendaftar');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (resendIn > 0 || !normalizedPhone) return;
+    setLoading(true);
+    try {
+      await sendOtp(normalizedPhone);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Langkah 2: verifikasi kode lalu buat akun
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error('Kode verifikasi harus 6 digit angka.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await completeRegistration({
+        fullName: toTitleCase(fullName.trim()),
+        phone: normalizedPhone,
+        pin,
+        kategoriJamaah,
+        gender,
+        address: buildAddress(),
+        waOptIn,
+        packageId,
+        otp,
+      });
+      if (!res.success) {
+        toast.error(res.error);
+        return;
+      }
+      toast.success(res.message || 'Pendaftaran berhasil!');
+      router.push(res.redirectTo || '/login');
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err?.message || 'Terjadi kesalahan saat mendaftar');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (step === 'otp') {
+    return (
+      <div className="flex-1 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-slate-50">
+        <div className="w-full max-w-[440px] bg-white p-6 sm:p-8 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100">
+          <div className="text-center mb-6">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-3.5 border border-emerald-100/60">
+              <MessageCircle className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Verifikasi WhatsApp</h1>
+            <p className="text-sm text-slate-500 mt-1.5 leading-relaxed">
+              Masukkan kode 6 angka yang kami kirim ke WhatsApp <span className="font-semibold text-slate-700">+{normalizedPhone}</span>.
+            </p>
+          </div>
+
+          <form onSubmit={handleVerify} className="space-y-4">
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="\d{6}"
+              maxLength={6}
+              required
+              autoFocus
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              className="w-full h-[56px] bg-white text-slate-900 placeholder:text-slate-300 caret-emerald-700 border border-slate-300 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-center text-2xl font-bold tracking-[0.5em] rounded-xl px-4 outline-none transition-all"
+              placeholder="••••••"
+            />
+
+            <button
+              type="submit"
+              disabled={loading || otp.length !== 6}
+              className="w-full h-[52px] bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base rounded-xl transition-all shadow-md shadow-emerald-600/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (<><Loader2 className="w-5 h-5 animate-spin" /><span>Memproses...</span></>) : <span>Verifikasi & Buat Akun</span>}
+            </button>
+          </form>
+
+          <div className="mt-5 flex items-center justify-between text-sm">
+            <button
+              type="button"
+              onClick={() => setStep('form')}
+              disabled={loading}
+              className="inline-flex items-center gap-1 text-slate-500 hover:text-slate-700 disabled:opacity-50"
+            >
+              <ArrowLeft className="w-4 h-4" /> Ubah data
+            </button>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={loading || resendIn > 0}
+              className="text-emerald-600 font-semibold hover:underline disabled:text-slate-400 disabled:no-underline"
+            >
+              {resendIn > 0 ? `Kirim ulang (${resendIn} dtk)` : 'Kirim ulang kode'}
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-400 mt-5 text-center leading-relaxed">
+            Kode tidak masuk? Pastikan nomor aktif di WhatsApp. Kode berlaku 10 menit.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8 bg-slate-50">
@@ -242,22 +329,43 @@ function RegisterForm() {
                   className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
                   placeholder="0812..."
                 />
-                <p className="text-xs text-slate-500 mt-1">Digunakan untuk masuk ke akun dan pengingat.</p>
+                <p className="text-xs text-slate-500 mt-1">Kode verifikasi akan dikirim ke nomor ini lewat WhatsApp.</p>
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password *</label>
-                <input 
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
-                  placeholder="Minimal 6 karakter"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">PIN (6 angka) *</label>
+                  <input 
+                    name="pin"
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    pattern="\d{6}"
+                    maxLength={6}
+                    required
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base tracking-[0.3em] border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
+                    placeholder="••••••"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Ulangi PIN *</label>
+                  <input 
+                    name="pinConfirm"
+                    type="password"
+                    inputMode="numeric"
+                    autoComplete="new-password"
+                    pattern="\d{6}"
+                    maxLength={6}
+                    required
+                    value={pinConfirm}
+                    onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    className="w-full px-4 py-3 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 text-base tracking-[0.3em] border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 outline-none transition-all"
+                    placeholder="••••••"
+                  />
+                </div>
+                <p className="col-span-2 text-xs text-slate-500 -mt-2">PIN dipakai untuk masuk. Hindari angka mudah ditebak seperti 123456 atau 111111.</p>
               </div>
 
               <div className="flex items-start gap-3 mt-4">
@@ -352,7 +460,7 @@ function RegisterForm() {
               disabled={loading}
               className="w-full md:w-auto px-8 py-3.5 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-emerald-600/20 order-1 md:order-2"
             >
-              {loading ? 'Memproses...' : 'Daftar & Lanjutkan'}
+              {loading ? 'Mengirim kode...' : 'Daftar & Kirim Kode WA'}
             </button>
           </div>
         </form>
