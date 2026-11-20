@@ -33,5 +33,36 @@ export default function manifest(): MetadataRoute.Manifest {
       },
     ],
     categories: ['finance', 'productivity'],
+    // Pratinjau di jendela install (Android/Chrome). Ganti file di public/screenshots bila tampilan berubah.
+    screenshots: [
+      {
+        src: '/screenshots/beranda-hp.webp',
+        sizes: '780x1688',
+        type: 'image/webp',
+        form_factor: 'narrow',
+        label: 'Beranda Tabungan Qurban MAKT dengan kalkulator target qurban',
+      },
+      {
+        src: '/screenshots/masuk-hp.webp',
+        sizes: '780x1688',
+        type: 'image/webp',
+        form_factor: 'narrow',
+        label: 'Masuk dengan nomor WhatsApp dan PIN 6 angka',
+      },
+      {
+        src: '/screenshots/daftar-hp.webp',
+        sizes: '780x1688',
+        type: 'image/webp',
+        form_factor: 'narrow',
+        label: 'Daftar tabungan qurban dengan verifikasi WhatsApp',
+      },
+      {
+        src: '/screenshots/beranda-desktop.webp',
+        sizes: '1280x800',
+        type: 'image/webp',
+        form_factor: 'wide',
+        label: 'Beranda Tabungan Qurban MAKT di komputer',
+      },
+    ],
   };
 }
