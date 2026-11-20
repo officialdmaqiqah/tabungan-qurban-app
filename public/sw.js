@@ -1,7 +1,20 @@
-const CACHE_NAME = 'makt-pwa-v2';
+// Service Worker Tabungan Qurban MAKT
+//
+// Prinsip:
+// - Data pribadi/keuangan (dashboard, admin, API, Supabase) TIDAK PERNAH disimpan di HP.
+// - Halaman (HTML) selalu diambil dari jaringan; bila offline tampil /offline.html.
+// - File tampilan statis (JS/CSS/font/gambar) disimpan agar cepat, dengan batas jumlah
+//   sehingga file dari versi lama terhapus otomatis.
+//
+// Naikkan VERSION setiap kali isi PRECACHE_ASSETS berubah (mis. ikon diganti).
+const VERSION = 'v3';
+const PRECACHE = `makt-precache-${VERSION}`;
+const RUNTIME = 'makt-runtime';
+const RUNTIME_MAX_ENTRIES = 80;
+const OFFLINE_URL = '/offline.html';
 
-// Static public assets to precache (strictly static icons/manifest/logos only)
 const PRECACHE_ASSETS = [
+  OFFLINE_URL,
   '/manifest.webmanifest',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
@@ -11,121 +24,119 @@ const PRECACHE_ASSETS = [
   '/logo-white.png',
 ];
 
-// Install Event: cache static assets and skip waiting immediately
+// Install: simpan aset inti (termasuk halaman offline), lalu langsung aktif
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
-      .open(CACHE_NAME)
+      .open(PRECACHE)
       .then((cache) => cache.addAll(PRECACHE_ASSETS))
-      .catch((err) => {
-        console.warn('[SW] Precache asset warning:', err);
-      })
+      .catch((err) => console.warn('[SW] Precache warning:', err))
       .then(() => self.skipWaiting())
   );
 });
 
-// Activate Event: clean up outdated caches (including makt-pwa-v1) & claim clients
+// Activate: hapus semua cache selain versi aktif (termasuk makt-pwa-v1/v2 lama)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((cacheNames) =>
+      .then((names) =>
         Promise.all(
-          cacheNames.map((name) => {
-            if (name !== CACHE_NAME) {
-              console.log('[SW] Purging old cache:', name);
+          names
+            .filter((name) => name !== PRECACHE && name !== RUNTIME)
+            .map((name) => {
+              console.log('[SW] Menghapus cache lama:', name);
               return caches.delete(name);
-            }
-          })
+            })
         )
       )
+      .then(() => trimCache(RUNTIME, RUNTIME_MAX_ENTRIES))
       .then(() => self.clients.claim())
   );
 });
 
-// Fetch Event: strictly enforce network-only for all private/financial/dynamic data & pages
+// Hapus entri tertua bila cache melebihi batas (urutan keys() = urutan penyimpanan)
+async function trimCache(cacheName, maxEntries) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  const excess = keys.length - maxEntries;
+  for (let i = 0; i < excess; i++) {
+    await cache.delete(keys[i]);
+  }
+}
+
+async function putInRuntime(request, response) {
+  const cache = await caches.open(RUNTIME);
+  // Hapus dulu supaya entri yang diperbarui pindah ke posisi "terbaru"
+  await cache.delete(request);
+  await cache.put(request, response);
+  await trimCache(RUNTIME, RUNTIME_MAX_ENTRIES);
+}
+
+async function offlineResponse() {
+  const cached = await caches.match(OFFLINE_URL);
+  return (
+    cached ||
+    new Response('<h1>Tidak ada koneksi internet</h1><p>Silakan periksa koneksi Anda lalu coba lagi.</p>', {
+      status: 503,
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    })
+  );
+}
+
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests
-  if (event.request.method !== 'GET') {
+  const request = event.request;
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  const sameOrigin = url.origin === self.location.origin;
+
+  // 1. Navigasi halaman: selalu dari jaringan; bila gagal tampilkan halaman offline.
+  //    Berlaku juga untuk dashboard/admin, tanpa pernah menyimpan isi halamannya.
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).catch(() => offlineResponse()));
     return;
   }
 
-  const url = new URL(event.request.url);
-
-  // SECURITY RULE:
-  // Never cache API routes, admin, dashboard, auth, Supabase queries, mutations, or private tokens.
+  // 2. Data pribadi/dinamis: jaringan saja, jangan disentuh cache
   const isPrivateOrDynamic =
+    !sameOrigin ||
     url.pathname.startsWith('/api') ||
     url.pathname.startsWith('/admin') ||
     url.pathname.startsWith('/dashboard') ||
     url.pathname.startsWith('/auth') ||
-    url.hostname.includes('supabase.co') ||
+    url.pathname.startsWith('/qris') ||
     url.searchParams.has('token') ||
-    url.pathname.includes('storage/v1/object');
+    url.searchParams.has('_rsc') ||
+    request.headers.get('RSC') === '1';
+  if (isPrivateOrDynamic) return;
 
-  if (isPrivateOrDynamic) {
-    // Pure network only — never touch cache storage
+  // 3. Aset inti (precache): ambil dari cache, perbarui dari jaringan bila tersedia
+  if (PRECACHE_ASSETS.includes(url.pathname)) {
+    event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
     return;
   }
 
-  // HTML page navigations (e.g. /login, /, /transparansi):
-  // ALWAYS Network First to guarantee latest HTML and UI state
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch((err) => {
-        return caches.match(event.request).then((cached) => {
-          if (cached) return cached;
-          return Promise.reject(err);
-        });
-      })
-    );
-    return;
-  }
-
-  // Static assets (CSS, JS chunks, fonts, icons, images)
+  // 4. File tampilan statis: cache dulu, perbarui di latar belakang (stale-while-revalidate)
   const isStaticAsset =
-    url.pathname.startsWith('/_next/static') ||
+    url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/icons/') ||
-    url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.jpg') ||
-    url.pathname.endsWith('.jpeg') ||
-    url.pathname.endsWith('.svg') ||
-    url.pathname.endsWith('.webp') ||
-    url.pathname.endsWith('.woff2');
+    /\.(?:png|jpg|jpeg|svg|webp|gif|ico|woff2?)$/.test(url.pathname);
 
   if (isStaticAsset) {
+    const network = fetch(request).then(async (response) => {
+      if (response && response.status === 200 && response.type === 'basic') {
+        await putInRuntime(request, response.clone());
+      }
+      return response;
+    });
+    // Pastikan penyimpanan di latar belakang selesai walau respons sudah dikirim dari cache
+    event.waitUntil(network.catch(() => {}));
     event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          // Stale-While-Revalidate in background
-          fetch(event.request)
-            .then((networkResponse) => {
-              if (networkResponse && networkResponse.status === 200) {
-                const responseToCache = networkResponse.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                  cache.put(event.request, responseToCache);
-                });
-              }
-            })
-            .catch(() => {});
-          return cachedResponse;
-        }
-
-        return fetch(event.request).then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200) {
-            return networkResponse;
-          }
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          return networkResponse;
-        });
-      })
+      caches.match(request, { cacheName: RUNTIME }).then(
+        (cached) => cached || network.catch(() => Response.error())
+      )
     );
-    return;
   }
-
-  // Default fallback to network
-  event.respondWith(fetch(event.request));
+  // Selain itu: biarkan browser menangani seperti biasa (jaringan)
 });
