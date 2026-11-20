@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Home, Send, Package, HelpCircle, Video, LayoutDashboard } from 'lucide-react';
+import { LogOut, Home, Send, Package, HelpCircle, Video, LayoutDashboard, Clock, XCircle } from 'lucide-react';
 import DashboardMobileNav from '@/components/dashboard/DashboardMobileNav';
 import { isAdminOrSuperAdmin } from '@/lib/roles';
 
@@ -19,7 +19,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, role, phone')
+    .select('full_name, role, phone, approval_status, approval_note')
     .eq('id', user.id)
     .single();
 
@@ -69,6 +69,25 @@ export default async function DashboardLayout({
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 overflow-y-auto pb-24 md:pb-8">
+        {!isAdminOrSuper && profile?.approval_status === 'pending' && (
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+            <Clock className="w-5 h-5 shrink-0 mt-0.5 text-amber-600" />
+            <div className="text-sm leading-relaxed">
+              <p className="font-bold">Akun Anda sedang menunggu persetujuan admin.</p>
+              <p className="text-amber-800/90">Anda sudah bisa melihat dan memilih paket qurban. Laporan setoran bisa dikirim setelah akun disetujui. Kami akan mengabari Anda lewat WhatsApp.</p>
+            </div>
+          </div>
+        )}
+        {!isAdminOrSuper && profile?.approval_status === 'rejected' && (
+          <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-900">
+            <XCircle className="w-5 h-5 shrink-0 mt-0.5 text-red-600" />
+            <div className="text-sm leading-relaxed">
+              <p className="font-bold">Pendaftaran Anda belum dapat disetujui.</p>
+              {profile?.approval_note && <p className="text-red-800/90">Catatan admin: {profile.approval_note}</p>}
+              <p className="text-red-800/90">Silakan hubungi admin MAKT untuk informasi lebih lanjut.</p>
+            </div>
+          </div>
+        )}
         {children}
       </main>
 

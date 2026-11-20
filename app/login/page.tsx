@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { formatWhatsAppNumber } from '@/lib/utils';
+import { loginWithPin } from '@/app/actions/auth';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ShieldCheck, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -14,8 +15,8 @@ export default function LoginPage() {
   
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [pin, setPin] = useState('');
+  const [showPin, setShowPin] = useState(false);
 
   // Fallback client-side check if user already has an active session
   useEffect(() => {
@@ -36,48 +37,33 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    
-    if (!phone || !password) {
-      toast.error('Harap isi No. WhatsApp dan password.');
-      setLoading(false);
+
+    if (!phone || !pin) {
+      toast.error('Harap isi No. WhatsApp dan PIN.');
       return;
     }
-
     const { formatted: validPhone, error: phoneError } = formatWhatsAppNumber(phone);
     if (phoneError || !validPhone) {
       toast.error(phoneError || 'Format nomor tidak valid.');
-      setLoading(false);
+      return;
+    }
+    if (!/^\d{6}$/.test(pin)) {
+      toast.error('PIN harus 6 digit angka.');
       return;
     }
 
+    setLoading(true);
     try {
-      const dummyEmail = `${validPhone}@qurban.makt.id`;
-      
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: dummyEmail,
-        password: password,
-      });
-
-      if (signInError) throw signInError;
-
-      // Cek role user
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
-
-      const isAdminUser = profileData?.role === 'admin' || profileData?.role === 'super_admin';
-
-      if (isAdminUser) {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
+      const res = await loginWithPin(validPhone, pin);
+      if (!res.success) {
+        toast.error(res.error);
+        setPin('');
+        return;
       }
-      
+      router.push(res.redirectTo || '/dashboard');
+      router.refresh();
     } catch (err: any) {
-      toast.error(err.message || 'Nomor WhatsApp atau password salah');
+      toast.error(err?.message || 'Terjadi kesalahan saat masuk.');
     } finally {
       setLoading(false);
     }
@@ -117,41 +103,45 @@ export default function LoginPage() {
             />
           </div>
 
-          {/* Password Field */}
+          {/* PIN Field */}
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-xs sm:text-sm font-semibold text-slate-700">
-                Password
+                PIN (6 angka)
               </label>
-              <a 
-                href="https://wa.me/6287791134515?text=Assalamu'alaikum%20Admin,%20saya%20kesulitan%20login%20ke%20akun%20Tabungan%20Qurban%20saya.%20Mohon%20bantuannya%20untuk%20reset%20password." 
-                target="_blank" 
-                rel="noreferrer"
+              <Link
+                href="/lupa-pin"
                 className="text-xs text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors"
               >
-                Lupa password?
-              </a>
+                Buat PIN / Lupa PIN?
+              </Link>
             </div>
             <div className="relative">
               <input 
-                name="password"
-                type={showPassword ? 'text' : 'password'}
+                name="pin"
+                type={showPin ? 'text' : 'password'}
+                inputMode="numeric"
                 autoComplete="current-password"
+                pattern="\d{6}"
+                maxLength={6}
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-[52px] min-w-0 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-base opacity-100 rounded-xl pl-4 pr-12 outline-none transition-all box-border"
-                placeholder="Masukkan password"
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                className="w-full h-[52px] min-w-0 bg-white text-slate-900 placeholder:text-slate-400 caret-emerald-700 border border-slate-200 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/10 text-base tracking-[0.3em] opacity-100 rounded-xl pl-4 pr-12 outline-none transition-all box-border"
+                placeholder="••••••"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => setShowPin(!showPin)}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2 rounded-lg transition-colors focus:outline-none cursor-pointer"
-                aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                aria-label={showPin ? 'Sembunyikan PIN' : 'Tampilkan PIN'}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPin ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+            <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+              Sebelumnya masuk dengan password? Klik <span className="font-semibold">Buat PIN</span> untuk membuat PIN lewat kode WhatsApp.
+            </p>
           </div>
 
           {/* Tombol Masuk */}

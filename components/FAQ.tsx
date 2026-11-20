@@ -29,7 +29,7 @@ export default function FAQ({ bankAccounts = [] }: { bankAccounts?: any[] }) {
   const faqs = [
     {
       question: "Bagaimana cara menabung qurban?",
-      answer: "Anda dapat mendaftar melalui aplikasi ini, kemudian memilih paket qurban yang diinginkan. Setelah itu, Anda bisa mulai menyetorkan tabungan baik secara tunai ke panitia maupun transfer ke rekening resmi masjid, lalu melaporkannya melalui menu 'Lapor Setoran'."
+      answer: "Anda dapat mendaftar melalui aplikasi ini (nomor WhatsApp diverifikasi dengan kode, lalu akun disetujui oleh admin), kemudian memilih paket qurban yang diinginkan. Setelah itu, Anda bisa mulai menyetorkan tabungan baik secara tunai ke panitia maupun transfer ke rekening resmi masjid, lalu melaporkannya melalui menu 'Lapor Setoran'."
     },
     {
       question: "Apakah saya bisa mengganti target qurban di tengah jalan?",
@@ -40,8 +40,8 @@ export default function FAQ({ bankAccounts = [] }: { bankAccounts?: any[] }) {
       answer: "Selama status setoran masih 'Pending', Anda bisa membatalkan laporan Anda dan mengirim ulang. Jika sudah diverifikasi, silakan hubungi admin untuk melakukan koreksi saldo."
     },
     {
-      question: "Setelah jamaah mengirim reset password, seterusnya gimana?",
-      answer: "Admin akan memverifikasi identitas Anda (misalnya dengan mencocokkan nomor WhatsApp dan nama Anda). Setelah sesuai, Admin akan membuatkan password baru secara manual dan memberikannya langsung kepada Anda melalui WhatsApp."
+      question: "Saya lupa PIN atau belum punya PIN, bagaimana?",
+      answer: "Di halaman Masuk, klik 'Buat PIN / Lupa PIN', masukkan nomor WhatsApp yang terdaftar, lalu masukkan kode verifikasi yang dikirim ke WhatsApp Anda dan buat PIN baru 6 angka. Jika kode tidak bisa diterima, hubungi admin untuk dibantu mengatur ulang PIN."
     },
     {
       question: "Ke mana saya harus transfer uang tabungannya?",

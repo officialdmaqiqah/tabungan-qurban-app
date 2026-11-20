@@ -10,9 +10,16 @@ export interface WhatsAppParams {
   eventType: string;
   recipientUserId?: string;
   relatedTransactionId?: string;
+  /** Teks yang disimpan di log (mis. untuk menyamarkan kode OTP). Default: message. */
+  logMessage?: string;
 }
 
-export async function sendWhatsAppMessageInternal(params: WhatsAppParams) {
+export interface WhatsAppSendResult {
+  status: string;
+  errorMessage: string | null;
+}
+
+export async function sendWhatsAppMessageInternal(params: WhatsAppParams): Promise<WhatsAppSendResult> {
   const supabaseAuth = await createClient();
   const supabase = createAdminClient();
 
@@ -124,7 +131,7 @@ export async function sendWhatsAppMessageInternal(params: WhatsAppParams) {
       recipient_phone: phone,
       recipient_name: recipientName,
       event_type: params.eventType,
-      message: params.message,
+      message: params.logMessage ?? params.message,
       status: status,
       provider: 'xsender',
       provider_response: providerResponse,
@@ -136,4 +143,6 @@ export async function sendWhatsAppMessageInternal(params: WhatsAppParams) {
   } catch (dbError) {
     console.error('Failed to save whatsapp log', dbError);
   }
+
+  return { status, errorMessage };
 }

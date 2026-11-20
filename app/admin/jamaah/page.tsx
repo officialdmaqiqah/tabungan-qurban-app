@@ -5,6 +5,7 @@ import { Users, Eye, ShieldAlert, UserCheck, User } from 'lucide-react';
 import Link from 'next/link';
 import ChangeRoleModal from './ChangeRoleModal';
 import EditNameModal from './EditNameModal';
+import ApprovalActions, { ApprovalBadge } from './ApprovalActions';
 import { getEffectiveRole, isSuperAdmin, UserRole, ROLE_LABELS } from '@/lib/roles';
 
 export default async function AdminJamaahPage({
@@ -49,6 +50,15 @@ export default async function AdminJamaahPage({
   const { data: jamaahList, count: totalJamaah } = await query;
 
   // Fetch transactions for the current page to calculate progress
+  // Pendaftar yang menunggu persetujuan (selalu tampil di atas, tidak terpengaruh pencarian/halaman)
+  const { data: pendingList } = await supabase
+    .from('profiles')
+    .select('id, full_name, phone_normalized, phone, kategori_jamaah, address, created_at')
+    .eq('approval_status', 'pending')
+    .not('role', 'in', '(admin,super_admin)')
+    .order('created_at', { ascending: true })
+    .limit(50);
+
   const jamaahIds = jamaahList?.map(j => j.id) || [];
   const { data: transactions } = await supabase
     .from('transactions')
@@ -77,6 +87,29 @@ export default async function AdminJamaahPage({
         )}
       </div>
 
+      {pendingList && pendingList.length > 0 && (
+        <div className="bg-amber-50/60 border border-amber-200 rounded-xl p-4 space-y-3">
+          <div>
+            <h2 className="text-base font-bold text-amber-900">Menunggu Persetujuan ({pendingList.length})</h2>
+            <p className="text-xs text-amber-800/80">Nomor WhatsApp pendaftar sudah terverifikasi lewat kode OTP. Periksa nama, kategori, dan alamat sebelum menyetujui.</p>
+          </div>
+          <div className="divide-y divide-amber-100 bg-white rounded-lg border border-amber-100">
+            {pendingList.map((p) => (
+              <div key={p.id} className="p-3 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <Link href={`/admin/jamaah/${p.id}`} className="font-semibold text-slate-900 hover:underline capitalize">{p.full_name || '-'}</Link>
+                  <div className="text-xs text-slate-500 mt-0.5">
+                    {p.phone_normalized || p.phone || '-'} · {p.kategori_jamaah || 'Tanpa kategori'} · Daftar {new Date(p.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' })}
+                  </div>
+                  {p.address && <div className="text-xs text-slate-500 mt-0.5 line-clamp-2">{p.address}</div>}
+                </div>
+                <ApprovalActions userId={p.id} fullName={p.full_name || 'Jamaah'} status="pending" />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6">
         <SearchAndFilter />
       </div>
@@ -103,6 +136,9 @@ export default async function AdminJamaahPage({
                     <tr key={j.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-3">
                         <div className="font-semibold text-slate-900 capitalize">{j.full_name}</div>
+                        {j.approval_status && j.approval_status !== 'approved' && (
+                          <div className="mt-1"><ApprovalBadge status={j.approval_status} /></div>
+                        )}
                         {j.kategori_jamaah ? (
                           <div className="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100">
                             {j.kategori_jamaah}
