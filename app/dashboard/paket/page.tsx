@@ -33,6 +33,13 @@ export default async function PaketJamaahPage() {
     const packageId = formData.get('package_id') as string;
     const quantity = parseInt(formData.get('quantity') as string) || 1;
 
+    // Validasi di server: jumlah 1-20 dan paket benar-benar ada
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) return;
+    if (packageId) {
+      const { data: pkg } = await supabase.from('qurban_packages').select('id').eq('id', packageId).maybeSingle();
+      if (!pkg) return;
+    }
+
     if (user && packageId) {
       // Create user_package entry
       await supabase.from('user_packages').insert({
