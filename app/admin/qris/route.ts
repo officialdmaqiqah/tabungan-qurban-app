@@ -15,11 +15,6 @@ const ALLOWED: Record<string, string> = {
 export async function POST(request: Request) {
   const admin = await getAdminUser();
   if (!admin) return NextResponse.json({ error: 'Akses ditolak: hanya admin.' }, { status: 403 });
-  // QRIS menentukan ke mana uang jamaah dibayarkan: hanya Super Admin yang boleh mengganti
-  const { data: caller } = await createAdminClient().from('profiles').select('role').eq('id', admin.id).maybeSingle();
-  if (caller?.role !== 'super_admin') {
-    return NextResponse.json({ error: 'Hanya Super Admin yang dapat mengganti QRIS.' }, { status: 403 });
-  }
 
   let file: FormDataEntryValue | null = null;
   try {

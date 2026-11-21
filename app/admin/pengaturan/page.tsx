@@ -6,7 +6,8 @@ export default async function PengaturanPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: me } = await supabase.from('profiles').select('role').eq('id', user?.id || '').maybeSingle();
-  const isSuperAdmin = me?.role === 'super_admin';
+  // Admin/Bendahara & Super Admin boleh mengubah pengaturan, rekening, dan QRIS (tercatat di Audit Log)
+  const canEdit = me?.role === 'admin' || me?.role === 'super_admin';
   const { data: settings } = await supabase.from('program_settings').select('*').single();
   const { data: bankAccounts } = await supabase.from('bank_accounts').select('*').order('created_at', { ascending: true });
 
@@ -17,10 +18,10 @@ export default async function PengaturanPage() {
         <p className="text-slate-500">Atur profil program, tanggal pelaksanaan, rekening resmi, dan QRIS setoran.</p>
       </div>
 
-      <PengaturanForm initialSettings={settings} initialBankAccounts={bankAccounts || []} canEdit={isSuperAdmin} />
+      <PengaturanForm initialSettings={settings} initialBankAccounts={bankAccounts || []} canEdit={canEdit} />
 
       <QrisUploadCard
-        canEdit={isSuperAdmin}
+        canEdit={canEdit}
         version={settings?.qris_image_path ? String(settings.qris_updated_at ? new Date(settings.qris_updated_at).getTime() : 1) : null}
       />
 
