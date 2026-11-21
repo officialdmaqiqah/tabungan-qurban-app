@@ -36,7 +36,7 @@ export async function GET() {
   const rows = transactions.map(tx => {
     const jamaah = Array.isArray(tx.profiles) ? tx.profiles[0] : tx.profiles;
     return [
-      new Date(tx.created_at).toLocaleString('id-ID').replace(',', ''),
+      new Date(tx.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }).replace(',', ''),
       `"${jamaah?.full_name || '-'}"`,
       `"${jamaah?.phone || '-'}"`,
       tx.method,

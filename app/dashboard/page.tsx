@@ -329,7 +329,7 @@ export default async function DashboardPage() {
                   {history && history.length > 0 ? (
                     history.map((tx) => (
                       <tr key={tx.id} className="border-b border-slate-50 last:border-0 hover:bg-emerald-50/30 transition-colors group">
-                        <td className="px-4 md:px-8 py-3 md:py-4 text-slate-500 text-xs md:text-sm whitespace-nowrap">{new Date(tx.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</td>
+                        <td className="px-4 md:px-8 py-3 md:py-4 text-slate-500 text-xs md:text-sm whitespace-nowrap">{new Date(tx.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric'})}</td>
                         <td className="px-4 md:px-8 py-3 md:py-4 hidden sm:table-cell">
                           <div className="flex flex-col">
                             <span className="capitalize font-medium text-slate-700 text-xs md:text-sm">{tx.method}</span>
