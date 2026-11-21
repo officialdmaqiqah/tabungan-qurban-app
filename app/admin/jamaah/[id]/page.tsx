@@ -11,7 +11,7 @@ import ResetPasswordButton from './ResetPasswordButton';
 import ApprovalActions from '../ApprovalActions';
 import DeleteJamaahButton from '../DeleteJamaahButton';
 import { resetJamaahPin } from '@/app/actions/admin_jamaah';
-import { getAdminUser } from '@/lib/auth-guards';
+import { getAdminUser, validateCashAmount } from '@/lib/auth-guards';
 import KategoriSelect from './KategoriSelect';
 import ManualReminderButton from './ManualReminderButton';
 
@@ -121,6 +121,10 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     const { data: profile } = await supabaseAction.from('profiles').select('role').eq('id', user.id).single();
     if (profile?.role !== 'admin' && profile?.role !== 'super_admin') return { success: false, error: 'Forbidden' };
 
+    const amountError = validateCashAmount(amount);
+    if (amountError) return { success: false, error: amountError };
+    if (jamaahId === user.id) return { success: false, error: 'Setoran untuk akun Anda sendiri harus diinput oleh admin lain.' };
+
     const adminClient = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -135,6 +139,13 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     });
 
     if (error) return { success: false, error: error.message };
+
+    await adminClient.from('audit_logs').insert({
+      admin_id: user.id,
+      action: 'input setoran tunai',
+      target_id: jamaahId,
+      details: `Admin menginput setoran tunai Rp ${amount.toLocaleString('id-ID')} untuk jamaah: ${jamaah.full_name}`,
+    });
 
     revalidatePath(`/admin/jamaah/${jamaahId}`);
     return { success: true };

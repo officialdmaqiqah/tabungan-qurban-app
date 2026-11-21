@@ -89,6 +89,17 @@ export async function resetJamaahPin(formData: FormData): Promise<Result> {
   if (pinError) return { success: false, error: pinError };
 
   const adminClient = createAdminClient();
+
+  // Cegah eskalasi wewenang: PIN akun Admin/Super Admin hanya boleh direset oleh Super Admin
+  const [{ data: targetRole }, { data: callerRole }] = await Promise.all([
+    adminClient.from('profiles').select('role').eq('id', userId).maybeSingle(),
+    adminClient.from('profiles').select('role').eq('id', admin.id).maybeSingle(),
+  ]);
+  const targetIsAdmin = targetRole?.role === 'admin' || targetRole?.role === 'super_admin';
+  if (targetIsAdmin && callerRole?.role !== 'super_admin') {
+    return { success: false, error: 'PIN akun Admin/Super Admin hanya bisa diatur ulang oleh Super Admin.' };
+  }
+
   const { data: authUser, error: getError } = await adminClient.auth.admin.getUserById(userId);
   const email = authUser?.user?.email;
   if (getError || !email) return { success: false, error: 'Akun login jamaah tidak ditemukan.' };
