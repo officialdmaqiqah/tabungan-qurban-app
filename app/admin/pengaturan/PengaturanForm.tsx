@@ -9,10 +9,13 @@ import Modal from '@/components/ui/Modal';
 
 export default function PengaturanForm({ 
   initialSettings,
-  initialBankAccounts
+  initialBankAccounts,
+  canEdit = false,
 }: { 
   initialSettings: any;
   initialBankAccounts: any[];
+  /** Hanya Super Admin yang boleh mengubah pengaturan program & rekening resmi. */
+  canEdit?: boolean;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -61,6 +64,7 @@ export default function PengaturanForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!canEdit) return;
     setLoading(true);
     
     try {
@@ -109,7 +113,14 @@ export default function PengaturanForm({
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-3xl">
+      {!canEdit && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span className="font-semibold">Hanya Super Admin</span> yang dapat mengubah pengaturan program dan rekening resmi,
+          karena rekening menentukan ke mana uang jamaah ditransfer.
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-8">
+      <fieldset disabled={!canEdit} className="contents">
         
         {/* Section: Profil Program */}
         <div className="space-y-4">
@@ -227,6 +238,7 @@ export default function PengaturanForm({
             {loading ? 'Menyimpan...' : 'Simpan Semua Pengaturan'}
           </button>
         </div>
+      </fieldset>
       </form>
 
       {/* Modal Hapus Rekening */}

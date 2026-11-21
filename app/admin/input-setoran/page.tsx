@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { validateCashAmount } from '@/lib/auth-guards';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -31,7 +32,12 @@ export default async function InputSetoranPage() {
     const method = formData.get('method') as string;
     const proofUrl = formData.get('proofUrl') as string | null;
 
-    if (!userId || !amount || !method) return { success: false, error: 'Incomplete data' };
+    if (!userId || !method) return { success: false, error: 'Data tidak lengkap.' };
+    // Validasi di server (jangan hanya mengandalkan form di browser)
+    const amountError = validateCashAmount(rawAmount);
+    if (amountError) return { success: false, error: amountError };
+    if (transactionType !== 'setoran' && transactionType !== 'penarikan') return { success: false, error: 'Jenis transaksi tidak valid.' };
+    if (method !== 'tunai' && method !== 'transfer') return { success: false, error: 'Metode tidak valid.' };
     
     const supabaseAction = await createClient();
     const { data: { user } } = await supabaseAction.auth.getUser();
@@ -39,11 +45,19 @@ export default async function InputSetoranPage() {
     
     const { data: profileAction } = await supabaseAction.from('profiles').select('role').eq('id', user.id).single();
     if (profileAction?.role !== 'admin' && profileAction?.role !== 'super_admin') return { success: false, error: 'Forbidden' };
+    // Pemisahan tugas: transaksi untuk akun sendiri harus diinput admin lain
+    if (userId === user.id) return { success: false, error: 'Transaksi untuk akun Anda sendiri harus diinput oleh admin lain.' };
 
     const adminClient = createAdminClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
+
+    if (transactionType === 'penarikan') {
+      const { data: verified } = await adminClient.from('transactions').select('amount').eq('user_id', userId).eq('status', 'verified');
+      const saldo = (verified || []).reduce((sum, t) => sum + Number(t.amount), 0);
+      if (rawAmount > saldo) return { success: false, error: `Penarikan melebihi saldo terverifikasi jamaah (Rp ${saldo.toLocaleString('id-ID')}).` };
+    }
 
     const { data: newTx, error } = await adminClient.from('transactions').insert({
       user_id: userId,

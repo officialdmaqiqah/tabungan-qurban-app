@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { QrCode, Upload, Loader2, Download } from 'lucide-react';
 
-export default function QrisUploadCard({ version }: { version: string | null }) {
+export default function QrisUploadCard({ version, canEdit = false }: { version: string | null; canEdit?: boolean }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -80,6 +80,11 @@ export default function QrisUploadCard({ version }: { version: string | null }) 
         </div>
 
         <div className="space-y-3">
+          {!canEdit && (
+            <p className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              Hanya Super Admin yang dapat mengganti QRIS.
+            </p>
+          )}
           {preview && (
             <p className="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
               Pratinjau file baru, belum disimpan. Pastikan nama merchant dan NMID sudah benar sebelum menyimpan.
@@ -90,7 +95,7 @@ export default function QrisUploadCard({ version }: { version: string | null }) 
             type="file"
             accept="image/png,image/jpeg,image/webp"
             onChange={(e) => onPick(e.target.files?.[0] || null)}
-            disabled={loading}
+            disabled={loading || !canEdit}
             className="block w-full text-sm text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
           />
           <p className="text-xs text-slate-500">Format PNG/JPG/WEBP, maksimal 3 MB. Gunakan file QRIS asli dari bank, bukan foto/screenshot yang buram.</p>
@@ -98,7 +103,7 @@ export default function QrisUploadCard({ version }: { version: string | null }) 
             <button
               type="button"
               onClick={handleUpload}
-              disabled={loading || !file}
+              disabled={loading || !file || !canEdit}
               className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold text-sm hover:bg-emerald-700 transition-colors disabled:opacity-50"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}

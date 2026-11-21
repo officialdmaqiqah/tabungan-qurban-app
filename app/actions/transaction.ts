@@ -68,6 +68,16 @@ export async function approveTransactionAction(
     const adminClient = createAdminClient();
     const nowIso = new Date().toISOString();
 
+    // Pemisahan tugas: setoran milik sendiri harus diverifikasi admin lain
+    const { data: ownerCheck } = await adminClient.from('transactions').select('user_id').eq('id', txId).maybeSingle();
+    if (ownerCheck?.user_id === user.id) {
+      return {
+        success: false,
+        error: 'Setoran milik Anda sendiri harus diverifikasi oleh admin lain.',
+        code: 'SELF_VERIFICATION',
+      };
+    }
+
     const { data: updatedTxs, error: updateError } = await adminClient
       .from('transactions')
       .update({

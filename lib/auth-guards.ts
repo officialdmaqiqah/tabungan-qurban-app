@@ -26,3 +26,15 @@ export async function getAdminUser(): Promise<User | null> {
 
   return isAdminOrSuperAdmin(profile?.role) ? user : null;
 }
+
+/** Batas nominal satu kali input setoran/penarikan tunai oleh admin (Rp 100 juta). */
+export const MAX_CASH_AMOUNT = 100_000_000;
+
+/** Mengembalikan pesan error bila nominal tidak wajar, selain itu null. */
+export function validateCashAmount(value: unknown): string | null {
+  const n = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(n) || !Number.isInteger(n)) return 'Nominal harus berupa angka bulat.';
+  if (n <= 0) return 'Nominal harus lebih dari 0.';
+  if (n > MAX_CASH_AMOUNT) return 'Nominal terlalu besar (maksimal Rp 100.000.000 per transaksi).';
+  return null;
+}
