@@ -7,7 +7,7 @@
 //   sehingga file dari versi lama terhapus otomatis.
 //
 // Naikkan VERSION setiap kali isi PRECACHE_ASSETS berubah (mis. ikon diganti).
-const VERSION = 'v3';
+const VERSION = 'v4';
 const PRECACHE = `makt-precache-${VERSION}`;
 const RUNTIME = 'makt-runtime';
 const RUNTIME_MAX_ENTRIES = 80;
