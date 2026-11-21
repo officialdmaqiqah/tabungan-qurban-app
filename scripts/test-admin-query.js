@@ -9,7 +9,7 @@ async function testAdminQuery() {
 
   // Login as admin
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-    email: '628111111111@qurban.makt.id',
+    email: '628111111111@akun.kubahtimah.com',
     password: 'Password123'
   });
 

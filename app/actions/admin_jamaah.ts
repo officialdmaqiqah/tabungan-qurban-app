@@ -6,7 +6,7 @@
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { getAdminUser } from '@/lib/auth-guards';
-import { clearLoginFailures, derivePinPassword, validatePin } from '@/lib/pin-auth';
+import { clearLoginFailures, derivePinPasswordForPhone, phoneFromLoginEmail, validatePin } from '@/lib/pin-auth';
 import { notifyJamaahOnApprovalResult } from '@/lib/wa/notifications';
 
 type Result = { success: true; message?: string } | { success: false; error: string };
@@ -93,8 +93,9 @@ export async function resetJamaahPin(formData: FormData): Promise<Result> {
   const email = authUser?.user?.email;
   if (getError || !email) return { success: false, error: 'Akun login jamaah tidak ditemukan.' };
 
+  const phone = phoneFromLoginEmail(email);
   const { error } = await adminClient.auth.admin.updateUserById(userId, {
-    password: derivePinPassword(email, pin as string),
+    password: derivePinPasswordForPhone(phone, pin as string),
   });
   if (error) {
     console.error('Admin PIN reset failed:', error);
@@ -107,7 +108,6 @@ export async function resetJamaahPin(formData: FormData): Promise<Result> {
     .eq('id', userId)
     .single();
   await adminClient.from('profiles').update({ pin_set_at: new Date().toISOString() }).eq('id', userId);
-  const phone = email.split('@')[0];
   await clearLoginFailures(phone);
 
   await adminClient.from('audit_logs').insert({
@@ -168,7 +168,7 @@ export async function deleteJamaah(userId: string): Promise<Result> {
   }
 
   const { data: authUser } = await adminClient.auth.admin.getUserById(userId);
-  const loginPhone = authUser?.user?.email?.split('@')[0] || target.phone_normalized || null;
+  const loginPhone = (authUser?.user?.email && phoneFromLoginEmail(authUser.user.email)) || target.phone_normalized || null;
 
   // Catat lebih dulu agar jejaknya tetap ada walaupun penghapusan gagal di tengah jalan
   await adminClient.from('audit_logs').insert({

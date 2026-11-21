@@ -14,7 +14,7 @@ async function testQuery() {
   );
 
   const { data, error: signInError } = await supabase.auth.signInWithPassword({
-    email: '628222222222@qurban.makt.id',
+    email: '628222222222@akun.kubahtimah.com',
     password: 'Password123'
   });
 

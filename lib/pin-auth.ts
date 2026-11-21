@@ -40,9 +40,21 @@ function hmac(input: string): string {
 // Email login & PIN
 // ---------------------------------------------------------------------------
 
-/** Email internal yang dipakai Supabase Auth untuk nomor WA (format sejak awal aplikasi). */
+// Email internal akun di Supabase Auth (bukan alamat email sungguhan; tidak pernah dipakai mengirim email).
+// Memakai subdomain milik masjid agar tidak ada pihak luar yang bisa menerima email untuk akun jamaah.
+export const LOGIN_EMAIL_DOMAIN = 'akun.kubahtimah.com';
+// Domain lama (bukan milik masjid). Akun lama dipindahkan lewat migrasi 20261123000000_login_email_domain.sql;
+// selama masa peralihan aplikasi tetap mengenali keduanya.
+export const LEGACY_LOGIN_EMAIL_DOMAIN = 'qurban.makt.id';
+
+/** Email internal untuk akun BARU dari nomor WA (format 62xxx). */
 export function loginEmailForPhone(phone: string): string {
-  return `${phone}@qurban.makt.id`;
+  return `${phone}@${LOGIN_EMAIL_DOMAIN}`;
+}
+
+/** Nomor WA dari email internal (domain lama maupun baru). */
+export function phoneFromLoginEmail(email: string): string {
+  return email.split('@')[0];
 }
 
 /**
@@ -52,10 +64,15 @@ export function loginEmailForPhone(phone: string): string {
  * aplikasi. Dengan HMAC + rahasia server, password asli tidak bisa ditebak
  * tanpa rahasia tersebut, dan satu-satunya jalan login adalah lewat server
  * aplikasi yang menerapkan kunci otomatis.
+ *
+ * PENTING: masukan HMAC sengaja tetap memakai format lama `<nomor>@qurban.makt.id`
+ * (hanya sebagai "garam", bukan alamat email) agar PIN yang sudah dibuat jamaah
+ * tetap berlaku walaupun email internal akun dipindah ke domain baru.
  */
-export function derivePinPassword(email: string, pin: string): string {
+export function derivePinPasswordForPhone(phone: string, pin: string): string {
+  const subject = `${phone}@${LEGACY_LOGIN_EMAIL_DOMAIN}`.toLowerCase();
   // Akhiran tetap ".Aa1" menjamin syarat karakter password Supabase (huruf besar/kecil, angka, simbol) selalu terpenuhi.
-  return 'pin1.' + hmac(`pin:${email.toLowerCase()}:${pin}`) + '.Aa1';
+  return 'pin1.' + hmac(`pin:${subject}:${pin}`) + '.Aa1';
 }
 
 /** Mengembalikan pesan error jika PIN tidak valid/terlalu mudah ditebak, selain itu null. */
@@ -82,16 +99,27 @@ export function validatePin(pin: unknown): string | null {
 // ---------------------------------------------------------------------------
 // Pencarian akun
 // ---------------------------------------------------------------------------
-export async function findAuthUserIdByPhone(phone: string): Promise<string | null> {
+async function lookupUserIdByEmail(email: string): Promise<string | null> {
   const adminClient = createAdminClient();
-  const { data, error } = await adminClient.rpc('get_auth_user_id_by_email', {
-    p_email: loginEmailForPhone(phone),
-  });
+  const { data, error } = await adminClient.rpc('get_auth_user_id_by_email', { p_email: email });
   if (error) {
     console.error('get_auth_user_id_by_email failed:', error);
     throw new Error('Database belum diperbarui. Jalankan migrasi 20261120000000_registration_otp_pin_approval.sql.');
   }
   return (data as string | null) ?? null;
+}
+
+/** Akun untuk nomor WA ini (email domain baru, atau domain lama selama masa peralihan). */
+export async function findAuthAccountByPhone(phone: string): Promise<{ userId: string; email: string } | null> {
+  for (const email of [loginEmailForPhone(phone), `${phone}@${LEGACY_LOGIN_EMAIL_DOMAIN}`]) {
+    const userId = await lookupUserIdByEmail(email);
+    if (userId) return { userId, email };
+  }
+  return null;
+}
+
+export async function findAuthUserIdByPhone(phone: string): Promise<string | null> {
+  return (await findAuthAccountByPhone(phone))?.userId ?? null;
 }
 
 // ---------------------------------------------------------------------------
