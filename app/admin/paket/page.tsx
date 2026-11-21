@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { formatCurrency } from '@/lib/utils';
 import { Plus, Trash2, Package } from 'lucide-react';
 import DeleteConfirmButton from '@/components/DeleteConfirmButton';
+import { getAdminUser } from '@/lib/auth-guards';
 
 export default async function AdminPaketPage() {
   const supabase = await createClient();
@@ -15,11 +16,12 @@ export default async function AdminPaketPage() {
 
   async function addPackage(formData: FormData) {
     'use server';
+    if (!(await getAdminUser())) return;
     const supabase = await createClient();
     
-    const name = formData.get('name') as string;
+    const name = (formData.get('name') as string)?.trim().slice(0, 100);
     const priceStr = formData.get('price') as string;
-    const description = formData.get('description') as string;
+    const description = ((formData.get('description') as string) || '').trim().slice(0, 500);
     const price = parseFloat(priceStr.replace(/[^0-9]/g, ''));
 
     if (name && price > 0) {
@@ -34,6 +36,7 @@ export default async function AdminPaketPage() {
 
   async function deletePackage(formData: FormData) {
     'use server';
+    if (!(await getAdminUser())) return;
     const supabase = await createClient();
     const id = formData.get('id') as string;
     

@@ -129,9 +129,9 @@ export default function PackageCard({ pkg, selectedQuantity, onSelect }: Package
               <span className="w-8 text-center font-extrabold text-slate-900 text-base">{quantity}</span>
               <button
                 type="button"
-                onClick={() => setQuantity(quantity + 1)}
-                disabled={loading}
-                className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center justify-center font-bold transition-colors shadow-xs"
+                onClick={() => setQuantity(Math.min(20, quantity + 1))}
+                disabled={loading || quantity >= 20}
+                className="w-8 h-8 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 flex items-center justify-center font-bold transition-colors shadow-xs disabled:opacity-40"
                 aria-label="Tambah"
               >
                 <Plus className="w-4 h-4" />
