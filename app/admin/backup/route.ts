@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -45,6 +46,15 @@ export async function GET() {
     };
 
     const jsonString = JSON.stringify(backupData, null, 2);
+
+    // Backup berisi seluruh data pribadi jamaah: catat siapa yang mengunduh
+    await createAdminClient().from('audit_logs').insert({
+      admin_id: user.id,
+      action: 'download backup',
+      target_id: null,
+      details: `Mengunduh backup data lengkap (${profiles?.length ?? 0} profil, ${transactions?.length ?? 0} transaksi)`,
+      created_at: new Date().toISOString(),
+    });
 
     return new NextResponse(jsonString, {
       headers: {

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { resolveProofUrl } from '@/lib/proof';
 import { formatCurrency, calculateDaysLeft, maskName } from '@/lib/utils';
 import { redirect } from 'next/navigation';
 import { Target, TrendingUp, Calendar, AlertCircle, EyeOff, Eye, Trophy, Sparkles } from 'lucide-react';
@@ -55,17 +56,8 @@ export default async function DashboardPage() {
   const recPerMonth = daysLeft > 0 ? sisaTarget / (daysLeft / 30) : 0;
 
   const history = await Promise.all((historyRaw || []).map(async (tx) => {
-    let finalUrl = tx.proof_url;
-    if (finalUrl && !finalUrl.startsWith('http')) {
-      const parts = finalUrl.split('/');
-      const bucket = parts[0];
-      const path = parts.slice(1).join('/');
-      if (bucket && path) {
-        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
-        if (data) finalUrl = data.signedUrl;
-      }
-    }
-    return { ...tx, proof_url: finalUrl };
+    const proof = await resolveProofUrl(supabase, tx.proof_url, tx.user_id);
+    return { ...tx, proof_url: proof.url, proof_invalid: proof.invalid };
   }));
 
   // Leaderboard & Motivation Logic
