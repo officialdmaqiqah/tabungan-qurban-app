@@ -29,8 +29,23 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  // Alamat utama situs, agar gambar pratinjau link (WhatsApp, Facebook, dll.) memakai URL lengkap
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://tabunganqurban.kubahtimah.com"),
   title: "Tabungan Qurban MAKT",
   description: "Aplikasi Tabungan Qurban Masjid Agung Kubah Timah Pangkalpinang",
+  // Pratinjau saat link dibagikan. Gambarnya dari app/opengraph-image.png (logo aplikasi).
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    siteName: "Tabungan Qurban MAKT",
+    title: "Tabungan Qurban MAKT",
+    description: "Wujudkan niat qurban tanpa terasa berat. Menabung fleksibel tanpa minimum setor, setor mudah lewat QRIS. Masjid Agung Kubah Timah Pangkalpinang.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Tabungan Qurban MAKT",
+    description: "Wujudkan niat qurban tanpa terasa berat. Menabung fleksibel, setor mudah lewat QRIS.",
+  },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
