@@ -14,7 +14,7 @@ export default function PengaturanForm({
 }: { 
   initialSettings: any;
   initialBankAccounts: any[];
-  /** Hanya Super Admin yang boleh mengubah pengaturan program & rekening resmi. */
+  /** Admin/Bendahara & Super Admin boleh mengubah pengaturan program & rekening resmi. */
   canEdit?: boolean;
 }) {
   const router = useRouter();
@@ -115,8 +115,7 @@ export default function PengaturanForm({
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-3xl">
       {!canEdit && (
         <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          <span className="font-semibold">Hanya Super Admin</span> yang dapat mengubah pengaturan program dan rekening resmi,
-          karena rekening menentukan ke mana uang jamaah ditransfer.
+          <span className="font-semibold">Hanya Admin/Bendahara</span> yang dapat mengubah pengaturan program dan rekening resmi.
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-8">

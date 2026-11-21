@@ -26,30 +26,32 @@ BEGIN
 END
 $$;
 
--- 2. REKENING RESMI: hanya Super Admin yang boleh menambah/mengubah/menghapus.
---    Admin tetap bisa melihat semua; jamaah (login) hanya melihat rekening aktif.
+-- 2. REKENING RESMI: Admin/Bendahara & Super Admin boleh mengelola (keputusan pengurus).
+--    Setiap perubahan tercatat otomatis di Audit Log (lihat bagian 4).
+--    Jamaah (login) hanya melihat rekening aktif.
 DROP POLICY IF EXISTS "Admin full access to bank_accounts" ON public.bank_accounts;
 DROP POLICY IF EXISTS "Read bank accounts" ON public.bank_accounts;
 DROP POLICY IF EXISTS "Super admin manages bank accounts" ON public.bank_accounts;
+DROP POLICY IF EXISTS "Admins manage bank accounts" ON public.bank_accounts;
 
 CREATE POLICY "Read bank accounts" ON public.bank_accounts
   FOR SELECT
   USING (is_active = true OR public.is_admin());
 
-CREATE POLICY "Super admin manages bank accounts" ON public.bank_accounts
+CREATE POLICY "Admins manage bank accounts" ON public.bank_accounts
   FOR ALL
-  USING (public.is_super_admin())
-  WITH CHECK (public.is_super_admin());
+  USING (public.is_admin())
+  WITH CHECK (public.is_admin());
 
--- 3. PENGATURAN PROGRAM: hanya Super Admin yang boleh mengubah
+-- 3. PENGATURAN PROGRAM: Admin/Bendahara & Super Admin (dengan Audit Log)
 DROP POLICY IF EXISTS "Admins can update program settings" ON public.program_settings;
 DROP POLICY IF EXISTS "Admins can insert program settings" ON public.program_settings;
 DROP POLICY IF EXISTS "Super admin can update program settings" ON public.program_settings;
 DROP POLICY IF EXISTS "Super admin can insert program settings" ON public.program_settings;
-CREATE POLICY "Super admin can update program settings" ON public.program_settings
-  FOR UPDATE USING (public.is_super_admin()) WITH CHECK (public.is_super_admin());
-CREATE POLICY "Super admin can insert program settings" ON public.program_settings
-  FOR INSERT WITH CHECK (public.is_super_admin());
+CREATE POLICY "Admins can update program settings" ON public.program_settings
+  FOR UPDATE USING (public.is_admin()) WITH CHECK (public.is_admin());
+CREATE POLICY "Admins can insert program settings" ON public.program_settings
+  FOR INSERT WITH CHECK (public.is_admin());
 
 -- 4. JEJAK AUDIT otomatis untuk perubahan rekening & pengaturan program
 CREATE OR REPLACE FUNCTION public.log_settings_change()
