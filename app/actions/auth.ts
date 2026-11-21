@@ -10,8 +10,9 @@ import { formatWhatsAppNumber } from '@/lib/utils';
 import {
   checkLoginLock,
   clearLoginFailures,
-  derivePinPassword,
+  derivePinPasswordForPhone,
   discardOtp,
+  findAuthAccountByPhone,
   findAuthUserIdByPhone,
   getClientIp,
   issueOtp,
@@ -136,7 +137,7 @@ export async function completeRegistration(input: RegistrationInput): Promise<Ac
 
     const { data: created, error: createError } = await adminClient.auth.admin.createUser({
       email,
-      password: derivePinPassword(email, input.pin),
+      password: derivePinPasswordForPhone(phone, input.pin),
       email_confirm: true,
       user_metadata: {
         full_name: fullName,
@@ -185,7 +186,7 @@ export async function completeRegistration(input: RegistrationInput): Promise<Ac
     // Notifikasi WA (kegagalan tidak membatalkan pendaftaran)
     await Promise.allSettled([sendRegistrationWelcomeWA(userId), notifyAdminOnNewRegistration(userId)]);
 
-    const signedIn = await signInAndGetRedirect(email, derivePinPassword(email, input.pin));
+    const signedIn = await signInAndGetRedirect(email, derivePinPasswordForPhone(phone, input.pin));
     if ('error' in signedIn) {
       return { success: true, message: 'Pendaftaran berhasil! Silakan masuk dengan nomor WA dan PIN Anda.', redirectTo: '/login' };
     }
@@ -212,14 +213,16 @@ export async function loginWithPin(rawPhone: string, pin: string): Promise<Actio
     const lockMessage = await checkLoginLock(phone, ip);
     if (lockMessage) return { success: false, error: lockMessage };
 
-    const email = loginEmailForPhone(phone);
-    const result = await signInAndGetRedirect(email, derivePinPassword(email, pin));
+    // Akun lama bisa masih memakai email domain lama selama masa peralihan
+    const account = await findAuthAccountByPhone(phone);
+    const email = account?.email ?? loginEmailForPhone(phone);
+    const result = await signInAndGetRedirect(email, derivePinPasswordForPhone(phone, pin));
 
     if ('error' in result) {
       const left = await recordLoginFailure(phone, ip);
 
       // Bantu pengguna lama yang belum membuat PIN
-      const userId = await findAuthUserIdByPhone(phone);
+      const userId = account?.userId;
       if (userId) {
         const adminClient = createAdminClient();
         const { data: profile } = await adminClient.from('profiles').select('pin_set_at').eq('id', userId).maybeSingle();
@@ -277,13 +280,13 @@ export async function resetPinWithOtp(rawPhone: string, otp: string, pin: string
     const otpError = await verifyOtp('reset_pin', phone, otp);
     if (otpError) return { success: false, error: otpError };
 
-    const userId = await findAuthUserIdByPhone(phone);
-    if (!userId) return { success: false, error: 'Akun tidak ditemukan.' };
+    const account = await findAuthAccountByPhone(phone);
+    if (!account) return { success: false, error: 'Akun tidak ditemukan.' };
+    const { userId, email } = account;
 
-    const email = loginEmailForPhone(phone);
     const adminClient = createAdminClient();
     const { error } = await adminClient.auth.admin.updateUserById(userId, {
-      password: derivePinPassword(email, pin),
+      password: derivePinPasswordForPhone(phone, pin),
     });
     if (error) {
       console.error('updateUserById (PIN) failed:', error);
@@ -292,7 +295,7 @@ export async function resetPinWithOtp(rawPhone: string, otp: string, pin: string
     await adminClient.from('profiles').update({ pin_set_at: new Date().toISOString() }).eq('id', userId);
     await clearLoginFailures(phone);
 
-    const signedIn = await signInAndGetRedirect(email, derivePinPassword(email, pin));
+    const signedIn = await signInAndGetRedirect(email, derivePinPasswordForPhone(phone, pin));
     if ('error' in signedIn) {
       return { success: true, message: 'PIN berhasil disimpan. Silakan masuk.', redirectTo: '/login' };
     }

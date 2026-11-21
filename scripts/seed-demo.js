@@ -33,7 +33,7 @@ async function seed() {
 
   // Helper to create user
   async function createDemoUser(phone, name, role) {
-    const email = `${phone}@qurban.makt.id`;
+    const email = `${phone}@akun.kubahtimah.com`;
     const password = 'Password123';
     
     // Check if exists
