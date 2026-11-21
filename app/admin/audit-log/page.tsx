@@ -47,7 +47,7 @@ export default async function AuditLogPage() {
                 logs.map((log) => (
                   <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-xs text-slate-500">
-                      {new Date(log.created_at).toLocaleString('id-ID')}
+                      {new Date(log.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}
                     </td>
                     <td className="px-6 py-4 font-medium text-slate-900">
                       {Array.isArray(log.admin) ? log.admin[0]?.full_name : (log.admin as any)?.full_name || 'Admin'}

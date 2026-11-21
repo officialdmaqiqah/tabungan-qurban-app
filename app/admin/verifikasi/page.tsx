@@ -91,7 +91,7 @@ export default async function AdminVerifikasiPage({ searchParams }: { searchPara
               {pendingTxs && pendingTxs.length > 0 ? (
                 pendingTxs.map((tx: any) => (
                   <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="px-6 py-4">{new Date(tx.created_at).toLocaleDateString('id-ID')}</td>
+                    <td className="px-6 py-4">{new Date(tx.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta' })}</td>
                     <td className="px-6 py-4">
                       <div className="font-medium text-slate-900 capitalize">{tx.profiles?.full_name}</div>
                       <div className="text-xs text-slate-500">{tx.profiles?.phone}</div>

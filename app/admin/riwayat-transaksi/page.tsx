@@ -85,7 +85,7 @@ export default async function AdminRiwayatTransaksiPage({ searchParams }: { sear
                 transactions.map((tx: any) => (
                   <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-4 py-2.5">
-                      {new Date(tx.created_at).toLocaleDateString('id-ID', {
+                      {new Date(tx.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', 
                         day: 'numeric', month: 'short', year: 'numeric',
                         hour: '2-digit', minute: '2-digit'
                       })}

@@ -154,7 +154,7 @@ export default async function AdminWhatsAppLogsPage() {
                   logs.map((log: any) => (
                     <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-4 py-3 text-xs">
-                        {new Date(log.created_at).toLocaleString('id-ID', {
+                        {new Date(log.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', 
                           day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
                         })}
                       </td>

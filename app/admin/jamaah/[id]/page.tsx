@@ -353,7 +353,7 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                     transactions.map((tx) => (
                       <tr key={tx.id} className="hover:bg-slate-50/50">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {new Date(tx.created_at).toLocaleDateString('id-ID', {
+                          {new Date(tx.created_at).toLocaleDateString('id-ID', { timeZone: 'Asia/Jakarta', 
                             day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                           })}
                         </td>
