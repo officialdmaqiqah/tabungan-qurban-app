@@ -375,7 +375,8 @@ https://tabunganqurban.kubahtimah.com/admin/jamaah`;
       to: settings.admin_notification_phone,
       message,
       eventType: 'registration_pending_admin',
-      recipientUserId: userId,
+      // Sengaja tanpa recipientUserId: log ini milik admin. Bila diisi id jamaah,
+      // jamaah bisa membaca nomor WA admin lewat policy "Jamaah can view own logs".
     });
   } catch (error) {
     console.error('Error notifyAdminOnNewRegistration:', error);

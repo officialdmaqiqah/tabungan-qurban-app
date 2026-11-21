@@ -185,6 +185,8 @@ export async function rejectTransactionAction(
       txAmount = input.txAmount || '';
       txName = input.txName || '';
     }
+    // Catatan ikut terkirim lewat WA ke jamaah: batasi panjangnya
+    adminNote = String(adminNote).trim().slice(0, 500);
 
     if (!txId) {
       return { success: false, error: 'ID transaksi tidak valid.', code: 'INVALID_ID' };

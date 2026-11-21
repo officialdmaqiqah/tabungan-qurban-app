@@ -1,7 +1,9 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { revalidatePath } from 'next/cache';
+import { formatWhatsAppNumber } from '@/lib/utils';
 
 export async function updateWhatsAppSettings(data: any) {
   try {
@@ -31,6 +33,28 @@ export async function updateWhatsAppSettings(data: any) {
     if (!currentSettings) {
       throw new Error('Pengaturan belum diinisialisasi di database.');
     }
+
+    // Validasi masukan dari browser
+    if (!data || typeof data !== 'object') throw new Error('Data pengaturan tidak valid.');
+    const boolFields = [
+      'is_enabled', 'dry_run', 'send_to_admin_on_deposit_reported', 'send_to_jamaah_on_deposit_approved',
+      'send_to_jamaah_on_deposit_rejected', 'send_manual_reminder_enabled', 'send_welcome_on_registration',
+    ];
+    for (const f of boolFields) {
+      if (data[f] !== undefined && typeof data[f] !== 'boolean') throw new Error('Data pengaturan tidak valid.');
+    }
+    if (data.admin_notification_phone) {
+      const { formatted, error: phoneError } = formatWhatsAppNumber(String(data.admin_notification_phone));
+      if (phoneError || !formatted) throw new Error(phoneError || 'Nomor WA admin tidak valid.');
+      data.admin_notification_phone = formatted;
+    } else {
+      data.admin_notification_phone = null;
+    }
+    const { data: before } = await supabase
+      .from('whatsapp_settings')
+      .select('is_enabled, dry_run, admin_notification_phone')
+      .eq('id', currentSettings.id)
+      .single();
 
     // Attempt to update
     const { error } = await supabase
@@ -69,7 +93,16 @@ export async function updateWhatsAppSettings(data: any) {
       throw error;
     }
 
+    await createAdminClient().from('audit_logs').insert({
+      admin_id: user.id,
+      action: 'ubah pengaturan WA',
+      target_id: null,
+      details: `Pengaturan WhatsApp diubah. Aktif: ${before?.is_enabled} -> ${data.is_enabled}; Dry run: ${before?.dry_run} -> ${data.dry_run}; No. WA admin: ${before?.admin_notification_phone || '-'} -> ${data.admin_notification_phone || '-'}`,
+      created_at: new Date().toISOString(),
+    });
+
     revalidatePath('/admin/whatsapp');
+    revalidatePath('/admin/audit-log');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { resolveProofUrl } from '@/lib/proof';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
 import { notFound, redirect } from 'next/navigation';
@@ -44,17 +45,8 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
     .order('created_at', { ascending: false });
 
   const transactions = await Promise.all((transactionsRaw || []).map(async (tx) => {
-    let finalUrl = tx.proof_url;
-    if (finalUrl && !finalUrl.startsWith('http')) {
-      const parts = finalUrl.split('/');
-      const bucket = parts[0];
-      const path = parts.slice(1).join('/');
-      if (bucket && path) {
-        const { data } = await supabase.storage.from(bucket).createSignedUrl(path, 3600);
-        if (data) finalUrl = data.signedUrl;
-      }
-    }
-    return { ...tx, proof_url: finalUrl };
+    const proof = await resolveProofUrl(supabase, tx.proof_url, tx.user_id);
+    return { ...tx, proof_url: proof.url, proof_invalid: proof.invalid };
   }));
 
   // Calculate stats
@@ -360,6 +352,9 @@ export default async function JamaahDetailPage({ params }: { params: Promise<{ i
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
                             <span className="capitalize font-medium">{tx.method}</span>
+                            {tx.proof_invalid && (
+                              <span className="text-[10px] mt-0.5 font-semibold text-red-600" title="Isi bukti transfer bukan file dari aplikasi ini. Jangan dibuka; periksa manual.">⚠ Bukti tidak valid</span>
+                            )}
                             {tx.method === 'transfer' && tx.proof_url && (
                               <a href={tx.proof_url} target="_blank" rel="noreferrer" className="text-[10px] text-blue-600 hover:underline mt-0.5">
                                 Lihat Bukti
