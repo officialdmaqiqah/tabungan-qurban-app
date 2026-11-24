@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Aset video motion graphic (bukan kode aplikasi)
+    "video-pas/**",
   ]),
 ]);
 
